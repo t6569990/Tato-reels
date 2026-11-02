@@ -174,6 +174,8 @@ textarea { min-height:76px; }
 /* Visualizador fijo arriba a la derecha; herramientas en el flujo normal */
 .fixed-workspace { position:static; top:auto; z-index:auto; background:transparent; padding:0; margin:0; }
 .preview-shell.is-screen-pinned { position:fixed; top:88px; right:24px; left:auto; transform:none; z-index:25; width:min(280px,24vw); max-height:calc(100vh - 110px); margin:0; }
+.preview-shell.is-screen-pinned { cursor:grab; touch-action:none; user-select:none; }
+.preview-shell.is-screen-pinned.is-dragging { cursor:grabbing; }
 .preview-shell.is-screen-pinned .video-frame { max-height:calc(100vh - 190px); }
 .editor-panel { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; align-items:start; }
 .editor-panel .tool-tabs, .editor-panel .tool-panes, .editor-panel .timeline-panel, .editor-panel .trim-panel { grid-column:1/-1; }
@@ -443,7 +445,23 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  if(!editor)return;
  const heading=document.querySelector('.heading-row');
  const preview=document.querySelector('.preview-shell');
- if(heading&&preview){preview.classList.add('is-screen-pinned');document.getElementById('app').append(preview);}
+ if(heading&&preview){
+  preview.classList.add('is-screen-pinned');document.getElementById('app').append(preview);
+  let drag=null;
+  preview.addEventListener('pointerdown',event=>{
+   if(event.target.closest('button,video,input,textarea,select,a'))return;
+   const rect=preview.getBoundingClientRect();drag={x:event.clientX-rect.left,y:event.clientY-rect.top};preview.classList.add('is-dragging');preview.setPointerCapture(event.pointerId);event.preventDefault();
+  });
+  preview.addEventListener('pointermove',event=>{
+   if(!drag)return;
+   const width=preview.offsetWidth,height=preview.offsetHeight;
+   const left=Math.max(0,Math.min(window.innerWidth-width,event.clientX-drag.x));
+   const top=Math.max(0,Math.min(window.innerHeight-height,event.clientY-drag.y));
+   preview.style.left=left+'px';preview.style.top=top+'px';preview.style.right='auto';
+  });
+  const stopDragging=()=>{drag=null;preview.classList.remove('is-dragging');};
+  preview.addEventListener('pointerup',stopDragging);preview.addEventListener('pointercancel',stopDragging);
+ }
  const trim=document.querySelector('.trim-panel');
  const panels=Array.from(editor.querySelectorAll(':scope > .panel'));
  const timeline=panels.find(p=>p.querySelector('#timelineTrack'));
