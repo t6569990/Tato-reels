@@ -135,6 +135,11 @@ textarea { min-height:76px; }
 .post-card p { margin:0; color:light-dark(#777083,#AAA4B7); font-size:11px; }
 .toast { position:fixed; bottom:22px; left:50%; transform:translate(-50%,20px); opacity:0; pointer-events:none; padding:12px 17px; border-radius:12px; background:#211A32; color:white; font-size:12px; box-shadow:0 10px 30px #0005; transition:.25s; z-index:30; }
 .toast.show { opacity:1; transform:translate(-50%,0); }
+.export-progress { display:none; grid-column:1/-1; padding:13px 15px; border:1px solid light-dark(#E8E3EE,#373144); border-radius:13px; background:light-dark(#FFFFFF,#171521); }
+.export-progress.visible { display:block; }
+.export-progress-head { display:flex; justify-content:space-between; gap:12px; align-items:center; font-size:12px; font-weight:750; margin-bottom:9px; }
+.export-progress-track { height:10px; overflow:hidden; border-radius:20px; background:light-dark(#EEEAF3,#302A40); }
+.export-progress-fill { width:0%; height:100%; border-radius:20px; background:linear-gradient(90deg,#6C3CE8,#B69AFF); transition:width .12s linear; }
 .mobile-nav { display:none; }
 @media (max-width:1050px) { .layout { grid-template-columns:190px minmax(320px,1fr); } .right-rail { display:none; } .editor-panel { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media (max-width:720px) {
@@ -207,6 +212,11 @@ textarea { min-height:76px; }
           <div class="filter-row"><button class="filter active" data-filter="none">Original</button><button class="filter" data-filter="warm">Cálido</button><button class="filter" data-filter="mono">B&amp;N</button></div>
         </div>
         <div class="panel">
+          <h3>📐 Formato</h3>
+          <div class="filter-row"><button class="filter active" data-ratio="9/16">9:16</button><button class="filter" data-ratio="4/5">4:5</button><button class="filter" data-ratio="1/1">1:1</button></div>
+          <div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:9px">El formato cambia el encuadre de la vista previa.</div>
+        </div>
+        <div class="panel">
           <h3>✂️ Recortar clip</h3>
           <div class="range-row"><label>Inicio (seg.)<input id="trimStart" type="number" min="0" step="0.1" value="0"></label><label>Final (seg.)<input id="trimEnd" type="number" min="0" step="0.1" value="0"></label></div>
           <div class="file-note" id="durationNote">Carga un video para definir el recorte.</div>
@@ -256,12 +266,8 @@ textarea { min-height:76px; }
           <button class="secondary" id="openTikTok" style="width:100%;margin-top:7px">Abrir TikTok</button>
           <div class="file-note" id="socialStatus">No hay cuentas conectadas. Estos accesos no suben el video automáticamente.</div>
         </div>
-        <div class="panel">
-          <h3>📐 Formato</h3>
-          <div class="filter-row"><button class="filter active" data-ratio="9/16">9:16</button><button class="filter" data-ratio="4/5">4:5</button><button class="filter" data-ratio="1/1">1:1</button></div>
-          <div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:9px">El formato cambia el encuadre de la vista previa.</div>
-        </div>
         <div style="grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap"><button class="secondary" id="saveBtn" style="flex:1">Guardar borrador</button><button class="primary" id="exportBtn" style="flex:1">Exportar clip WebM ↓</button><button class="primary" id="exportSequenceBtn" style="flex:1">Exportar Reel completo ↓</button><button class="secondary" id="publishBtn" style="flex:1">Preparar publicación ↗</button></div>
+        <div class="export-progress" id="exportProgress" role="status" aria-live="polite"><div class="export-progress-head"><span id="exportProgressLabel">Preparando Reel completo…</span><strong id="exportProgressPercent">0%</strong></div><div class="export-progress-track"><div class="export-progress-fill" id="exportProgressFill"></div></div></div>
       </section>
     </div>
     <div class="post-card" id="postCard"><h3>✓ Publicación preparada</h3><p id="postText">Tu Reel está listo en esta vista previa. La publicación real en redes sociales requiere conectar una cuenta o servicio.</p></div>
@@ -384,7 +390,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  const items=timelineItems.length?timelineItems.map(item=>({...item})):video.src?[{name:'Video principal',url:objectUrl,start:Number($('trimStart').value)||0,end:Number($('trimEnd').value)||video.duration,duration:video.duration}]:[];
  if(!items.length){toast('Carga un video y agrega los clips que quieras incluir.');return;}
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast('Tu navegador no permite exportar el Reel completo. Prueba Chrome actualizado.');return;}
- const btn=$('exportSequenceBtn');btn.disabled=true;btn.textContent='Preparando Reel…';let audioContext=null,music=null,musicSource=null,recorder=null,raf=0;
+ const btn=$('exportSequenceBtn');btn.disabled=true;btn.textContent='Preparando Reel…';const progress=$('exportProgress'),progressFill=$('exportProgressFill'),progressPercent=$('exportProgressPercent'),progressLabel=$('exportProgressLabel');const totalDuration=items.reduce((sum,item)=>sum+Math.max(0,(Number(item.end)||item.duration)-(Number(item.start)||0)),0);let completedDuration=0;const updateProgress=value=>{const percent=Math.max(0,Math.min(100,Math.round(value)));progress.classList.add('visible');progressFill.style.width=percent+'%';progressPercent.textContent=percent+'%';};progressLabel.textContent='Preparando Reel completo…';updateProgress(0);let audioContext=null,music=null,musicSource=null,recorder=null,raf=0;
  try{
   const canvas=document.createElement('canvas');canvas.width=720;canvas.height=1280;const ctx=canvas.getContext('2d');const stream=canvas.captureStream(30);audioContext=new AudioContext();const audioOut=audioContext.createMediaStreamDestination();
   if(musicUrl){music=new Audio(musicUrl);music.loop=true;music.volume=Number($('musicVolume').value);musicSource=audioContext.createMediaElementSource(music);musicSource.connect(audioOut);}
@@ -393,9 +399,9 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
   for(let index=0;index<items.length;index++){
    const item=items[index],clip=document.createElement('video');clip.src=item.url;clip.muted=false;clip.playsInline=true;clip.preload='auto';await waitForMedia(clip,'loadedmetadata');const start=Math.max(0,Number(item.start)||0),end=Math.min(clip.duration,Number(item.end)||clip.duration);if(!(end>start))throw new Error('Hay un recorte inválido en '+(item.name||'un clip'));
    const source=audioContext.createMediaElementSource(clip);source.connect(audioOut);clip.currentTime=start;await waitForMedia(clip,'seeked');await clip.play();$('videoStatus').textContent='Exportando clip '+(index+1)+' de '+items.length;
-   await new Promise((resolve,reject)=>{let last=0;const frame=()=>{if(clip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,clip,720,1280);const elapsed=(index===0?0:items.slice(0,index).reduce((sum,x)=>sum+Math.max(0,(Number(x.end)||x.duration)-(Number(x.start)||0)),0))+(clip.currentTime-start);drawExportTitle(ctx,elapsed);if(clip.currentTime>=end||clip.ended){clip.pause();resolve();return;}raf=requestAnimationFrame(frame);};last=performance.now();frame();});cancelAnimationFrame(raf);clip.pause();clip.removeAttribute('src');clip.load();
+   progressLabel.textContent='Creando clip '+(index+1)+' de '+items.length+'…';await new Promise((resolve,reject)=>{const frame=()=>{if(clip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,clip,720,1280);const elapsed=completedDuration+(clip.currentTime-start);drawExportTitle(ctx,elapsed);updateProgress(totalDuration?((elapsed/totalDuration)*100):0);if(clip.currentTime>=end||clip.ended){clip.pause();resolve();return;}raf=requestAnimationFrame(frame);};frame();});cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);clip.pause();clip.removeAttribute('src');clip.load();
   }
-  recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tato-reel-completo.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);toast('Reel completo exportado.');$('videoStatus').textContent='Exportación completa';
+  recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tato-reel-completo.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);updateProgress(100);progressLabel.textContent='¡Reel completo listo!';toast('Reel completo exportado.');$('videoStatus').textContent='Exportación completa';
  }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();toast(error.message||'No se pudo exportar el Reel completo.');}
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='Exportar Reel completo ↓';}
 });
