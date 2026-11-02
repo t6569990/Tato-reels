@@ -51,6 +51,11 @@ h1 { font-family:var(--site-font-heading); font-size:calc(27px * var(--site-head
 .creator { display:grid; grid-template-columns:minmax(0,1fr); gap:17px; align-items:start; }
 .preview-shell { width:min(100%,390px); margin:0 auto; }
 .preview-shell { background:#08070C; border-radius:23px; padding:10px; box-shadow:0 18px 45px #0002; }
+.trim-panel { width:min(100%,390px); margin:-5px auto 0; border:1px solid light-dark(#E8E3EE,#373144); border-radius:16px; padding:15px; background:light-dark(#FFFFFF,#171521); }
+.trim-panel h3 { font-size:14px; margin:0 0 6px; }
+.trim-help { color:light-dark(#777083,#A29BAD); font-size:11px; line-height:1.5; margin:0 0 13px; }
+.trim-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+.trim-actions button { width:100%; }
 .video-frame { position:relative; width:100%; aspect-ratio:9/16; max-height:620px; overflow:hidden; border-radius:16px; background:radial-gradient(circle at 70% 25%,#F5A45D 0,#A64C83 28%,#30265F 65%,#10101C 100%); }
 .video-frame video { width:100%; height:100%; object-fit:cover; display:none; }
 .video-frame video.show { display:block; }
@@ -181,6 +186,14 @@ textarea { min-height:76px; }
         </div>
         <div class="player-controls"><span id="videoStatus">Vista previa</span><div><button id="playBtn" aria-label="Reproducir">▶</button> <button id="muteBtn" aria-label="Silenciar">♫</button></div><span>1080 × 1920</span></div>
       </section>
+      <section class="trim-panel">
+        <h3>✂️ Recorta este video</h3>
+        <p class="trim-help">Elige dónde quieres que empiece y termine tu clip. Puedes escribir los segundos o reproducir el video y marcar el punto exacto con los botones.</p>
+        <div class="range-row"><label>Inicio (segundos)<input id="trimStart" type="number" min="0" step="0.1" value="0"></label><label>Final (segundos)<input id="trimEnd" type="number" min="0" step="0.1" value="0"></label></div>
+        <div class="file-note" id="durationNote">Primero selecciona un video para comenzar a recortarlo.</div>
+        <div class="trim-actions"><button class="secondary" id="markTrimStart">Marcar inicio aquí</button><button class="secondary" id="markTrimEnd">Marcar final aquí</button></div>
+        <button class="primary" id="previewTrim" style="margin-top:9px">▶ Ver mi recorte</button>
+      </section>
       <section class="editor-panel">
         <div class="panel">
           <h3>🎬 Tu video</h3>
@@ -215,12 +228,6 @@ textarea { min-height:76px; }
           <h3>📐 Formato</h3>
           <div class="filter-row"><button class="filter active" data-ratio="9/16">9:16</button><button class="filter" data-ratio="4/5">4:5</button><button class="filter" data-ratio="1/1">1:1</button></div>
           <div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:9px">El formato cambia el encuadre de la vista previa.</div>
-        </div>
-        <div class="panel">
-          <h3>✂️ Recortar clip</h3>
-          <div class="range-row"><label>Inicio (seg.)<input id="trimStart" type="number" min="0" step="0.1" value="0"></label><label>Final (seg.)<input id="trimEnd" type="number" min="0" step="0.1" value="0"></label></div>
-          <div class="file-note" id="durationNote">Carga un video para definir el recorte.</div>
-          <button class="secondary" id="previewTrim" style="width:100%;margin-top:9px">Vista previa del recorte</button>
         </div>
         <div class="panel">
           <h3>🎵 Música de fondo</h3>
@@ -337,6 +344,8 @@ $('saveBtn').addEventListener('click',saveDraft);
 function loadDrafts(){ if(!drafts.length){toast('Todavía no tienes borradores guardados.');return;} const item=drafts[0]; $('caption').value=item.caption||''; $('hashtags').value=item.hashtags||''; $('username').value=item.username||'@tato.reels'; $('trimStart').value=item.trimStart||0; $('trimEnd').value=item.trimEnd||0; updateCaption(); $('overlayName').textContent=$('username').value; toast('Se cargó el borrador más reciente. Vuelve a seleccionar su video para editarlo.'); }
 function showTrim(){ if(!video.src){toast('Primero selecciona un video.');return;} const start=Math.max(0,Number($('trimStart').value)||0); const end=Number($('trimEnd').value)||video.duration; if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;} video.currentTime=start; video.play(); const stop=()=>{if(video.currentTime>=end){video.pause();video.removeEventListener('timeupdate',stop);}}; video.addEventListener('timeupdate',stop); toast('Reproduciendo el fragmento seleccionado.'); }
 $('previewTrim').addEventListener('click',showTrim);
+$('markTrimStart').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const point=Math.min(video.duration,Math.max(0,video.currentTime));$('trimStart').value=point.toFixed(1);if(Number($('trimEnd').value)<=point)$('trimEnd').value=video.duration.toFixed(1);toast('Inicio marcado en '+point.toFixed(1)+' segundos.');});
+$('markTrimEnd').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const point=Math.min(video.duration,Math.max(0,video.currentTime));if(point<=Number($('trimStart').value)){toast('Avanza el video hasta después del punto de inicio.');return;}$('trimEnd').value=point.toFixed(1);toast('Final marcado en '+point.toFixed(1)+' segundos.');});
 $('musicBtn').addEventListener('click',()=>$('musicInput').click());
 $('musicInput').addEventListener('change',e=>{const file=e.target.files?.[0];if(!file)return;if(musicUrl)URL.revokeObjectURL(musicUrl);musicUrl=URL.createObjectURL(file);musicAudio=new Audio(musicUrl);musicAudio.loop=true;musicAudio.volume=Number($('musicVolume').value);musicAudio.addEventListener('ended',()=>musicAudio?.pause());$('musicNote').textContent='Pista seleccionada: '+file.name;renderMusicLibrary(file);toast('Pista añadida a tu biblioteca de esta sesión.');});
 function renderMusicLibrary(file){const shelf=$('musicLibrary');shelf.innerHTML='';if(!musicAudio||!file)return;const row=document.createElement('div');row.className='library-track';const name=document.createElement('span');name.textContent='♫ '+file.name;const play=document.createElement('button');play.textContent='▶';play.addEventListener('click',()=>{if(musicAudio.paused)musicAudio.play().catch(()=>toast('No se pudo reproducir la pista.'));else musicAudio.pause();});row.append(name,play);shelf.append(row);}
