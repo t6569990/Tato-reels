@@ -68,7 +68,7 @@ h1 { font-family:var(--site-font-heading); font-size:calc(27px * var(--site-head
 .overlay-tag { background:#ffffff25; border:1px solid #ffffff55; border-radius:20px; padding:5px 8px; font-size:9px; }
 .player-controls { display:flex; justify-content:space-between; align-items:center; color:#D8D3E4; padding:10px 4px 2px; font-size:11px; }
 .player-controls button { border:0; background:none; color:inherit; }
-.editor-panel { display:flex; flex-direction:column; gap:13px; }
+.editor-panel { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:stretch; gap:13px; }
 .panel { background:light-dark(#FFFFFF,#171521); border:1px solid light-dark(#E8E3EE,#2B2738); border-radius:17px; padding:15px; }
 .panel h3 { font-size:13px; margin:0 0 12px; }
 .upload-zone { border:1.5px dashed light-dark(#C9BEDD,#51446B); border-radius:13px; padding:17px 10px; text-align:center; background:light-dark(#FAF8FE,#1D1929); }
