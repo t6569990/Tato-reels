@@ -171,16 +171,15 @@ textarea { min-height:76px; }
  .mobile-nav svg { width:19px; height:19px; } .mobile-nav .current { color:#A98AEF; }
 }
 @media (max-width:390px) { .editor-panel { grid-template-columns:1fr; } }
-/* Espacio de trabajo: lienzo central inmóvil y caja de herramientas flotante */
+/* Visualizador fijo arriba a la derecha; herramientas en el flujo normal */
 .fixed-workspace { position:static; top:auto; z-index:auto; background:transparent; padding:0; margin:0; }
-.fixed-workspace .heading-row { position:relative; }
-.preview-shell.is-screen-pinned { position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); z-index:25; width:min( min(390px, 34vw), calc(100vw - 32px)); max-height:calc(100vh - 110px); margin:0; }
+.preview-shell.is-screen-pinned { position:fixed; top:88px; right:24px; left:auto; transform:none; z-index:25; width:min(280px,24vw); max-height:calc(100vh - 110px); margin:0; }
 .preview-shell.is-screen-pinned .video-frame { max-height:calc(100vh - 190px); }
 .editor-panel { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; align-items:start; }
 .editor-panel .tool-tabs, .editor-panel .tool-panes, .editor-panel .timeline-panel, .editor-panel .trim-panel { grid-column:1/-1; }
 .editor-panel .tool-pane { grid-template-columns:repeat(2,minmax(0,1fr)); }
-@media(max-width:900px){ .preview-shell.is-screen-pinned { width:min( min(330px, 43vw), calc(100vw - 24px)); } }
-@media(max-width:600px){ .preview-shell.is-screen-pinned { top:42%; width:min( min(220px, 39vw), calc(100vw - 24px)); padding:6px; border-radius:16px; } .preview-shell.is-screen-pinned .video-frame { max-height:42vh; border-radius:12px; } .preview-shell.is-screen-pinned .player-controls { padding:5px 2px 0; font-size:9px; } .editor-panel .tool-pane { grid-template-columns:1fr; } }
+@media(max-width:900px){ .preview-shell.is-screen-pinned { top:74px; right:14px; width:min(220px,29vw); } }
+@media(max-width:600px){ .preview-shell.is-screen-pinned { top:70px; right:10px; width:min(150px,38vw); padding:6px; border-radius:14px; } .preview-shell.is-screen-pinned .video-frame { max-height:34vh; border-radius:10px; } .preview-shell.is-screen-pinned .player-controls { padding:5px 2px 0; font-size:8px; } .editor-panel .tool-pane { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -438,7 +437,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();toast(error.message||'No se pudo exportar el Reel completo.');}
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='Exportar Reel completo ↓';}
 });
-// Organiza las herramientas en una caja flotante arrastrable y fija el visualizador al centro.
+// Organiza las herramientas en el flujo normal y fija el visualizador arriba a la derecha.
 (function setupToolTabs(){
  const editor=document.querySelector('.editor-panel');
  if(!editor)return;
