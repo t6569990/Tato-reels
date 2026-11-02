@@ -157,7 +157,7 @@ textarea { min-height:76px; }
           <div class="upload-zone"><b>Agrega más videos</b><span>Selecciona varios archivos para crear un solo Reel.</span><div style="margin-top:10px"><button class="secondary" id="addClipsBtn">Agregar clips</button></div><input id="clipsInput" type="file" accept="video/*" multiple hidden></div>
           <div class="clip-list" id="clipList"><div class="file-note">Aún no agregas clips adicionales.</div></div>
           <button class="primary" id="combineBtn" style="margin-top:10px">Exportar Reel unido ↓</button>
-          <div class="file-note">Los clips se unirán en el orden de esta lista. La exportación genera WebM.</div>
+          <div class="file-note">Los clips se unirán en el orden de esta lista. El formato disponible depende de tu navegador.</div>
         </div>
         <div class="panel">
           <h3>✍️ Detalles del Reel</h3>
@@ -178,13 +178,29 @@ textarea { min-height:76px; }
         <div class="panel">
           <h3>🎵 Música de fondo</h3>
           <button class="secondary" id="musicBtn" style="width:100%">Elegir audio</button>
-          <input id="musicInput" type="file" accept="audio/*" hidden>
+          <input id="musicInput" type="file" accept="audio/mpeg,audio/mp3,audio/*,.mp3" hidden>
           <div class="file-note" id="musicNote">Agrega un archivo de audio propio.</div>
           <label class="field-label" for="originalVolume" style="margin-top:12px">Volumen del audio original <span id="originalVolumeValue">100%</span></label>
           <input id="originalVolume" type="range" min="0" max="100" value="100" style="width:100%;accent-color:var(--site-primary)">
           <label class="field-label" for="musicVolume" style="margin-top:10px">Volumen de música <span id="musicVolumeValue">25%</span></label>
           <input id="musicVolume" type="range" min="0" max="100" value="25" style="width:100%;accent-color:var(--site-primary)">
           <button class="secondary" id="clearMusic" style="width:100%;margin-top:8px">Quitar música</button>
+        </div>
+        <div class="panel">
+          <h3>📦 Formato de descarga</h3>
+          <label class="field-label" for="exportFormat">Formato del video</label>
+          <select id="exportFormat" style="width:100%;border:1px solid light-dark(#E3DDEB,#373244);border-radius:10px;background:light-dark(#FBFAFD,#100F17);color:inherit;padding:10px;font-size:11px">
+            <option value="webm">WebM (compatible)</option>
+            <option value="mp4">MP4 (si tu navegador lo admite)</option>
+          </select>
+          <div class="file-note" id="formatNote">Se comprobará la compatibilidad al abrir la aplicación.</div>
+        </div>
+        <div class="panel">
+          <h3>🔗 Compartir Tato Reels</h3>
+          <div class="file-note">Comparte el enlace de la aplicación para que otras personas puedan entrar.</div>
+          <button class="secondary" id="shareWhatsApp" style="width:100%;margin-top:9px">Compartir por WhatsApp</button>
+          <button class="secondary" id="shareFacebook" style="width:100%;margin-top:7px">Compartir en Facebook</button>
+          <button class="secondary" id="copyAppLink" style="width:100%;margin-top:7px">Copiar enlace de Tato Reels</button>
         </div>
         <div class="panel">
           <h3>📐 Formato</h3>
@@ -211,6 +227,26 @@ textarea { min-height:76px; }
 </div>
 <script>
 const $ = id => document.getElementById(id);
+const APP_PUBLIC_URL='https://tato-reels.t6569990.workers.dev';
+function getExportConfig(){
+ const choice=$('exportFormat')?.value||'webm';
+ const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];
+ const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));
+ if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');
+ return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};
+}
+function refreshExportFormats(){
+ const select=$('exportFormat');if(!select||!window.MediaRecorder)return;
+ const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));
+ const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;
+ if(!mp4&&select.value==='mp4')select.value='webm';
+ $('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';
+}
+$('exportFormat').addEventListener('change',refreshExportFormats);
+$('shareWhatsApp').addEventListener('click',()=>window.open('https://wa.me/?text='+encodeURIComponent('Prueba Tato Reels: '+APP_PUBLIC_URL),'_blank','noopener'));
+$('shareFacebook').addEventListener('click',()=>window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(APP_PUBLIC_URL),'_blank','noopener'));
+$('copyAppLink').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(APP_PUBLIC_URL);toast('Enlace de Tato Reels copiado.');}catch(error){window.prompt('Copia el enlace de Tato Reels:',APP_PUBLIC_URL);}});
+
 const video = $('video');
 let objectUrl = null;
 let musicUrl = null;
@@ -256,8 +292,8 @@ const originalVolume=$('originalVolume'),musicVolume=$('musicVolume');
 function syncVolumeLabels(){$('originalVolumeValue').textContent=originalVolume.value+'%';$('musicVolumeValue').textContent=musicVolume.value+'%';}
 originalVolume.addEventListener('input',syncVolumeLabels);musicVolume.addEventListener('input',syncVolumeLabels);syncVolumeLabels();
 $('clearMusic').addEventListener('click',()=>{if(musicUrl)URL.revokeObjectURL(musicUrl);musicUrl=null;musicAudio=null;$('musicInput').value='';$('musicNote').textContent='Agrega un archivo de audio propio.';toast('Música eliminada.');});
-$('exportBtn').addEventListener('click',async()=>{if(!video.src){toast('Primero selecciona un video.');return;}if(!window.MediaRecorder||!video.captureStream){toast('Tu navegador no permite exportar este video. Prueba la versión reciente de Chrome.');return;}const start=Math.max(0,Number($('trimStart').value)||0);const end=Number($('trimEnd').value)||video.duration;if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;}const btn=$('exportBtn');btn.disabled=true;btn.textContent='Exportando…';try{video.pause();video.currentTime=start;await new Promise(resolve=>video.addEventListener('seeked',resolve,{once:true}));const stream=video.captureStream();let audioContext=null;if(musicAudio){audioContext=new AudioContext();const source=audioContext.createMediaElementSource(musicAudio);const destination=audioContext.createMediaStreamDestination();source.connect(destination);destination.stream.getAudioTracks().forEach(track=>stream.addTrack(track));musicAudio.currentTime=0;await audioContext.resume();await musicAudio.play();}const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';const recorder=new MediaRecorder(stream,{mimeType:mime});const chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const finished=new Promise(resolve=>recorder.onstop=resolve);recorder.start();await video.play();await new Promise(resolve=>{const tick=()=>{if(video.currentTime>=end||video.ended){video.pause();resolve();}else requestAnimationFrame(tick);};tick();});recorder.stop();if(musicAudio)musicAudio.pause();await finished;const blob=new Blob(chunks,{type:'video/webm'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tato-reel.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);if(audioContext)await audioContext.close();toast('Exportación lista. Se descargó tu video WebM.');}catch(err){toast('No se pudo exportar. Intenta con otro video o navegador.');}finally{btn.disabled=false;btn.textContent='Exportar clip WebM ↓';}});
-$('combineBtn').addEventListener('click',async()=>{if(!video.src){toast('Primero carga el video principal.');return;}if(!extraClips.length){toast('Agrega al menos otro clip para unir.');return;}if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast('Necesitas una versión reciente de Chrome para unir clips.');return;}const btn=$('combineBtn');btn.disabled=true;btn.textContent='Uniendo clips…';let recorder;let audioContext;try{const canvas=document.createElement('canvas');canvas.width=720;canvas.height=1280;const ctx=canvas.getContext('2d');const output=canvas.captureStream(30);const sources=[objectUrl,...extraClips.map(item=>item.url)];const player=document.createElement('video');player.muted=false;player.volume=1;player.playsInline=true;player.crossOrigin='anonymous';if(window.AudioContext||window.webkitAudioContext){const AudioContextClass=window.AudioContext||window.webkitAudioContext;audioContext=new AudioContextClass();const audioDestination=audioContext.createMediaStreamDestination();const playerAudio=audioContext.createMediaElementSource(player);const originalGain=audioContext.createGain();originalGain.gain.value=Number(originalVolume.value)/100;playerAudio.connect(originalGain).connect(audioDestination);if(musicAudio){const musicSource=audioContext.createMediaElementSource(musicAudio);const musicGain=audioContext.createGain();musicGain.gain.value=Number(musicVolume.value)/100;musicSource.connect(musicGain).connect(audioDestination);musicAudio.currentTime=0;}audioDestination.stream.getAudioTracks().forEach(track=>output.addTrack(track));await audioContext.resume();if(musicAudio)await musicAudio.play();}const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';recorder=new MediaRecorder(output,{mimeType:mime});const chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const finished=new Promise(resolve=>recorder.onstop=resolve);recorder.start();for(const src of sources){player.src=src;await new Promise((resolve,reject)=>{player.onloadedmetadata=resolve;player.onerror=reject;player.load();});await player.play();while(!player.ended){if(player.readyState>=2){ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);const scale=Math.max(canvas.width/player.videoWidth,canvas.height/player.videoHeight);const w=player.videoWidth*scale;const h=player.videoHeight*scale;ctx.drawImage(player,(canvas.width-w)/2,(canvas.height-h)/2,w,h);}await new Promise(resolve=>requestAnimationFrame(resolve));}player.pause();}recorder.stop();if(musicAudio)musicAudio.pause();await finished;const blob=new Blob(chunks,{type:'video/webm'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tato-reel-unido.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);output.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close();toast('Reel unido descargado con el audio original de los clips.');}catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();if(audioContext)await audioContext.close();toast('No se pudo unir con audio. Prueba clips MP4 o WebM en Chrome.');}finally{btn.disabled=false;btn.textContent='Exportar Reel unido ↓';}});
+$('exportBtn').addEventListener('click',async()=>{if(!video.src){toast('Primero selecciona un video.');return;}if(!window.MediaRecorder||!video.captureStream){toast('Tu navegador no permite exportar este video. Prueba la versión reciente de Chrome.');return;}const start=Math.max(0,Number($('trimStart').value)||0);const end=Number($('trimEnd').value)||video.duration;if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;}const btn=$('exportBtn');btn.disabled=true;btn.textContent='Exportando…';try{video.pause();video.currentTime=start;await new Promise(resolve=>video.addEventListener('seeked',resolve,{once:true}));const stream=video.captureStream();let audioContext=null;if(musicAudio){audioContext=new AudioContext();const source=audioContext.createMediaElementSource(musicAudio);const destination=audioContext.createMediaStreamDestination();source.connect(destination);destination.stream.getAudioTracks().forEach(track=>stream.addTrack(track));musicAudio.currentTime=0;await audioContext.resume();await musicAudio.play();}const exportConfig=getExportConfig();const recorder=new MediaRecorder(stream,{mimeType:exportConfig.mime});const chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const finished=new Promise(resolve=>recorder.onstop=resolve);recorder.start();await video.play();await new Promise(resolve=>{const tick=()=>{if(video.currentTime>=end||video.ended){video.pause();resolve();}else requestAnimationFrame(tick);};tick();});recorder.stop();if(musicAudio)musicAudio.pause();await finished;const blob=new Blob(chunks,{type:'video/webm'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tato-reel.'+exportConfig.extension;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);if(audioContext)await audioContext.close();toast('Exportación lista. Se descargó tu video WebM.');}catch(err){toast('No se pudo exportar. Intenta con otro video o navegador.');}finally{btn.disabled=false;btn.textContent='Exportar clip WebM ↓';}});
+$('combineBtn').addEventListener('click',async()=>{if(!video.src){toast('Primero carga el video principal.');return;}if(!extraClips.length){toast('Agrega al menos otro clip para unir.');return;}if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast('Necesitas una versión reciente de Chrome para unir clips.');return;}const btn=$('combineBtn');btn.disabled=true;btn.textContent='Uniendo clips…';let recorder;let audioContext;try{const canvas=document.createElement('canvas');canvas.width=720;canvas.height=1280;const ctx=canvas.getContext('2d');const output=canvas.captureStream(30);const sources=[objectUrl,...extraClips.map(item=>item.url)];const player=document.createElement('video');player.muted=false;player.volume=1;player.playsInline=true;player.crossOrigin='anonymous';if(window.AudioContext||window.webkitAudioContext){const AudioContextClass=window.AudioContext||window.webkitAudioContext;audioContext=new AudioContextClass();const audioDestination=audioContext.createMediaStreamDestination();const playerAudio=audioContext.createMediaElementSource(player);const originalGain=audioContext.createGain();originalGain.gain.value=Number(originalVolume.value)/100;playerAudio.connect(originalGain).connect(audioDestination);if(musicAudio){const musicSource=audioContext.createMediaElementSource(musicAudio);const musicGain=audioContext.createGain();musicGain.gain.value=Number(musicVolume.value)/100;musicSource.connect(musicGain).connect(audioDestination);musicAudio.currentTime=0;}audioDestination.stream.getAudioTracks().forEach(track=>output.addTrack(track));await audioContext.resume();if(musicAudio)await musicAudio.play();}const exportConfig=getExportConfig();recorder=new MediaRecorder(output,{mimeType:exportConfig.mime});const chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const finished=new Promise(resolve=>recorder.onstop=resolve);recorder.start();for(const src of sources){player.src=src;await new Promise((resolve,reject)=>{player.onloadedmetadata=resolve;player.onerror=reject;player.load();});await player.play();while(!player.ended){if(player.readyState>=2){ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);const scale=Math.max(canvas.width/player.videoWidth,canvas.height/player.videoHeight);const w=player.videoWidth*scale;const h=player.videoHeight*scale;ctx.drawImage(player,(canvas.width-w)/2,(canvas.height-h)/2,w,h);}await new Promise(resolve=>requestAnimationFrame(resolve));}player.pause();}recorder.stop();if(musicAudio)musicAudio.pause();await finished;const blob=new Blob(chunks,{type:'video/webm'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tato-reel-unido.'+exportConfig.extension;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);output.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close();toast('Reel unido descargado con el audio original de los clips.');}catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();if(audioContext)await audioContext.close();toast('No se pudo unir con audio. Prueba clips MP4 o WebM en Chrome.');}finally{btn.disabled=false;btn.textContent='Exportar Reel unido ↓';}});
 $('publishBtn').addEventListener('click',()=>{
  if(!video.src){toast('Sube un video antes de preparar tu Reel.');return;}
  $('postText').textContent=($('caption').value||'Sin descripción')+' '+$('hashtags').value+' · Vista previa local preparada. Para publicarlo en Instagram, Facebook o TikTok hace falta conectar esas cuentas.';
@@ -273,6 +309,7 @@ $('tipsBtn').addEventListener('click',()=>toast('Tip: usa buena luz, encuadre ve
 $('helpBtn').addEventListener('click',()=>toast('Selecciona un video y personaliza los detalles en el panel de edición.'));
 updateCaption();
 refreshDraftCount();
+refreshExportFormats();
 </script>
 </body>
 </html>
