@@ -183,6 +183,8 @@ textarea { min-height:76px; }
 @media(max-width:720px){
  .sidebar { display:block; position:sticky; top:62px; z-index:12; padding:0 0 8px; margin:0 -13px 12px; background:light-dark(#F5F3FA,#0D0C13); }
  .sidebar .preview-shell { display:block; position:fixed; top:72px; left:12px; z-index:25; width:112px; max-width:112px; margin:0; padding:5px; border-radius:13px; box-shadow:0 8px 28px #0005; touch-action:none; cursor:grab; }
+ .sidebar .preview-shell.preview-in-flow { position:relative; top:auto; left:auto; width:min(100%,390px); max-width:390px; margin:0 auto 14px; cursor:default; touch-action:auto; }
+ .preview-position-btn { border:1px solid #ffffff55!important; border-radius:8px; padding:5px 7px; font-size:9px; background:#ffffff18!important; color:inherit; white-space:nowrap; }
  .sidebar .preview-shell.dragging { cursor:grabbing; opacity:.94; }
  .sidebar .video-frame { max-height:190px; border-radius:9px; }
  .sidebar .player-controls { font-size:8px; padding:5px 1px 0; }
@@ -220,7 +222,7 @@ textarea { min-height:76px; }
           <video id="video" playsinline controls></video>
           <div class="video-overlay" id="videoOverlay"><div class="overlay-copy"><strong id="overlayName">@tato.reels</strong><p id="overlayCaption">Tu idea merece ser vista. ✨</p></div><span class="overlay-tag">9:16 · REEL</span><strong class="animated-title" id="animatedTitle" hidden></strong></div>
         </div>
-        <div class="player-controls"><span id="videoStatus">Vista previa</span><div><button id="playBtn" aria-label="Reproducir">▶</button> <button id="muteBtn" aria-label="Silenciar">♫</button></div><span>1080 × 1920</span></div>
+        <div class="player-controls"><span id="videoStatus">Vista previa</span><div><button id="playBtn" aria-label="Reproducir">▶</button> <button id="muteBtn" aria-label="Silenciar">♫</button></div><button type="button" class="preview-position-btn" id="previewPositionBtn" aria-pressed="true">↙ Mover</button></div>
       </section>
       <section class="trim-panel">
         <h3>✂️ Recorta este video</h3>
@@ -507,6 +509,25 @@ if(movablePreview&&previewHandle){
  previewHandle.addEventListener('pointermove',event=>{if(!moving)return;const maxX=window.innerWidth-movablePreview.offsetWidth-6,maxY=window.innerHeight-movablePreview.offsetHeight-75;movablePreview.style.left=Math.max(6,Math.min(maxX,event.clientX-offsetX))+'px';movablePreview.style.top=Math.max(68,Math.min(maxY,event.clientY-offsetY))+'px';});
  const stopMoving=()=>{moving=false;movablePreview.classList.remove('dragging');};
  previewHandle.addEventListener('pointerup',stopMoving);previewHandle.addEventListener('pointercancel',stopMoving);
+}
+// Alterna la vista previa flotante y su posición original en el flujo móvil.
+const previewPositionBtn=document.getElementById('previewPositionBtn');
+const previewPositionShell=document.querySelector('.sidebar .preview-shell');
+if(previewPositionBtn&&previewPositionShell){
+ previewPositionBtn.addEventListener('click',()=>{
+  const inFlow=previewPositionShell.classList.toggle('preview-in-flow');
+  if(inFlow){
+   previewPositionShell.style.left='';
+   previewPositionShell.style.top='';
+   previewPositionBtn.textContent='📌 Fijar';
+   previewPositionBtn.setAttribute('aria-pressed','false');
+   previewPositionBtn.setAttribute('aria-label','Fijar vista previa en pantalla');
+  }else{
+   previewPositionBtn.textContent='↙ Mover';
+   previewPositionBtn.setAttribute('aria-pressed','true');
+   previewPositionBtn.setAttribute('aria-label','Mover vista previa a su lugar original');
+  }
+ });
 }
 renderTimeline();
 </script>
