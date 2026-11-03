@@ -171,30 +171,11 @@ textarea { min-height:76px; }
  .mobile-nav svg { width:19px; height:19px; } .mobile-nav .current { color:#A98AEF; }
 }
 @media (max-width:390px) { .editor-panel { grid-template-columns:1fr; } }
-/* Vista previa fija en la parte superior de la barra izquierda */
-.fixed-workspace { position:static; top:auto; z-index:auto; background:transparent; padding:0; margin:0; }
-.sidebar .preview-shell { position:sticky; top:88px; z-index:9; width:100%; max-width:220px; margin:0 0 22px; padding:7px; border-radius:16px; }
-.sidebar .video-frame { max-height:310px; border-radius:11px; }
-.sidebar .player-controls { font-size:9px; padding:7px 2px 1px; }
-.editor-panel { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; align-items:start; }
-.editor-panel .tool-tabs, .editor-panel .tool-panes, .editor-panel .timeline-panel, .editor-panel .trim-panel { grid-column:1/-1; }
-.editor-panel .tool-pane { grid-template-columns:repeat(2,minmax(0,1fr)); }
-@media(max-width:900px){ .sidebar .preview-shell { top:74px; } }
-@media(max-width:720px){
- .sidebar { display:block; position:sticky; top:62px; z-index:12; padding:0 0 8px; margin:0 -13px 12px; background:light-dark(#F5F3FA,#0D0C13); }
- .sidebar .preview-shell { display:block; position:fixed; top:72px; left:12px; z-index:25; width:112px; max-width:112px; margin:0; padding:5px; border-radius:13px; box-shadow:0 8px 28px #0005; touch-action:none; cursor:grab; }
- .sidebar .preview-shell.preview-in-flow { position:relative; top:auto; left:auto; width:min(100%,390px); max-width:390px; margin:0 auto 14px; cursor:default; touch-action:auto; }
- .preview-position-btn { border:1px solid #ffffff55!important; border-radius:8px; padding:5px 7px; font-size:9px; background:#ffffff18!important; color:inherit; white-space:nowrap; }
- .sidebar .preview-shell.dragging { cursor:grabbing; opacity:.94; }
- .sidebar .video-frame { max-height:190px; border-radius:9px; }
- .sidebar .player-controls { font-size:8px; padding:5px 1px 0; }
- .sidebar .player-controls span:first-child { cursor:grab; touch-action:none; }
- .sidebar .nav-label:first-of-type { margin-left:138px; padding-top:7px; }
- .sidebar .nav-item { width:auto; display:inline-flex; padding:9px 10px; margin:3px 2px; font-size:11px; gap:6px; }
- .sidebar .nav-label[style] { margin:5px 8px 2px; }
- .sidebar .side-card { display:none; }
- .editor-panel .tool-pane { grid-template-columns:1fr; }
-}
+/* Vista previa en su ubicación original dentro del área de creación. */
+ .editor-panel { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; align-items:start; }
+ .editor-panel .tool-tabs, .editor-panel .tool-panes, .editor-panel .timeline-panel, .editor-panel .trim-panel { grid-column:1/-1; }
+ .editor-panel .tool-pane { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ @media(max-width:720px){ .editor-panel .tool-pane { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -222,7 +203,7 @@ textarea { min-height:76px; }
           <video id="video" playsinline controls></video>
           <div class="video-overlay" id="videoOverlay"><div class="overlay-copy"><strong id="overlayName">@tato.reels</strong><p id="overlayCaption">Tu idea merece ser vista. ✨</p></div><span class="overlay-tag">9:16 · REEL</span><strong class="animated-title" id="animatedTitle" hidden></strong></div>
         </div>
-        <div class="player-controls"><span id="videoStatus">Vista previa</span><div><button id="playBtn" aria-label="Reproducir">▶</button> <button id="muteBtn" aria-label="Silenciar">♫</button></div><button type="button" class="preview-position-btn" id="previewPositionBtn" aria-pressed="true">↙ Mover</button></div>
+        <div class="player-controls"><span id="videoStatus">Vista previa</span><div><button id="playBtn" aria-label="Reproducir">▶</button> <button id="muteBtn" aria-label="Silenciar">♫</button></div></div>
       </section>
       <section class="trim-panel">
         <h3>✂️ Recorta este video</h3>
@@ -458,9 +439,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  if(!editor)return;
  const sidebar=document.querySelector('.sidebar');
  const preview=document.querySelector('.preview-shell');
- if(sidebar&&preview){sidebar.insertBefore(preview,sidebar.firstChild);preview.classList.remove('is-screen-pinned');}
- if(sidebar&&preview){const tips=sidebar.querySelector('.side-card');sidebar.insertBefore(preview,tips||null);preview.classList.remove('is-screen-pinned');}
- const trim=document.querySelector('.trim-panel');
+   const trim=document.querySelector('.trim-panel');
  const panels=Array.from(editor.querySelectorAll(':scope > .panel'));
  const timeline=panels.find(p=>p.querySelector('#timelineTrack'));
  const groups=[
@@ -500,35 +479,6 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
   panes.querySelectorAll('.tool-pane').forEach(p=>p.classList.toggle('active',p.dataset.pane===tab.dataset.tab));
  }));
 })();
-// En móvil, permite mover la vista previa arrastrando la etiqueta "Vista previa".
-const movablePreview=document.querySelector('.sidebar .preview-shell');
-const previewHandle=movablePreview?.querySelector('.player-controls span:first-child');
-if(movablePreview&&previewHandle){
- let moving=false,offsetX=0,offsetY=0;
- previewHandle.addEventListener('pointerdown',event=>{if(!window.matchMedia('(max-width:720px)').matches)return;const rect=movablePreview.getBoundingClientRect();moving=true;offsetX=event.clientX-rect.left;offsetY=event.clientY-rect.top;movablePreview.classList.add('dragging');previewHandle.setPointerCapture(event.pointerId);event.preventDefault();});
- previewHandle.addEventListener('pointermove',event=>{if(!moving)return;const maxX=window.innerWidth-movablePreview.offsetWidth-6,maxY=window.innerHeight-movablePreview.offsetHeight-75;movablePreview.style.left=Math.max(6,Math.min(maxX,event.clientX-offsetX))+'px';movablePreview.style.top=Math.max(68,Math.min(maxY,event.clientY-offsetY))+'px';});
- const stopMoving=()=>{moving=false;movablePreview.classList.remove('dragging');};
- previewHandle.addEventListener('pointerup',stopMoving);previewHandle.addEventListener('pointercancel',stopMoving);
-}
-// Alterna la vista previa flotante y su posición original en el flujo móvil.
-const previewPositionBtn=document.getElementById('previewPositionBtn');
-const previewPositionShell=document.querySelector('.sidebar .preview-shell');
-if(previewPositionBtn&&previewPositionShell){
- previewPositionBtn.addEventListener('click',()=>{
-  const inFlow=previewPositionShell.classList.toggle('preview-in-flow');
-  if(inFlow){
-   previewPositionShell.style.left='';
-   previewPositionShell.style.top='';
-   previewPositionBtn.textContent='📌 Fijar';
-   previewPositionBtn.setAttribute('aria-pressed','false');
-   previewPositionBtn.setAttribute('aria-label','Fijar vista previa en pantalla');
-  }else{
-   previewPositionBtn.textContent='↙ Mover';
-   previewPositionBtn.setAttribute('aria-pressed','true');
-   previewPositionBtn.setAttribute('aria-label','Mover vista previa a su lugar original');
-  }
- });
-}
 renderTimeline();
 </script>
 </body>
