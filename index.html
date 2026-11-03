@@ -485,11 +485,11 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
   const group=groups.find(g=>g.match.some(m=>title.includes(m)));
   if(group)group.pane.append(panel);
  });
+ if(trim)groups[0].pane.append(trim);
  const footer=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
  editor.insertBefore(tabs,editor.firstChild);
  tabs.classList.add('tool-tabs');
  panes.classList.add('tool-panes');
- if(trim)editor.insertBefore(trim,tabs);
  if(timeline){timeline.classList.add('timeline-panel');editor.insertBefore(timeline,tabs);}
  editor.insertBefore(panes,footer||null);
  tabs.querySelectorAll('.tool-tab').forEach(tab=>tab.addEventListener('click',()=>{
