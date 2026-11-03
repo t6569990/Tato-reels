@@ -377,7 +377,59 @@ $('clearAnimatedText').addEventListener('click',()=>{$('animatedText').value='';
 $('openInstagram').addEventListener('click',()=>{window.open('https://www.instagram.com/','_blank','noopener');$('socialStatus').textContent='Instagram abierto. Para publicar, usa la opción Crear dentro de tu cuenta y selecciona el video exportado.';});
 $('openFacebook').addEventListener('click',()=>{window.open('https://www.facebook.com/','_blank','noopener');$('socialStatus').textContent='Facebook abierto. Para publicar, crea un Reel desde tu cuenta y selecciona el video exportado.';});
 $('openTikTok').addEventListener('click',()=>{window.open('https://www.tiktok.com/upload','_blank','noopener');$('socialStatus').textContent='Centro de carga de TikTok abierto. Selecciona el video exportado para completar la publicación.';});
-$('exportBtn').addEventListener('click',async()=>{if(!video.src){toast('Primero selecciona un video.');return;}if(!window.MediaRecorder||!video.captureStream){toast('Tu navegador no permite exportar este video. Prueba la versión reciente de Chrome.');return;}const start=Math.max(0,Number($('trimStart').value)||0);const end=Number($('trimEnd').value)||video.duration;if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;}const btn=$('exportBtn');btn.disabled=true;btn.textContent='Exportando…';try{video.pause();video.currentTime=start;await new Promise(resolve=>video.addEventListener('seeked',resolve,{once:true}));const stream=video.captureStream();let audioContext=null;if(musicAudio){audioContext=new AudioContext();const source=audioContext.createMediaElementSource(musicAudio);const destination=audioContext.createMediaStreamDestination();source.connect(destination);destination.stream.getAudioTracks().forEach(track=>stream.addTrack(track));musicAudio.currentTime=0;await audioContext.resume();await musicAudio.play();}const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';const recorder=new MediaRecorder(stream,{mimeType:mime});const chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const finished=new Promise(resolve=>recorder.onstop=resolve);recorder.start();await video.play();await new Promise(resolve=>{const tick=()=>{if(video.currentTime>=end||video.ended){video.pause();resolve();}else requestAnimationFrame(tick);};tick();});recorder.stop();if(musicAudio)musicAudio.pause();await finished;const blob=new Blob(chunks,{type:'video/webm'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tato-reel.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);if(audioContext)await audioContext.close();toast('Exportación lista. Se descargó tu video WebM.');}catch(err){toast('No se pudo exportar. Intenta con otro video o navegador.');}finally{btn.disabled=false;btn.textContent='Exportar clip WebM ↓';}});
+$('exportBtn').addEventListener('click',async()=>{
+ if(!video.src){toast('Primero selecciona un video.');return;}
+ if(!window.MediaRecorder||!video.captureStream){toast('Tu navegador no permite exportar este video. Prueba Chrome actualizado.');return;}
+ const start=Math.max(0,Number($('trimStart').value)||0);
+ const end=Number($('trimEnd').value)||video.duration;
+ if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;}
+ const btn=$('exportBtn');btn.disabled=true;btn.textContent='Exportando…';
+ let audioContext=null,recorder=null,raf=0,stream=null;
+ try{
+  const config=getExportConfig();
+  video.pause();video.currentTime=start;
+  await new Promise((resolve,reject)=>{
+   if(Math.abs(video.currentTime-start)<0.05){resolve();return;}
+   const onSeek=()=>{cleanup();resolve();};
+   const onError=()=>{cleanup();reject(new Error('No se pudo posicionar el video.'));};
+   const cleanup=()=>{video.removeEventListener('seeked',onSeek);video.removeEventListener('error',onError);};
+   video.addEventListener('seeked',onSeek,{once:true});video.addEventListener('error',onError,{once:true});
+  });
+  stream=video.captureStream();
+  if(musicAudio){
+   audioContext=new AudioContext();
+   const destination=audioContext.createMediaStreamDestination();
+   const source=audioContext.createMediaElementSource(musicAudio);
+   source.connect(destination);
+   destination.stream.getAudioTracks().forEach(track=>stream.addTrack(track));
+   musicAudio.currentTime=0;musicAudio.volume=Number($('musicVolume').value);
+   await audioContext.resume();await musicAudio.play();
+  }
+  recorder=new MediaRecorder(stream,{mimeType:config.mime});
+  const chunks=[];
+  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  const finished=new Promise(resolve=>{recorder.onstop=resolve;});
+  recorder.start(250);await video.play();
+  await new Promise(resolve=>{
+   const tick=()=>{if(video.currentTime>=end||video.ended){video.pause();resolve();}else raf=requestAnimationFrame(tick);};
+   tick();
+  });
+  cancelAnimationFrame(raf);recorder.stop();if(musicAudio)musicAudio.pause();await finished;
+  const blob=new Blob(chunks,{type:config.mime});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='tato-reel.'+config.extension;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+  toast('Exportación lista en '+config.extension.toUpperCase()+'.');
+ }catch(err){
+  if(recorder&&recorder.state!=='inactive')recorder.stop();
+  toast(err.message||'No se pudo exportar. Intenta con otro video o navegador.');
+ }finally{
+  cancelAnimationFrame(raf);if(musicAudio)musicAudio.pause();
+  if(stream)stream.getTracks().forEach(track=>track.stop());
+  if(audioContext)await audioContext.close().catch(()=>{});
+  btn.disabled=false;btn.textContent='Exportar clip ↓';
+ }
+});
 
 $('publishBtn').addEventListener('click',()=>{
  if(!video.src){toast('Sube un video antes de preparar tu Reel.');return;}
