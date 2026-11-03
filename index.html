@@ -180,7 +180,19 @@ textarea { min-height:76px; }
 .editor-panel .tool-tabs, .editor-panel .tool-panes, .editor-panel .timeline-panel, .editor-panel .trim-panel { grid-column:1/-1; }
 .editor-panel .tool-pane { grid-template-columns:repeat(2,minmax(0,1fr)); }
 @media(max-width:900px){ .sidebar .preview-shell { top:74px; } }
-@media(max-width:720px){ .sidebar .preview-shell { display:none; } .editor-panel .tool-pane { grid-template-columns:1fr; } }
+@media(max-width:720px){
+ .sidebar { display:block; position:sticky; top:62px; z-index:12; padding:0 0 8px; margin:0 -13px 12px; background:light-dark(#F5F3FA,#0D0C13); }
+ .sidebar .preview-shell { display:block; position:fixed; top:72px; left:12px; z-index:25; width:112px; max-width:112px; margin:0; padding:5px; border-radius:13px; box-shadow:0 8px 28px #0005; touch-action:none; cursor:grab; }
+ .sidebar .preview-shell.dragging { cursor:grabbing; opacity:.94; }
+ .sidebar .video-frame { max-height:190px; border-radius:9px; }
+ .sidebar .player-controls { font-size:8px; padding:5px 1px 0; }
+ .sidebar .player-controls span:first-child { cursor:grab; touch-action:none; }
+ .sidebar .nav-label:first-of-type { margin-left:138px; padding-top:7px; }
+ .sidebar .nav-item { width:auto; display:inline-flex; padding:9px 10px; margin:3px 2px; font-size:11px; gap:6px; }
+ .sidebar .nav-label[style] { margin:5px 8px 2px; }
+ .sidebar .side-card { display:none; }
+ .editor-panel .tool-pane { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
@@ -481,6 +493,16 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
   panes.querySelectorAll('.tool-pane').forEach(p=>p.classList.toggle('active',p.dataset.pane===tab.dataset.tab));
  }));
 })();
+// En móvil, permite mover la vista previa arrastrando la etiqueta "Vista previa".
+const movablePreview=document.querySelector('.sidebar .preview-shell');
+const previewHandle=movablePreview?.querySelector('.player-controls span:first-child');
+if(movablePreview&&previewHandle){
+ let moving=false,offsetX=0,offsetY=0;
+ previewHandle.addEventListener('pointerdown',event=>{if(!window.matchMedia('(max-width:720px)').matches)return;const rect=movablePreview.getBoundingClientRect();moving=true;offsetX=event.clientX-rect.left;offsetY=event.clientY-rect.top;movablePreview.classList.add('dragging');previewHandle.setPointerCapture(event.pointerId);event.preventDefault();});
+ previewHandle.addEventListener('pointermove',event=>{if(!moving)return;const maxX=window.innerWidth-movablePreview.offsetWidth-6,maxY=window.innerHeight-movablePreview.offsetHeight-75;movablePreview.style.left=Math.max(6,Math.min(maxX,event.clientX-offsetX))+'px';movablePreview.style.top=Math.max(68,Math.min(maxY,event.clientY-offsetY))+'px';});
+ const stopMoving=()=>{moving=false;movablePreview.classList.remove('dragging');};
+ previewHandle.addEventListener('pointerup',stopMoving);previewHandle.addEventListener('pointercancel',stopMoving);
+}
 renderTimeline();
 </script>
 </body>
