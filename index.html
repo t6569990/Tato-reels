@@ -57,7 +57,6 @@ h1 { font-family:var(--site-font-heading); font-size:calc(27px * var(--site-head
 .trim-panel { width:100%; margin:0; }
 .editor-panel { display:block; }
 .tool-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 12px; padding:8px; border:1px solid light-dark(#E8E3EE,#302B3D); border-radius:15px; background:light-dark(#FFFFFF,#171521); }
-.main > .tool-tabs { margin:0 0 18px; }
 .tool-tab { border:1px solid transparent; border-radius:10px; background:transparent; color:inherit; padding:10px 14px; font-size:12px; font-weight:750; }
 .tool-tab.active { background:var(--site-primary); color:#fff; }
 .tool-pane { display:none; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; align-items:start; }
@@ -484,8 +483,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  });
  if(trim)groups[0].pane.append(trim);
  const footer=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
- const main=document.querySelector('.main');
- main.insertBefore(tabs,main.firstChild);
+ editor.insertBefore(tabs,editor.firstChild);
  tabs.classList.add('tool-tabs');
  panes.classList.add('tool-panes');
  if(timeline){timeline.classList.add('timeline-panel');editor.insertBefore(timeline,tabs);}
