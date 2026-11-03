@@ -171,17 +171,16 @@ textarea { min-height:76px; }
  .mobile-nav svg { width:19px; height:19px; } .mobile-nav .current { color:#A98AEF; }
 }
 @media (max-width:390px) { .editor-panel { grid-template-columns:1fr; } }
-/* Visualizador fijo arriba a la derecha; herramientas en el flujo normal */
+/* Vista previa fija en la parte superior de la barra izquierda */
 .fixed-workspace { position:static; top:auto; z-index:auto; background:transparent; padding:0; margin:0; }
-.preview-shell.is-screen-pinned { position:fixed; top:88px; right:24px; left:auto; transform:none; z-index:25; width:min(280px,24vw); max-height:calc(100vh - 110px); margin:0; }
-.preview-shell.is-screen-pinned { cursor:grab; touch-action:none; user-select:none; }
-.preview-shell.is-screen-pinned.is-dragging { cursor:grabbing; }
-.preview-shell.is-screen-pinned .video-frame { max-height:calc(100vh - 190px); }
+.sidebar .preview-shell { position:sticky; top:88px; z-index:9; width:100%; max-width:220px; margin:0 0 22px; padding:7px; border-radius:16px; }
+.sidebar .video-frame { max-height:310px; border-radius:11px; }
+.sidebar .player-controls { font-size:9px; padding:7px 2px 1px; }
 .editor-panel { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; align-items:start; }
 .editor-panel .tool-tabs, .editor-panel .tool-panes, .editor-panel .timeline-panel, .editor-panel .trim-panel { grid-column:1/-1; }
 .editor-panel .tool-pane { grid-template-columns:repeat(2,minmax(0,1fr)); }
-@media(max-width:900px){ .preview-shell.is-screen-pinned { top:74px; right:14px; width:min(220px,29vw); } }
-@media(max-width:600px){ .preview-shell.is-screen-pinned { top:70px; right:10px; width:min(150px,38vw); padding:6px; border-radius:14px; } .preview-shell.is-screen-pinned .video-frame { max-height:34vh; border-radius:10px; } .preview-shell.is-screen-pinned .player-controls { padding:5px 2px 0; font-size:8px; } .editor-panel .tool-pane { grid-template-columns:1fr; } }
+@media(max-width:900px){ .sidebar .preview-shell { top:74px; } }
+@media(max-width:720px){ .sidebar .preview-shell { display:none; } .editor-panel .tool-pane { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -443,25 +442,9 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
 (function setupToolTabs(){
  const editor=document.querySelector('.editor-panel');
  if(!editor)return;
- const heading=document.querySelector('.heading-row');
+ const sidebar=document.querySelector('.sidebar');
  const preview=document.querySelector('.preview-shell');
- if(heading&&preview){
-  preview.classList.add('is-screen-pinned');document.getElementById('app').append(preview);
-  let drag=null;
-  preview.addEventListener('pointerdown',event=>{
-   if(event.target.closest('button,video,input,textarea,select,a'))return;
-   const rect=preview.getBoundingClientRect();drag={x:event.clientX-rect.left,y:event.clientY-rect.top};preview.classList.add('is-dragging');preview.setPointerCapture(event.pointerId);event.preventDefault();
-  });
-  preview.addEventListener('pointermove',event=>{
-   if(!drag)return;
-   const width=preview.offsetWidth,height=preview.offsetHeight;
-   const left=Math.max(0,Math.min(window.innerWidth-width,event.clientX-drag.x));
-   const top=Math.max(0,Math.min(window.innerHeight-height,event.clientY-drag.y));
-   preview.style.left=left+'px';preview.style.top=top+'px';preview.style.right='auto';
-  });
-  const stopDragging=()=>{drag=null;preview.classList.remove('is-dragging');};
-  preview.addEventListener('pointerup',stopDragging);preview.addEventListener('pointercancel',stopDragging);
- }
+ if(sidebar&&preview){sidebar.insertBefore(preview,sidebar.firstChild);preview.classList.remove('is-screen-pinned');}
  const trim=document.querySelector('.trim-panel');
  const panels=Array.from(editor.querySelectorAll(':scope > .panel'));
  const timeline=panels.find(p=>p.querySelector('#timelineTrack'));
