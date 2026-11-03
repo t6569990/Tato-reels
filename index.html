@@ -445,6 +445,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  const sidebar=document.querySelector('.sidebar');
  const preview=document.querySelector('.preview-shell');
  if(sidebar&&preview){sidebar.insertBefore(preview,sidebar.firstChild);preview.classList.remove('is-screen-pinned');}
+ if(sidebar&&preview){const tips=sidebar.querySelector('.side-card');sidebar.insertBefore(preview,tips||null);preview.classList.remove('is-screen-pinned');}
  const trim=document.querySelector('.trim-panel');
  const panels=Array.from(editor.querySelectorAll(':scope > .panel'));
  const timeline=panels.find(p=>p.querySelector('#timelineTrack'));
