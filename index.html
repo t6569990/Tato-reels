@@ -468,11 +468,10 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  const publishAction=document.getElementById('publishBtn');
  if(publishGroup&&publishAction){publishAction.classList.add('primary');publishAction.textContent='Preparar publicación ↗';publishGroup.pane.append(publishAction);}
  const footer=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
- const layout=document.querySelector('.layout');
-  if(layout)layout.parentNode.insertBefore(tabs,layout);
  tabs.classList.add('tool-tabs');
  panes.classList.add('tool-panes');
  if(timeline){timeline.classList.add('timeline-panel');}
+ editor.insertBefore(tabs,footer||null);
  editor.insertBefore(panes,footer||null);
  tabs.querySelectorAll('.tool-tab').forEach(tab=>tab.addEventListener('click',()=>{
   tabs.querySelectorAll('.tool-tab').forEach(t=>t.classList.toggle('active',t===tab));
