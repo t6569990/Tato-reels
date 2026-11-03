@@ -467,7 +467,8 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
   {id:'music',label:'🎵 Música',match:['Música de fondo']},
   {id:'image',label:'🖼️ Imagen y estilo',match:['Estilo de vista']},
   {id:'format',label:'📐 Formato y tamaño',match:['Formato','Formato de descarga']},
-  {id:'share',label:'🚀 Compartir',match:['Compartir Tato Reels','Salida a redes sociales']}
+  {id:'share',label:'🔗 Compartir',match:['Compartir Tato Reels']},
+  {id:'publish',label:'📣 Publicar',match:['Salida a redes sociales']}
  ];
  const tabs=document.createElement('nav');tabs.className='tool-tabs';tabs.setAttribute('aria-label','Familias de herramientas');
  const panes=document.createElement('div');
@@ -482,6 +483,9 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
   if(group)group.pane.append(panel);
  });
  if(trim)groups[0].pane.append(trim);
+ const publishGroup=groups.find(group=>group.id==='publish');
+ const publishAction=document.getElementById('publishBtn');
+ if(publishGroup&&publishAction){publishAction.classList.add('primary');publishAction.textContent='Preparar publicación ↗';publishGroup.pane.append(publishAction);}
  const footer=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
  const layout=document.querySelector('.layout');
   if(layout)layout.parentNode.insertBefore(tabs,layout);
