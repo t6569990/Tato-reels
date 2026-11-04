@@ -126,6 +126,7 @@ async function handle(request, env) {
     const data = await body(request);
     const email = String(data.email || "").trim().toLowerCase();
     if (!email) return json({ error: "Escribe el correo de tu cuenta." }, 400);
+    if (!env.RESEND_API_KEY || !env.APP_URL) return json({ error: "El servicio de correo aún no está configurado." }, 503);
     const user = await env.DB.prepare("SELECT id,username,email FROM users WHERE email=? COLLATE NOCASE").bind(email).first();
     // Respuesta genérica para no revelar si un correo está registrado.
     if (user) {
