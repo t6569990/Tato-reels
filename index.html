@@ -208,6 +208,13 @@ html,body,#app{background:#050407;color:#f5f1f5}
 .library-track span{flex:1;min-width:100px}.library-track button{background:#2b1424!important;color:#fff!important;border:1px solid #6c2949!important;padding:6px 9px}
 @media(max-width:720px){.login-card{padding:25px 19px}.login-brand{font-size:30px}}
 
+
+/* Menú de destino para exportaciones */
+.export-dest-backdrop{position:fixed;inset:0;z-index:9999;background:#05030bd9;display:grid;place-items:center;padding:18px}
+.export-dest-card{width:min(100%,390px);background:#171321;border:1px solid #59304e;border-radius:20px;padding:22px;color:#fff;box-shadow:0 20px 70px #000b}
+.export-dest-card h2{margin:0 0 7px;font-size:21px}.export-dest-card p{color:#c4b8ca;font-size:13px;line-height:1.5;margin:0 0 16px}
+.export-dest-action{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:14px;margin:8px 0;border-radius:12px;border:1px solid #55334e;background:#24182a;color:#fff;font-weight:750}
+.export-dest-action span{font-size:22px}.export-dest-action small{display:block;color:#c4b8ca;font-weight:400;margin-top:3px}.export-dest-close{width:100%;margin-top:8px;padding:11px;border:0;background:transparent;color:#d7c8d8}
 </style>
 </head>
 <body>
@@ -382,6 +389,18 @@ const savedSession=sessionStorage.getItem('tatoReelsSession');if(savedSession)en
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
 $('exportFormat').addEventListener('change',refreshExportFormats);
+function showExportOptions(blob,filename){
+ const old=document.getElementById('exportDestModal');if(old)old.remove();
+ const backdrop=document.createElement('div');backdrop.id='exportDestModal';backdrop.className='export-dest-backdrop';
+ const card=document.createElement('section');card.className='export-dest-card';
+ card.innerHTML='<h2>🎬 Tu Reel está listo</h2><p>¿Qué quieres hacer con <b>'+filename+'</b>?</p><button class="export-dest-action" id="destSave"><span>📱</span><div>Guardar en el dispositivo<small>Android o el navegador guardará el archivo</small></div></button><button class="export-dest-action" id="destShare"><span>↗️</span><div>Compartir / publicar<small>Abrir las aplicaciones disponibles para compartir</small></div></button><button class="export-dest-close" id="destClose">Ahora no</button>';
+ backdrop.append(card);document.body.append(backdrop);
+ const save=()=>{const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),120000);toast('Archivo enviado a las descargas del dispositivo.');backdrop.remove();};
+ card.querySelector('#destSave').addEventListener('click',save);
+ card.querySelector('#destShare').addEventListener('click',async()=>{const file=new File([blob],filename,{type:blob.type||'application/octet-stream'});try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({files:[file],title:'Mi Reel de Tato Reels',text:'Creado con Tato Reels'});backdrop.remove();}else{toast('Este dispositivo no permite compartir archivos desde la app. Usa Guardar en el dispositivo.');}}catch(error){if(error.name!=='AbortError')toast('No se pudo abrir el menú para compartir.');}});
+ card.querySelector('#destClose').addEventListener('click',()=>backdrop.remove());backdrop.addEventListener('click',e=>{if(e.target===backdrop)backdrop.remove();});
+}
+
 $('shareWhatsApp').addEventListener('click',()=>window.open('https://wa.me/?text='+encodeURIComponent('Prueba Tato Reels: '+APP_PUBLIC_URL),'_blank','noopener'));
 $('shareFacebook').addEventListener('click',()=>window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(APP_PUBLIC_URL),'_blank','noopener'));
 $('copyAppLink').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(APP_PUBLIC_URL);toast('Enlace de Tato Reels copiado.');}catch(error){window.prompt('Copia el enlace de Tato Reels:',APP_PUBLIC_URL);}});
@@ -497,9 +516,7 @@ $('exportBtn').addEventListener('click',async()=>{
   });
   cancelAnimationFrame(raf);recorder.stop();if(exportMusic)exportMusic.pause();await finished;
   const blob=new Blob(chunks,{type:config.mime});
-  const url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='tato-reel.'+config.extension;a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),60000);
+  showExportOptions(blob,'tato-reel.'+config.extension);
   toast('Exportación lista en '+config.extension.toUpperCase()+'.');
  }catch(err){
   if(recorder&&recorder.state!=='inactive')recorder.stop();
@@ -562,7 +579,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
    const source=audioContext.createMediaElementSource(clip);source.connect(audioOut);clip.currentTime=start;await waitForMedia(clip,'seeked');await clip.play();$('videoStatus').textContent='Exportando clip '+(index+1)+' de '+items.length;
    progressLabel.textContent='Creando clip '+(index+1)+' de '+items.length+'…';await new Promise((resolve,reject)=>{const frame=()=>{if(clip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,clip,720,1280);const elapsed=completedDuration+(clip.currentTime-start);drawExportTitle(ctx,elapsed);updateProgress(totalDuration?((elapsed/totalDuration)*100):0);if(clip.currentTime>=end||clip.ended){clip.pause();resolve();return;}raf=requestAnimationFrame(frame);};frame();});cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);clip.pause();clip.removeAttribute('src');clip.load();
   }
-  recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tato-reel-completo.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);updateProgress(100);progressLabel.textContent='¡Reel completo listo!';toast('Reel completo exportado.');$('videoStatus').textContent='Exportación completa';
+  recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});showExportOptions(blob,'tato-reel-completo.webm');updateProgress(100);progressLabel.textContent='¡Reel completo listo!';toast('Reel completo exportado.');$('videoStatus').textContent='Exportación completa';
  }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();toast(error.message||'No se pudo exportar el Reel completo.');}
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='Exportar Reel completo ↓';}
 });
