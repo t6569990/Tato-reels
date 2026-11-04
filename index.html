@@ -444,6 +444,7 @@ async function renderMusicLibrary(){const shelf=$('musicLibrary');shelf.innerHTM
 renderMusicLibrary();
 
 function getAudioTrim(){const duration=musicAudio?.duration||0;const start=Math.max(0,Number($('audioStart').value)||0);const end=Math.min(duration,Number($('audioEnd').value)||duration);if(!musicAudio||!Number.isFinite(duration)||end<=start){toast('Revisa el inicio y el final del recorte.');return null;}return {start,end,duration};}
+async function startTrimmedExportMusic(context,destination){if(!musicUrl||!musicAudio)return null;const trim=getAudioTrim();if(!trim)throw new Error('Revisa el inicio y el final de la música.');const track=new Audio(musicUrl);track.preload='auto';track.loop=false;await new Promise((resolve,reject)=>{if(track.readyState>=1){resolve();return;}track.addEventListener('loadedmetadata',resolve,{once:true});track.addEventListener('error',()=>reject(new Error('No se pudo cargar la pista de música.')),{once:true});track.load();});const start=Math.min(trim.start,Math.max(0,track.duration-.05)),end=Math.min(trim.end,track.duration);if(end<=start)throw new Error('El recorte de música no es válido.');track.currentTime=start;track.volume=Number($('musicVolume').value);const source=context.createMediaElementSource(track);source.connect(destination);track.addEventListener('timeupdate',()=>{if(track.currentTime>=end)track.pause();});await context.resume();await track.play();return track;}
 $('audioStart').addEventListener('change',()=>{const t=getAudioTrim();if(t&&musicAudio)musicAudio.currentTime=t.start;});
 $('audioEnd').addEventListener('change',()=>{const t=getAudioTrim();if(t&&musicAudio&&musicAudio.currentTime>t.end)musicAudio.currentTime=t.start;});
 $('musicVolume').addEventListener('input',()=>{if(musicAudio)musicAudio.volume=Number($('musicVolume').value);});
@@ -478,14 +479,12 @@ $('exportBtn').addEventListener('click',async()=>{
    video.addEventListener('seeked',onSeek,{once:true});video.addEventListener('error',onError,{once:true});
   });
   stream=video.captureStream();
-  if(musicAudio){
+  let exportMusic=null;
+  if(musicUrl){
    audioContext=new AudioContext();
    const destination=audioContext.createMediaStreamDestination();
-   const source=audioContext.createMediaElementSource(musicAudio);
-   source.connect(destination);
    destination.stream.getAudioTracks().forEach(track=>stream.addTrack(track));
-   const audioTrim=getAudioTrim();if(!audioTrim)throw new Error('Revisa el recorte de la música.');musicAudio.currentTime=audioTrim.start;musicAudio.volume=Number($('musicVolume').value);
-   await audioContext.resume();await musicAudio.play();
+   exportMusic=await startTrimmedExportMusic(audioContext,destination);
   }
   recorder=new MediaRecorder(stream,{mimeType:config.mime});
   const chunks=[];
@@ -496,7 +495,7 @@ $('exportBtn').addEventListener('click',async()=>{
    const tick=()=>{if(video.currentTime>=end||video.ended){video.pause();resolve();}else raf=requestAnimationFrame(tick);};
    tick();
   });
-  cancelAnimationFrame(raf);recorder.stop();if(musicAudio)musicAudio.pause();await finished;
+  cancelAnimationFrame(raf);recorder.stop();if(exportMusic)exportMusic.pause();await finished;
   const blob=new Blob(chunks,{type:config.mime});
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='tato-reel.'+config.extension;a.click();
@@ -555,7 +554,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  const btn=$('exportSequenceBtn');btn.disabled=true;btn.textContent='Preparando Reel…';const progress=$('exportProgress'),progressFill=$('exportProgressFill'),progressPercent=$('exportProgressPercent'),progressLabel=$('exportProgressLabel');const totalDuration=items.reduce((sum,item)=>sum+Math.max(0,(Number(item.end)||item.duration)-(Number(item.start)||0)),0);let completedDuration=0;const updateProgress=value=>{const percent=Math.max(0,Math.min(100,Math.round(value)));progress.classList.add('visible');progressFill.style.width=percent+'%';progressPercent.textContent=percent+'%';};progressLabel.textContent='Preparando Reel completo…';updateProgress(0);let audioContext=null,music=null,musicSource=null,recorder=null,raf=0;
  try{
   const canvas=document.createElement('canvas');canvas.width=720;canvas.height=1280;const ctx=canvas.getContext('2d');const stream=canvas.captureStream(30);audioContext=new AudioContext();const audioOut=audioContext.createMediaStreamDestination();
-  if(musicUrl){music=new Audio(musicUrl);music.loop=true;music.volume=Number($('musicVolume').value);musicSource=audioContext.createMediaElementSource(music);musicSource.connect(audioOut);}
+  if(musicUrl){const trim=getAudioTrim();if(!trim)throw new Error('Revisa el recorte de la música.');music=new Audio(musicUrl);music.preload='auto';music.loop=false;await new Promise((resolve,reject)=>{if(music.readyState>=1){resolve();return;}music.addEventListener('loadedmetadata',resolve,{once:true});music.addEventListener('error',()=>reject(new Error('No se pudo cargar la pista de música.')),{once:true});music.load();});const start=Math.min(trim.start,Math.max(0,music.duration-.05)),end=Math.min(trim.end,music.duration);if(end<=start)throw new Error('El recorte de música no es válido.');music.currentTime=start;music.volume=Number($('musicVolume').value);musicSource=audioContext.createMediaElementSource(music);musicSource.connect(audioOut);music.addEventListener('timeupdate',()=>{if(music.currentTime>=end)music.pause();});}
   const recorderStream=new MediaStream([...stream.getVideoTracks(),...audioOut.stream.getAudioTracks()]);const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error('WebM no está disponible en este navegador.');
   const chunks=[];recorder=new MediaRecorder(recorderStream,{mimeType:mime});recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const stopped=new Promise(resolve=>recorder.onstop=resolve);recorder.start(250);await audioContext.resume();if(music)await music.play().catch(()=>{});
   for(let index=0;index<items.length;index++){
