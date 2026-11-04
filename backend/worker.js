@@ -31,10 +31,10 @@ function getCookie(request) {
 async function currentUser(request, env) {
   const token = getCookie(request);
   if (!token) return null;
-  return env.DB.prepare(`SELECT u.id,u.username,u.email FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?`)
+  return env.DB.prepare(`SELECT u.id,u.email FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=? AND s.expires_at>?`)
     .bind(await sha256(token), new Date().toISOString()).first();
 }
-async function sendResetEmail(env, email, username, token) {
+async function sendResetEmail(env, email, token) {
   if (!env.RESEND_API_KEY || !env.APP_URL) throw new Error("EMAIL_NOT_CONFIGURED");
   const link = `${env.APP_URL.replace(/\/$/, "")}/?reset=${encodeURIComponent(token)}`;
   const response = await fetch("https://api.resend.com/emails", {
@@ -44,7 +44,7 @@ async function sendResetEmail(env, email, username, token) {
       from: env.EMAIL_FROM || "Tato Reels <onboarding@resend.dev>",
       to: [email],
       subject: "Recupera tu contraseña de Tato Reels",
-      html: `<div style="font-family:Arial,sans-serif;background:#100910;color:#fff;padding:28px;border-radius:16px"><h1 style="color:#ff3154">TATO REELS</h1><p>Hola ${escapeHtml(username)}, recibimos una solicitud para cambiar tu contraseña.</p><p><a href="${link}" style="display:inline-block;background:#e50935;color:#fff;padding:14px 20px;border-radius:9px;text-decoration:none">Crear nueva contraseña</a></p><p>Este enlace vence en 20 minutos y solo puede usarse una vez. Si no lo solicitaste, ignora este correo.</p></div>`
+      html: `<div style="font-family:Arial,sans-serif;background:#100910;color:#fff;padding:28px;border-radius:16px"><h1 style="color:#ff3154">TATO REELS</h1><p>Recibimos una solicitud para cambiar tu contraseña.</p><p><a href="${link}" style="display:inline-block;background:#e50935;color:#fff;padding:14px 20px;border-radius:9px;text-decoration:none">Crear nueva contraseña</a></p><p>Este enlace vence en 20 minutos y solo puede usarse una vez. Si no lo solicitaste, ignora este correo.</p></div>`
     })
   });
   if (!response.ok) throw new Error("EMAIL_SEND_FAILED");
@@ -78,42 +78,40 @@ async function handle(request, env) {
 
   if (request.method === "POST" && url.pathname === "/api/register") {
     const data = await body(request);
-    const username = String(data.username || "").trim();
     const email = String(data.email || "").trim().toLowerCase();
     const password = String(data.password || "");
-    if (!/^[a-zA-Z0-9_.-]{3,30}$/.test(username)) return json({ error: "El usuario debe tener entre 3 y 30 caracteres (letras, números, punto, guion o guion bajo)." }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Escribe un correo electrónico válido." }, 400);
     if (password.length < 8 || password.length > 128) return json({ error: "La contraseña debe tener entre 8 y 128 caracteres." }, 400);
     if (!await verifyTurnstile(request, env, data.turnstileToken)) return json({ error: "No se pudo validar la verificación humana. Inténtalo otra vez." }, 400);
-    const exists = await env.DB.prepare("SELECT id FROM users WHERE username=? COLLATE NOCASE OR email=? COLLATE NOCASE").bind(username, email).first();
-    if (exists) return json({ error: "Ese usuario o correo ya está registrado." }, 409);
+    const exists = await env.DB.prepare("SELECT id FROM users WHERE email=? COLLATE NOCASE").bind(email).first();
+    if (exists) return json({ error: "Ese correo ya está registrado." }, 409);
     const id = crypto.randomUUID();
     const salt = randomToken(16);
     const hash = await derivePassword(password, salt);
     try {
-      await env.DB.prepare("INSERT INTO users(id,username,email,password_hash,password_salt) VALUES(?,?,?,?,?)").bind(id, username, email, hash, salt).run();
-    } catch { return json({ error: "No se pudo crear la cuenta. Revisa si el usuario o correo ya existen." }, 409); }
+      await env.DB.prepare("undefined").bind(id, email, hash, salt).run();
+    } catch { return json({ error: "No se pudo crear la cuenta. Revisa si el correo ya está registrado." }, 409); }
     const session = randomToken();
     await env.DB.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").bind(await sha256(session), id, new Date(Date.now() + SESSION_DAYS * 86400000).toISOString()).run();
     await env.DB.prepare("INSERT INTO user_events(user_id,event_type) VALUES(?, 'register')").bind(id).run();
-    return json({ ok: true, user: { id, username, email } }, 201, { "set-cookie": cookie(session) });
+    return json({ ok: true, user: { id, email } }, 201, { "set-cookie": cookie(session) });
   }
 
   if (request.method === "POST" && url.pathname === "/api/login") {
     const data = await body(request);
-    const identity = String(data.identity || "").trim();
+    const email = String(data.email || "").trim().toLowerCase();
     const password = String(data.password || "");
-    if (!identity || !password) return json({ error: "Escribe tu usuario o correo y contraseña." }, 400);
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || !password) return json({ error: "Escribe tu correo y contraseña." }, 400);
     if (!await verifyTurnstile(request, env, data.turnstileToken)) return json({ error: "No se pudo validar la verificación humana. Inténtalo otra vez." }, 400);
-    const user = await env.DB.prepare("SELECT * FROM users WHERE username=? COLLATE NOCASE OR email=? COLLATE NOCASE").bind(identity, identity).first();
+    const user = await env.DB.prepare("undefined").bind(email).first();
     const salt = user?.password_salt || "00000000000000000000000000000000";
     const candidate = await derivePassword(password, salt);
-    if (!user || candidate !== user.password_hash) return json({ error: "Usuario/correo o contraseña incorrectos." }, 401);
+    if (!user || candidate !== user.password_hash) return json({ error: "Correo o contraseña incorrectos." }, 401);
     const session = randomToken();
     await env.DB.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").bind(await sha256(session), user.id, new Date(Date.now() + SESSION_DAYS * 86400000).toISOString()).run();
     await env.DB.prepare("UPDATE users SET last_login_at=? WHERE id=?").bind(new Date().toISOString(), user.id).run();
     await env.DB.prepare("INSERT INTO user_events(user_id,event_type) VALUES(?, 'login')").bind(user.id).run();
-    return json({ ok: true, user: { id: user.id, username: user.username, email: user.email } }, 200, { "set-cookie": cookie(session) });
+    return json({ ok: true, user: { id: user.id, email: user.email } }, 200, { "set-cookie": cookie(session) });
   }
 
   if (request.method === "POST" && url.pathname === "/api/logout") {
@@ -127,13 +125,13 @@ async function handle(request, env) {
     const email = String(data.email || "").trim().toLowerCase();
     if (!email) return json({ error: "Escribe el correo de tu cuenta." }, 400);
     if (!env.RESEND_API_KEY || !env.APP_URL) return json({ error: "El servicio de correo aún no está configurado." }, 503);
-    const user = await env.DB.prepare("SELECT id,username,email FROM users WHERE email=? COLLATE NOCASE").bind(email).first();
+    const user = await env.DB.prepare("SELECT id,email FROM users WHERE email=? COLLATE NOCASE").bind(email).first();
     // Respuesta genérica para no revelar si un correo está registrado.
     if (user) {
       const token = randomToken();
       await env.DB.prepare("DELETE FROM password_resets WHERE user_id=?").bind(user.id).run();
       await env.DB.prepare("INSERT INTO password_resets(token_hash,user_id,expires_at) VALUES(?,?,?)").bind(await sha256(token), user.id, new Date(Date.now() + RESET_MINUTES * 60000).toISOString()).run();
-      try { await sendResetEmail(env, user.email, user.username, token); }
+      try { await sendResetEmail(env, user.email, token); }
       catch (error) { console.error("Reset email error", error.message); return json({ error: "El servicio de correo aún no está configurado." }, 503); }
     }
     return json({ ok: true, message: "Si el correo está registrado, recibirás un enlace para recuperar tu cuenta." });
