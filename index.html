@@ -218,7 +218,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
 </style>
 </head>
 <body>
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" autocomplete="username" maxlength="30" placeholder="Tu usuario" required><label for="loginPass">CONTRASEÑA</label><input id="loginPass" type="password" autocomplete="current-password" minlength="6" placeholder="Tu contraseña" required><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><div class="auth-error" id="authError"></div><p class="login-note">Cuenta local protegida en este dispositivo. No sincroniza usuarios entre teléfonos; para eso conectaremos un servidor seguro.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" autocomplete="username" maxlength="30" placeholder="Tu usuario" required><label for="loginPass">CONTRASEÑA</label><input id="loginPass" type="password" autocomplete="current-password" minlength="6" placeholder="Tu contraseña" required><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError"></div><p class="login-note">Cuenta local protegida en este dispositivo. No sincroniza usuarios entre teléfonos; para eso conectaremos un servidor seguro.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 10 6-10 6z"/></svg></div>Tato <span style="color:#A98AEF">Reels</span></div>
@@ -365,6 +365,24 @@ const APP_PUBLIC_URL='https://tato-reels.t6569990.workers.dev';
 let registerMode=false;
 function enterApp(user){sessionStorage.setItem('tatoReelsSession',user);$('loginScreen').style.display='none';$('app').classList.add('authenticated');}
 $('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('button').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';$('authError').textContent='';});
+function makeRecoveryCode(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let code='';for(let i=0;i<10;i++)code+=chars[Math.floor(Math.random()*chars.length)];return code.match(/.{1,5}/g).join('-');}
+$('forgotPassword').addEventListener('click',()=>{
+ $('authError').textContent='';
+ let account=null;try{account=JSON.parse(localStorage.getItem('tatoReelsLocalAccount')||'null');}catch(_){}
+ if(!account){$('authError').textContent='No hay una cuenta registrada en este dispositivo.';return;}
+ const user=prompt('Escribe tu nombre de usuario para recuperar la cuenta:');
+ if(user===null)return;
+ if(user.trim().toLowerCase()!==account.user){$('authError').textContent='El usuario no coincide con esta cuenta.';return;}
+ if(!account.recoveryCode){$('authError').textContent='Esta cuenta se creó antes del sistema de recuperación. Inicia sesión con tu contraseña actual para generar tu código de recuperación.';return;}
+ const code=prompt('Introduce tu código de recuperación (lo recibiste al crear tu cuenta):');
+ if(code===null)return;
+ if(code.trim().toUpperCase()!==account.recoveryCode){$('authError').textContent='Código de recuperación incorrecto.';return;}
+ const next=prompt('Crea una contraseña nueva (mínimo 6 caracteres):');
+ if(next===null)return;
+ if(next.length<6){$('authError').textContent='La contraseña debe tener al menos 6 caracteres.';return;}
+ account.pass=next;localStorage.setItem('tatoReelsLocalAccount',JSON.stringify(account));
+ $('loginUser').value=account.user;$('loginPass').value='';$('authError').textContent='Contraseña actualizada. Ya puedes entrar con tu nueva contraseña.';
+});
 $('loginForm').addEventListener('submit',e=>{
   e.preventDefault();
   const user=$('loginUser').value.trim().toLowerCase();
@@ -374,7 +392,9 @@ $('loginForm').addEventListener('submit',e=>{
   if(!user||!pass){$('authError').textContent='Escribe tu usuario y contraseña.';return;}
   if(registerMode){
     if(localStorage.getItem(key)){$('authError').textContent='Ya existe una cuenta en este dispositivo. Selecciona «Ya tengo cuenta · Entrar».';return;}
-    localStorage.setItem(key,JSON.stringify({user,pass}));
+    const recoveryCode=makeRecoveryCode();
+    localStorage.setItem(key,JSON.stringify({user,pass,recoveryCode}));
+    alert('¡Cuenta creada! GUARDA ESTE CÓDIGO DE RECUPERACIÓN EN UN LUGAR SEGURO.\\n\\n'+recoveryCode+'\\n\\nLo necesitarás si olvidas tu contraseña. No se puede consultar después.');
     enterApp(user);
     return;
   }
@@ -382,6 +402,7 @@ $('loginForm').addEventListener('submit',e=>{
   try{account=JSON.parse(localStorage.getItem(key)||'null');}catch(_){}
   if(!account){$('authError').textContent='Primero crea una cuenta en este dispositivo.';return;}
   if(account.user!==user||account.pass!==pass){$('authError').textContent='Usuario o contraseña incorrectos.';return;}
+  if(!account.recoveryCode){account.recoveryCode=makeRecoveryCode();localStorage.setItem(key,JSON.stringify(account));alert('Para proteger tu cuenta, guarda este nuevo código de recuperación:\\n\\n'+account.recoveryCode+'\\n\\nGuárdalo en un lugar seguro.');}
   enterApp(user);
 });
 const savedSession=sessionStorage.getItem('tatoReelsSession');if(savedSession)enterApp(savedSession);
