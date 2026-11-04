@@ -155,7 +155,7 @@ async function handle(request, env) {
 
   if (request.method === "GET" && url.pathname === "/api/admin/stats") {
     const user = await currentUser(request, env);
-    if (!user || !env.ADMIN_EMAIL || user.email.toLowerCase() !== env.ADMIN_EMAIL.toLowerCase()) return json({ error: "No autorizado." }, 403);
+    if (!user || !env.ADMIN_USER_ID || user.id !== env.ADMIN_USER_ID) return json({ error: "No autorizado." }, 403);
     const stats = await env.DB.prepare("SELECT COUNT(*) AS total_users, SUM(CASE WHEN date(created_at)=date('now') THEN 1 ELSE 0 END) AS registrations_today FROM users").first();
     const events = await env.DB.prepare("SELECT event_type,COUNT(*) AS total FROM user_events GROUP BY event_type").all();
     return json({ stats, events: events.results || [] });
