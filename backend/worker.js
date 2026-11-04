@@ -101,7 +101,7 @@ async function handle(request, env) {
     const data = await body(request);
     const email = String(data.email || "").trim().toLowerCase();
     const password = String(data.password || "");
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || !password) return json({ error: "Escribe tu correo y contraseña." }, 400);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !password) return json({ error: "Escribe tu correo y contraseña." }, 400);
     if (!await verifyTurnstile(request, env, data.turnstileToken)) return json({ error: "No se pudo validar la verificación humana. Inténtalo otra vez." }, 400);
     const user = await env.DB.prepare("undefined").bind(email).first();
     const salt = user?.password_salt || "00000000000000000000000000000000";
