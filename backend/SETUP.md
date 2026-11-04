@@ -18,7 +18,7 @@ Conserva el servicio de archivos estáticos actual y enlázalo como binding `ASS
 Configura estas variables en Worker → Settings → Variables and Secrets:
 - `APP_URL`: `https://tato-reels.t6569990.workers.dev`
 - `EMAIL_FROM`: remitente de un dominio verificado en Resend, por ejemplo `Tato Reels <cuentas@tudominio.com>`
-- `ADMIN_EMAIL`: correo que tendrá acceso a las estadísticas.
+- `ADMIN_USER_ID`: ID interno del usuario autorizado para consultar estadísticas (se obtiene de la base después de crear la cuenta administradora).
 
 Como secretos (no variables de texto plano):
 - `RESEND_API_KEY`: API key de Resend.
