@@ -356,10 +356,27 @@ const $ = id => document.getElementById(id);
 const APP_PUBLIC_URL='https://tato-reels.t6569990.workers.dev';
 
 let registerMode=false;
-async function passwordDigest(password,salt){const data=new TextEncoder().encode(salt+':'+password);const digest=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(digest)).map(v=>v.toString(16).padStart(2,'0')).join('');}
 function enterApp(user){sessionStorage.setItem('tatoReelsSession',user);$('loginScreen').style.display='none';$('app').classList.add('authenticated');}
 $('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('button').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';$('authError').textContent='';});
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();const user=$('loginUser').value.trim().toLowerCase(),pass=$('loginPass').value,key='tatoReelsLocalAccount';$('authError').textContent='';if(!/^[a-z0-9._-]{3,30}$/.test(user)){$('authError').textContent='Usuario: 3 a 30 caracteres, letras, números, punto, guion o guion bajo.';return;}if(pass.length<6){$('authError').textContent='La contraseña requiere al menos 6 caracteres.';return;}try{const account=JSON.parse(localStorage.getItem(key)||'null');if(registerMode){if(account){$('authError').textContent='Ya hay una cuenta local. Entra con ella.';return;}const salt=crypto.randomUUID(),hash=await passwordDigest(pass,salt);localStorage.setItem(key,JSON.stringify({user,salt,hash}));enterApp(user);toast('Cuenta local creada.');}else{if(!account||account.user!==user){$('authError').textContent='No existe esa cuenta en este dispositivo. Crea una cuenta primero.';return;}if(await passwordDigest(pass,account.salt)!==account.hash){$('authError').textContent='Contraseña incorrecta.';return;}enterApp(user);toast('Acceso correcto.');}}catch(err){$('authError').textContent='No se pudo validar el acceso en este navegador.';}});
+$('loginForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const user=$('loginUser').value.trim().toLowerCase();
+  const pass=$('loginPass').value;
+  const key='tatoReelsLocalAccount';
+  $('authError').textContent='';
+  if(!user||!pass){$('authError').textContent='Escribe tu usuario y contraseña.';return;}
+  if(registerMode){
+    if(localStorage.getItem(key)){$('authError').textContent='Ya existe una cuenta en este dispositivo. Selecciona «Ya tengo cuenta · Entrar».';return;}
+    localStorage.setItem(key,JSON.stringify({user,pass}));
+    enterApp(user);
+    return;
+  }
+  let account=null;
+  try{account=JSON.parse(localStorage.getItem(key)||'null');}catch(_){}
+  if(!account){$('authError').textContent='Primero crea una cuenta en este dispositivo.';return;}
+  if(account.user!==user||account.pass!==pass){$('authError').textContent='Usuario o contraseña incorrectos.';return;}
+  enterApp(user);
+});
 const savedSession=sessionStorage.getItem('tatoReelsSession');if(savedSession)enterApp(savedSession);
 
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
