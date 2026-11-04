@@ -3,7 +3,6 @@ PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
-  username TEXT NOT NULL COLLATE NOCASE UNIQUE,
   email TEXT NOT NULL COLLATE NOCASE UNIQUE,
   password_hash TEXT NOT NULL,
   password_salt TEXT NOT NULL,
