@@ -200,7 +200,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
 .login-brand{font-size:34px;font-weight:950;letter-spacing:-1.8px;text-transform:uppercase;font-style:italic}
 .login-brand span{color:#ff2548}.login-kicker{font-size:10px;letter-spacing:4px;color:#b99bad;margin:8px 0 26px}
 .login-card label{display:block;text-align:left;font-size:11px;font-weight:800;color:#d9cbd5;margin:13px 0 6px}
-.login-card input{width:100%;padding:13px 14px;border:1px solid #49313f;border-radius:10px;background:#09070c;color:white;font-size:14px}
+.login-card input{width:100%;padding:13px 14px;border:1px solid #49313f;border-radius:10px;background:#09070c;color:white;font-size:14px}.login-password-wrap{position:relative;width:100%}.login-password-wrap input{padding-right:52px}.login-eye{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:38px;height:36px;border:0;border-radius:8px;background:transparent;color:#ff8da3;font-size:19px;cursor:pointer}
 .login-main{width:100%;margin-top:18px;padding:14px;border:0;border-radius:10px;background:linear-gradient(100deg,#f20d2e,#8e075f);color:white;font-weight:900;letter-spacing:1px}
 .login-switch{margin-top:17px;border:0;background:none;color:#ff7188;text-decoration:underline;font-size:12px}
 .login-note{margin:18px 0 0;color:#a18b9a;font-size:10px;line-height:1.5}.auth-error{min-height:16px;color:#ff788c;font-size:11px;margin-top:9px}
@@ -218,7 +218,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
 </style>
 </head>
 <body>
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" autocomplete="username" maxlength="30" placeholder="Tu usuario" required><label for="loginPass">CONTRASEÑA</label><input id="loginPass" type="password" autocomplete="current-password" minlength="6" placeholder="Tu contraseña" required><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError"></div><p class="login-note">Cuenta local protegida en este dispositivo. No sincroniza usuarios entre teléfonos; para eso conectaremos un servidor seguro.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" autocomplete="username" maxlength="30" placeholder="Tu usuario" required><label for="loginPass">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPass" type="password" autocomplete="current-password" minlength="6" placeholder="Tu contraseña" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError"></div><p class="login-note">Cuenta local protegida en este dispositivo. No sincroniza usuarios entre teléfonos; para eso conectaremos un servidor seguro.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 10 6-10 6z"/></svg></div>Tato <span style="color:#A98AEF">Reels</span></div>
@@ -364,7 +364,8 @@ const APP_PUBLIC_URL='https://tato-reels.t6569990.workers.dev';
 
 let registerMode=false;
 function enterApp(user){sessionStorage.setItem('tatoReelsSession',user);$('loginScreen').style.display='none';$('app').classList.add('authenticated');}
-$('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('button').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';$('authError').textContent='';});
+$('togglePassword').addEventListener('click',()=>{const field=$('loginPass');const showing=field.type==='password';field.type=showing?'text':'password';$('togglePassword').textContent=showing?'🙈':'👁';$('togglePassword').setAttribute('aria-label',showing?'Ocultar contraseña':'Mostrar contraseña');$('togglePassword').title=showing?'Ocultar contraseña':'Mostrar contraseña';});
+$('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('.login-main').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';$('authError').textContent='';});
 function makeRecoveryCode(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let code='';for(let i=0;i<10;i++)code+=chars[Math.floor(Math.random()*chars.length)];return code.match(/.{1,5}/g).join('-');}
 $('forgotPassword').addEventListener('click',()=>{
  $('authError').textContent='';
