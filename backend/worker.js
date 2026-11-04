@@ -89,7 +89,7 @@ async function handle(request, env) {
     const salt = randomToken(16);
     const hash = await derivePassword(password, salt);
     try {
-      await env.DB.prepare("undefined").bind(id, email, hash, salt).run();
+      await env.DB.prepare("INSERT INTO users(id,email,password_hash,password_salt) VALUES(?,?,?,?)").bind(id, email, hash, salt).run();
     } catch { return json({ error: "No se pudo crear la cuenta. Revisa si el correo ya está registrado." }, 409); }
     const session = randomToken();
     await env.DB.prepare("INSERT INTO sessions(token_hash,user_id,expires_at) VALUES(?,?,?)").bind(await sha256(session), id, new Date(Date.now() + SESSION_DAYS * 86400000).toISOString()).run();
@@ -103,7 +103,7 @@ async function handle(request, env) {
     const password = String(data.password || "");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !password) return json({ error: "Escribe tu correo y contraseña." }, 400);
     if (!await verifyTurnstile(request, env, data.turnstileToken)) return json({ error: "No se pudo validar la verificación humana. Inténtalo otra vez." }, 400);
-    const user = await env.DB.prepare("undefined").bind(email).first();
+    const user = await env.DB.prepare("SELECT * FROM users WHERE email=? COLLATE NOCASE").bind(email).first();
     const salt = user?.password_salt || "00000000000000000000000000000000";
     const candidate = await derivePassword(password, salt);
     if (!user || candidate !== user.password_hash) return json({ error: "Correo o contraseña incorrectos." }, 401);
