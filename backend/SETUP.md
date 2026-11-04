@@ -1,5 +1,7 @@
 # Tato Reels · activar cuentas reales
 
+El acceso usa **solo correo electrónico y contraseña**: no se solicita nombre de usuario. La sesión queda iniciada durante 365 días o hasta que la persona cierre sesión.
+
 El backend está preparado en `backend/worker.js` y el esquema SQL en `backend/schema.sql`. **Todavía no está conectado al Worker público**: falta crear D1 y añadir sus secretos/bindings en Cloudflare. No activar el frontend contra esta API hasta completar estos pasos.
 
 ## 1. Crear la base D1
