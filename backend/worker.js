@@ -25,7 +25,7 @@ function cookie(token, maxAge = SESSION_DAYS * 86400) {
 }
 function getCookie(request) {
   const raw = request.headers.get("Cookie") || "";
-  const match = raw.match(/(?:^|;\\s*)tr_session=([a-f0-9]+)/);
+  const match = raw.match(/(?:^|;\s*)tr_session=([a-f0-9]+)/);
   return match?.[1] || null;
 }
 async function currentUser(request, env) {
@@ -36,7 +36,7 @@ async function currentUser(request, env) {
 }
 async function sendResetEmail(env, email, username, token) {
   if (!env.RESEND_API_KEY || !env.APP_URL) throw new Error("EMAIL_NOT_CONFIGURED");
-  const link = `${env.APP_URL.replace(/\\/$/, "")}/?reset=${encodeURIComponent(token)}`;
+  const link = `${env.APP_URL.replace(/\/$/, "")}/?reset=${encodeURIComponent(token)}`;
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
@@ -82,7 +82,7 @@ async function handle(request, env) {
     const email = String(data.email || "").trim().toLowerCase();
     const password = String(data.password || "");
     if (!/^[a-zA-Z0-9_.-]{3,30}$/.test(username)) return json({ error: "El usuario debe tener entre 3 y 30 caracteres (letras, números, punto, guion o guion bajo)." }, 400);
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return json({ error: "Escribe un correo electrónico válido." }, 400);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "Escribe un correo electrónico válido." }, 400);
     if (password.length < 8 || password.length > 128) return json({ error: "La contraseña debe tener entre 8 y 128 caracteres." }, 400);
     if (!await verifyTurnstile(request, env, data.turnstileToken)) return json({ error: "No se pudo validar la verificación humana. Inténtalo otra vez." }, 400);
     const exists = await env.DB.prepare("SELECT id FROM users WHERE username=? COLLATE NOCASE OR email=? COLLATE NOCASE").bind(username, email).first();
