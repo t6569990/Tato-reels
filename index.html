@@ -337,7 +337,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <nav class="editor-toolbar" aria-label="Herramientas del editor">
-      <button class="editor-tool active" data-pane="video">🎬 Video</button><button class="editor-tool" data-pane="text">✍️ Texto</button><button class="editor-tool" data-pane="music">🎵 Música</button><button class="editor-tool" data-pane="image">🖼️ Imagen</button><button class="editor-tool" data-pane="style">🎨 Estilo y formato</button><button class="editor-tool" data-pane="share">🔗 Compartir</button><button class="editor-tool" data-pane="publish">📣 Publicar</button>
+      <button class="editor-tool active" data-pane="video">🎬 Video</button><button class="editor-tool" data-pane="text">✍️ Texto</button><button class="editor-tool" data-pane="music">🎵 Música</button><button class="editor-tool" data-pane="image">🖼️ Imagen</button><button class="editor-tool" data-pane="style">🎨 Estilo y formato</button><button class="editor-tool" data-pane="sharepublish">🔗 Compartir y publicar</button>
     </nav>
     <div class="creator">
       <section class="preview-shell">
@@ -472,7 +472,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
  creator.insertBefore(stage,preview);stage.append(preview,trim);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
- const paneNames=['video','text','music','image','style','share','publish'],panes={};
+ const paneNames=['video','text','music','image','style','sharepublish'],panes={};
  paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;panes[name]=p;editor.append(p);});
  const cards=[...editor.children].filter(el=>el.classList.contains('panel')||el.classList.contains('export-progress')||el.tagName==='DIV');
  cards.forEach(card=>{
@@ -481,9 +481,9 @@ html,body,#app{background:#050407;color:#f5f1f5}
    if(/Música/i.test(h))key='music';
    else if(/Texto animado|Detalles del Reel/i.test(h))key='text';
    else if(/Estilo de vista|Formato de descarga|^📐\s*Formato/i.test(h))key='style';
-   else if(card.querySelector('#saveBtn'))key='publish';
+   else if(card.querySelector('#saveBtn'))key='sharepublish';
    else if(/Imagen/i.test(h))key='image';
-   else if(/Compartir Tato Reels|Salida a redes/i.test(h))key='share';
+   else if(/Compartir Tato Reels|Salida a redes/i.test(h))key='sharepublish';
    panes[key].append(card);
  });
  const tabs=[...toolbar.querySelectorAll('[data-pane]')];
