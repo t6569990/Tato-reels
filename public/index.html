@@ -299,10 +299,37 @@ html,body,#app{background:#050407;color:#f5f1f5}
  .creator .tool-tabs{top:245px}
 }
 
+
+/* TATO REELS · VISOR FLOTANTE ARRASTRABLE */
+.creator>.preview-shell#floatingPreview{
+ position:fixed!important;left:auto!important;right:18px!important;top:104px!important;
+ width:220px!important;max-width:calc(100vw - 24px)!important;z-index:1000!important;
+ display:flex!important;flex-direction:column!important;gap:6px!important;
+ padding:8px!important;border:1px solid #713047!important;border-radius:15px!important;
+ background:#0c0a10!important;box-shadow:0 14px 42px #000b!important;margin:0!important;
+ touch-action:auto;
+}
+#previewDragbar{display:flex;align-items:center;justify-content:space-between;gap:8px;
+ min-height:30px;padding:2px 4px;color:#ffc1cc;font-size:10px;font-weight:900;letter-spacing:.6px;
+ cursor:grab;user-select:none;touch-action:none}
+#previewDragbar:active{cursor:grabbing}
+#previewDragbar button{border:1px solid #713047;border-radius:7px;background:#24101b;color:#fff;width:28px;height:26px;font-size:18px;line-height:1}
+#floatingPreview .video-frame{width:100%!important;max-height:none!important;aspect-ratio:9/16!important}
+#floatingPreview .player-controls{display:flex!important;justify-content:space-between;gap:5px;font-size:10px;padding:5px 2px 0!important}
+#floatingPreview.is-minimized{width:auto!important;min-width:150px!important;padding:5px 8px!important}
+#floatingPreview.is-minimized .video-frame,#floatingPreview.is-minimized .player-controls{display:none!important}
+#floatingPreview.is-minimized #previewDragbar{min-height:32px}
+@media(max-width:720px){
+ .creator>.preview-shell#floatingPreview{right:10px!important;top:82px!important;width:148px!important;padding:5px!important;border-radius:12px!important}
+ #floatingPreview .video-frame{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:9/16!important}
+ #floatingPreview .player-controls{font-size:9px!important;padding:4px 1px 0!important}
+ #previewDragbar{min-height:28px;font-size:9px}
+ #previewDragbar button{width:25px;height:24px}
+}
 </style>
 </head>
 <body>
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginEmail">CORREO ELECTRÓNICO</label><input id="loginEmail" type="email" autocomplete="email" maxlength="254" placeholder="tu@correo.com" required><label for="loginPass">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPass" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Tu cuenta se guarda de forma segura y podrás acceder desde distintos dispositivos.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USER</label><input id="loginUser" type="text" autocomplete="username" maxlength="30" placeholder="Ej. Tato 007" required><button class="login-main" type="submit">SIGN IN</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Tu nombre se guarda en este dispositivo.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 10 6-10 6z"/></svg></div>Tato <span style="color:#A98AEF">Reels</span></div>
@@ -321,7 +348,8 @@ html,body,#app{background:#050407;color:#f5f1f5}
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <div class="creator">
-      <section class="preview-shell">
+      <section class="preview-shell" id="floatingPreview">
+        <div class="preview-dragbar" id="previewDragbar"><span>↕ TATO REELS · VISTA</span><button type="button" id="minimizePreview" aria-label="Minimizar visor">−</button></div>
         <div class="video-frame" id="videoFrame">
           <div class="sample-art" id="sampleArt"><div class="spark">✦</div><b>Tu próxima<br>gran historia</b><small>Empieza a crear</small></div>
           <video id="video" playsinline controls></video>
@@ -339,16 +367,13 @@ html,body,#app{background:#050407;color:#f5f1f5}
       </section>
       <section class="editor-panel">
         <div class="panel">
-          <h3>🎬 Tu video</h3>
-          <div class="upload-zone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></svg><b>Sube tu video</b><span>MP4, MOV o WEBM<br>Elige un archivo de tu dispositivo</span><div style="margin-top:12px"><button class="primary" id="uploadBtn">Seleccionar video</button></div><input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden></div>
-          <div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:10px">Tu archivo se previsualiza localmente en este prototipo.</div>
-        </div>
-        <div class="panel">
-          <h3>🎞️ Unir varios clips</h3>
-          <div class="upload-zone"><b>Agrega más videos</b><span>Selecciona varios archivos para crear un solo Reel.</span><div style="margin-top:10px"><button class="secondary" id="addClipsBtn">Agregar clips</button></div><input id="clipsInput" type="file" accept="video/*" multiple hidden></div>
+          <h3>🎬 Tus videos</h3>
+          <div class="upload-zone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></svg><b>Selecciona el primer video</b><span>MP4, MOV o WEBM · Elige un archivo de tu dispositivo</span><div style="margin-top:12px"><button class="primary" id="uploadBtn">Seleccionar primer video</button></div><input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px"><button class="secondary" id="addClipsBtn">＋ Agregar otro video</button><span class="file-note">Añade los clips en el orden que prefieras.</span></div>
+          <input id="clipsInput" type="file" accept="video/*" multiple hidden>
           <div class="clip-list" id="clipList"><div class="file-note">Aún no agregas clips adicionales.</div></div>
-          <button class="primary" id="combineBtn" style="margin-top:10px">Crear secuencia de clips</button>
-          <div class="file-note" id="sequenceNote">Crea una secuencia editable dentro de Tato Reels. No se descarga ni se exporta ningún archivo.</div>
+          <button class="primary" id="combineBtn" style="margin-top:10px">Preparar secuencia</button>
+          <div class="file-note" id="sequenceNote">Todos tus videos se organizan en una sola línea de tiempo editable.</div>
         </div>
         <div class="panel timeline-panel" style="grid-column:1/-1">
           <h3>🧩 Línea de tiempo</h3>
@@ -395,9 +420,10 @@ html,body,#app{background:#050407;color:#f5f1f5}
           <div class="field"><label class="field-label" for="animatedText">Texto sobre el video</label><textarea id="animatedText" rows="2" placeholder="Escribe tu título..." style="min-height:55px"></textarea></div>
           <div class="field"><label class="field-label" for="titleAnimation">Animación</label><select id="titleAnimation" style="width:100%;padding:9px;border-radius:9px;background:light-dark(#FBFAFD,#100F17);color:inherit;border:1px solid light-dark(#E3DDEB,#373244)"><option value="pop">Zoom de entrada</option><option value="fade">Aparecer</option><option value="slide">Deslizar</option><option value="bounce">Rebotar</option><option value="none">Sin animación</option></select></div>
           <div class="field"><label class="field-label" for="titlePosition">Posición</label><select id="titlePosition" style="width:100%;padding:9px;border-radius:9px;background:light-dark(#FBFAFD,#100F17);color:inherit;border:1px solid light-dark(#E3DDEB,#373244)"><option value="center">Centro</option><option value="top">Arriba</option><option value="bottom">Abajo</option><option value="left">Izquierda</option><option value="right">Derecha</option></select></div>
+          <div class="field"><label class="field-label" for="titleColor">Color del texto</label><select id="titleColor" style="width:100%;padding:9px;border-radius:9px;background:light-dark(#FBFAFD,#100F17);color:inherit;border:1px solid light-dark(#E3DDEB,#373244)"><option value="#ffffff">Blanco</option><option value="#111111">Negro</option><option value="#ffdf00">Amarillo</option><option value="#ff3b5c">Rojo</option><option value="#39a9ff">Azul</option><option value="#32d583">Verde</option></select></div>
           <div class="range-row"><label>Tamaño<input id="titleSize" type="range" min="16" max="44" value="28"></label><label>Duración (s)<input id="titleDuration" type="number" min="1" max="30" value="5" step="1"></label></div>
           <button class="secondary" id="clearAnimatedText" style="width:100%;margin-top:9px">Quitar texto</button>
-          <div class="file-note">Vista previa del texto animado. La exportación del Reel completo se habilitará en la siguiente integración.</div>
+          <div class="file-note">Vista previa del texto animado. El texto también se incluye en la exportación del Reel completo.</div>
         </div>
         <div class="panel">
           <h3>📦 Formato de descarga</h3>
@@ -445,56 +471,26 @@ html,body,#app{background:#050407;color:#f5f1f5}
 <script>
 const $ = id => document.getElementById(id);
 const APP_PUBLIC_URL='https://tato-reels.t6569990.workers.dev';
-let registerMode=false;
 function showAuthError(message){$('authError').textContent=message||'';}
-function enterApp(user){$('loginScreen').style.display='none';$('app').classList.add('authenticated');}
-async function api(path,data,method='POST'){
-  const response=await fetch(path,{method,credentials:'same-origin',headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined});
-  let result={};try{result=await response.json();}catch(_){}
-  if(!response.ok)throw new Error(result.error||'No se pudo completar la solicitud. Inténtalo de nuevo.');
-  return result;
+function enterApp(user){
+  $('loginScreen').style.display='none';
+  $('app').classList.add('authenticated');
+  const avatar=document.querySelector('.topbar .avatar');
+  if(avatar)avatar.textContent=(user||'T').trim().charAt(0).toUpperCase();
 }
-$('togglePassword').addEventListener('click',()=>{const field=$('loginPass');const showing=field.type==='password';field.type=showing?'text':'password';$('togglePassword').textContent=showing?'🙈':'👁';$('togglePassword').setAttribute('aria-label',showing?'Ocultar contraseña':'Mostrar contraseña');$('togglePassword').title=showing?'Ocultar contraseña':'Mostrar contraseña';});
-$('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('.login-main').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('loginPass').autocomplete=registerMode?'new-password':'current-password';$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';showAuthError('');});
-$('forgotPassword').addEventListener('click',async()=>{
-  const email=$('loginEmail').value.trim().toLowerCase();
-  if(!email){showAuthError('Escribe primero el correo de tu cuenta.');$('loginEmail').focus();return;}
-  showAuthError('Enviando solicitud…');
-  try{const result=await api('/api/forgot-password',{email});showAuthError(result.message||'Si el correo está registrado, recibirás un enlace para recuperar tu cuenta.');}
-  catch(error){showAuthError(error.message);}
-});
-$('loginForm').addEventListener('submit',async e=>{
+try{
+  const savedUser=localStorage.getItem('tatoReelsUser');
+  if(savedUser)$('loginUser').value=savedUser;
+}catch(_){}
+$('loginForm').addEventListener('submit',e=>{
   e.preventDefault();
-  const email=$('loginEmail').value.trim().toLowerCase();
-  const password=$('loginPass').value;
-  showAuthError(registerMode?'Creando tu cuenta…':'Verificando tus datos…');
-  $('loginForm').querySelector('.login-main').disabled=true;
-  try{
-    const result=await api(registerMode?'/api/register':'/api/login',{email,password});
-    showAuthError('');
-    enterApp(result.user.email);
-  }catch(error){showAuthError(error.message);}
-  finally{$('loginForm').querySelector('.login-main').disabled=false;}
+  const user=$('loginUser').value.trim();
+  if(!user){showAuthError('Escribe tu nombre para continuar.');return;}
+  if(user.length>30){showAuthError('Usa un nombre de hasta 30 caracteres.');return;}
+  try{localStorage.setItem('tatoReelsUser',user);}catch(_){}
+  showAuthError('');
+  enterApp(user);
 });
-async function checkExistingSession(){
-  try{const result=await api('/api/me',null,'GET');if(result.authenticated)enterApp(result.user.email);}
-  catch(_){}
-}
-async function handlePasswordReset(){
-  const params=new URLSearchParams(location.search);
-  const token=params.get('reset');
-  if(!token)return;
-  const next=prompt('Crea tu nueva contraseña (mínimo 8 caracteres):');
-  if(next===null)return;
-  if(next.length<8||next.length>128){showAuthError('La contraseña debe tener entre 8 y 128 caracteres.');return;}
-  const confirmPassword=prompt('Escribe otra vez la nueva contraseña:');
-  if(confirmPassword===null)return;
-  if(next!==confirmPassword){showAuthError('Las contraseñas no coinciden.');return;}
-  try{const result=await api('/api/reset-password',{token,password:next});history.replaceState({},'',location.pathname);showAuthError(result.message||'Contraseña actualizada. Ya puedes iniciar sesión.');}
-  catch(error){showAuthError(error.message);}
-}
-checkExistingSession();
-handlePasswordReset();
 
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
@@ -503,11 +499,11 @@ function showExportOptions(blob,filename){
  const old=document.getElementById('exportDestModal');if(old)old.remove();
  const backdrop=document.createElement('div');backdrop.id='exportDestModal';backdrop.className='export-dest-backdrop';
  const card=document.createElement('section');card.className='export-dest-card';
- card.innerHTML='<h2>🎬 Tu Reel está listo</h2><p>¿Dónde quieres guardar o enviar <b>'+filename+'</b>?</p><button class="export-dest-action" id="destSave"><span>📂</span><div>Elegir dónde guardar<small>Selecciona memoria interna, tarjeta SD u otra carpeta</small></div></button><button class="export-dest-action" id="destShare"><span>↗️</span><div>Compartir / publicar<small>Enviar a WhatsApp, Instagram, Facebook y otras apps</small></div></button><p class="file-note" style="margin:8px 2px 0">La ubicación depende del selector de archivos disponible en tu teléfono. Si no está disponible, Android usará Descargas.</p><button class="export-dest-close" id="destClose">Ahora no</button>';
+ card.innerHTML='<h2>📁 Tu archivo está listo</h2><p>¿Dónde quieres guardar o enviar <b>'+filename+'</b>?</p><button class="export-dest-action" id="destSave"><span>📂</span><div>Elegir dónde guardar<small>Selecciona memoria interna, tarjeta SD u otra carpeta</small></div></button><button class="export-dest-action" id="destShare"><span>↗️</span><div>Compartir / publicar<small>Enviar a WhatsApp, Instagram, Facebook y otras apps</small></div></button><p class="file-note" style="margin:8px 2px 0">La ubicación depende del selector de archivos disponible en tu teléfono. Si no está disponible, Android usará Descargas.</p><button class="export-dest-close" id="destClose">Ahora no</button>';
  backdrop.append(card);document.body.append(backdrop);
- const save=async()=>{try{if(window.showSaveFilePicker){const ext=filename.includes('.')?'.'+filename.split('.').pop():'.webm';const mime=blob.type||'application/octet-stream';const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Video de Tato Reels',accept:{[mime]:[ext]}}]});const writable=await handle.createWritable();await writable.write(blob);await writable.close();toast('Video guardado en la ubicación que elegiste.');backdrop.remove();return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),120000);toast('Archivo enviado a las descargas del dispositivo.');backdrop.remove();}catch(error){if(error.name!=='AbortError')toast('No se pudo guardar el archivo.');}};
+ const save=async()=>{try{if(window.showSaveFilePicker){const ext=filename.includes('.')?'.'+filename.split('.').pop():'.webm';const mime=blob.type||'application/octet-stream';const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Archivo de Tato Reels',accept:{[mime]:[ext]}}]});const writable=await handle.createWritable();await writable.write(blob);await writable.close();toast('Archivo guardado en la ubicación que elegiste.');backdrop.remove();return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),120000);toast('Archivo enviado a las descargas del dispositivo.');backdrop.remove();}catch(error){if(error.name!=='AbortError')toast('No se pudo guardar el archivo.');}};
  card.querySelector('#destSave').addEventListener('click',save);
- card.querySelector('#destShare').addEventListener('click',async()=>{const file=new File([blob],filename,{type:blob.type||'application/octet-stream'});try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({files:[file],title:'Mi Reel de Tato Reels',text:'Creado con Tato Reels'});backdrop.remove();}else{toast('Este dispositivo no permite compartir archivos desde la app. Usa Guardar en el dispositivo.');}}catch(error){if(error.name!=='AbortError')toast('No se pudo abrir el menú para compartir.');}});
+ card.querySelector('#destShare').addEventListener('click',async()=>{const file=new File([blob],filename,{type:blob.type||'application/octet-stream'});try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({files:[file],title:filename,text:'Creado con Tato Reels'});backdrop.remove();}else{toast('Este dispositivo no permite compartir archivos desde la app. Usa Guardar en el dispositivo.');}}catch(error){if(error.name!=='AbortError')toast('No se pudo abrir el menú para compartir.');}});
  card.querySelector('#destClose').addEventListener('click',()=>backdrop.remove());backdrop.addEventListener('click',e=>{if(e.target===backdrop)backdrop.remove();});
 }
 
@@ -523,6 +519,26 @@ let extraClips = [];
 let editSequence = [];
 let sequenceIndex = 0;
 let sequenceActive = false;
+function advanceSequence(){
+ if(!sequenceActive||!editSequence.length)return;
+ const current=editSequence[sequenceIndex];
+ const stopAt=Number(current?.end);
+ if(current&&Number.isFinite(stopAt)&&video.currentTime<stopAt-0.04&&!video.ended)return;
+ if(sequenceIndex<editSequence.length-1){
+  sequenceIndex++;
+  const next=editSequence[sequenceIndex];
+  video.pause();video.src=next.url;video.load();
+  video.addEventListener('loadedmetadata',function startNext(){
+   video.removeEventListener('loadedmetadata',startNext);
+   video.currentTime=Number(next.start)||0;
+   video.play().catch(()=>{});
+  });
+  $('videoStatus').textContent='Vista previa · clip '+(sequenceIndex+1)+' de '+editSequence.length;
+ }else{
+  sequenceActive=false;video.pause();$('videoStatus').textContent='Secuencia completa';
+ }
+}
+
 let drafts = JSON.parse(localStorage.getItem('tatoReelsDrafts') || '[]');
 let filter = 'none';
 function refreshDraftCount(){ $('draftCount').textContent=drafts.length; }
@@ -539,7 +555,7 @@ $('fileInput').addEventListener('change',e=>{
  objectUrl=URL.createObjectURL(file); video.src=objectUrl; video.classList.add('show'); $('sampleArt').style.display='none'; $('videoStatus').textContent=file.name.length>22?file.name.slice(0,19)+'…':file.name; video.load(); toast('Video cargado para vista previa.');
 });
 video.addEventListener('loadedmetadata',()=>{ $('trimStart').max=video.duration; $('trimEnd').max=video.duration; $('trimEnd').value=video.duration.toFixed(1); $('durationNote').textContent='Duración total: '+video.duration.toFixed(1)+' segundos.'; });
-video.addEventListener('ended',()=>{if(!sequenceActive||sequenceIndex>=editSequence.length-1)return;sequenceIndex++;video.src=editSequence[sequenceIndex].url;video.load();video.play().catch(()=>{});$('videoStatus').textContent='Clip '+(sequenceIndex+1)+' de '+editSequence.length;});
+video.addEventListener('ended',advanceSequence);
 $('playBtn').addEventListener('click',()=>{ if(!video.src){toast('Primero selecciona un video.');return;} if(video.paused) video.play(); else video.pause(); });
 video.addEventListener('play',()=>$('playBtn').textContent='Ⅱ'); video.addEventListener('pause',()=>$('playBtn').textContent='▶');
 $('muteBtn').addEventListener('click',()=>{video.muted=!video.muted; $('muteBtn').textContent=video.muted?'×':'♫';});
@@ -578,13 +594,58 @@ $('audioStart').addEventListener('change',()=>{const t=getAudioTrim();if(t&&musi
 $('audioEnd').addEventListener('change',()=>{const t=getAudioTrim();if(t&&musicAudio&&musicAudio.currentTime>t.end)musicAudio.currentTime=t.start;});
 $('musicVolume').addEventListener('input',()=>{if(musicAudio)musicAudio.volume=Number($('musicVolume').value);});
 $('previewMusic').addEventListener('click',()=>{if(!musicAudio){toast('Añade primero una pista de audio.');return;}if(musicAudio.paused){const t=getAudioTrim();if(!t)return;if(musicAudio.currentTime<t.start||musicAudio.currentTime>=t.end)musicAudio.currentTime=t.start;musicAudio.volume=Number($('musicVolume').value);musicAudio.play().catch(()=>toast('No se pudo reproducir la pista.'));$('previewMusic').textContent='Ⅱ Pausar fragmento';}else{musicAudio.pause();$('previewMusic').textContent='▶ Escuchar fragmento';}});
-$('exportTrimmedAudio').addEventListener('click',async()=>{if(!musicFile){toast('Primero carga una canción.');return;}const t=getAudioTrim();if(!t)return;const button=$('exportTrimmedAudio');button.disabled=true;button.textContent='Procesando audio…';try{const data=await musicFile.arrayBuffer();const context=new AudioContext();const decoded=await context.decodeAudioData(data);const rate=decoded.sampleRate,from=Math.floor(t.start*rate),to=Math.min(decoded.length,Math.floor(t.end*rate)),length=to-from,channels=decoded.numberOfChannels;const wavBuffer=new ArrayBuffer(44+length*channels*2),view=new DataView(wavBuffer);const write=(offset,str)=>{for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));};write(0,'RIFF');view.setUint32(4,36+length*channels*2,true);write(8,'WAVE');write(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,channels,true);view.setUint32(24,rate,true);view.setUint32(28,rate*channels*2,true);view.setUint16(32,channels*2,true);view.setUint16(34,16,true);write(36,'data');view.setUint32(40,length*channels*2,true);let offset=44;for(let i=0;i<length;i++){for(let c=0;c<channels;c++){const sample=Math.max(-1,Math.min(1,decoded.getChannelData(c)[from+i]));view.setInt16(offset,sample<0?sample*32768:sample*32767,true);offset+=2;}}await context.close();const url=URL.createObjectURL(new Blob([wavBuffer],{type:'audio/wav'}));const a=document.createElement('a');a.href=url;a.download=(musicFile.name.replace(/\.[^.]+$/,'')||'cancion')+'-recortada.wav';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);toast('Canción recortada y descargada en WAV.');}catch(error){toast('No se pudo procesar este formato de audio.');}finally{button.disabled=false;button.textContent='⬇ Descargar canción recortada';}});
+$('exportTrimmedAudio').addEventListener('click',async()=>{
+ if(!musicFile){toast('Primero carga una canción.');return;}
+ const trim=getAudioTrim();if(!trim)return;
+ const button=$('exportTrimmedAudio'),originalLabel=button.textContent;
+ button.disabled=true;button.textContent='Procesando audio…';
+ let context=null;
+ try{
+  const data=await musicFile.arrayBuffer();
+  context=new (window.AudioContext||window.webkitAudioContext)();
+  const decoded=await context.decodeAudioData(data.slice(0));
+  const rate=decoded.sampleRate,from=Math.floor(trim.start*rate),to=Math.min(decoded.length,Math.floor(trim.end*rate));
+  const length=to-from,channels=decoded.numberOfChannels;
+  if(length<=0)throw new Error('El tramo seleccionado está vacío.');
+  const wavBuffer=new ArrayBuffer(44+length*channels*2),view=new DataView(wavBuffer);
+  const write=(offset,str)=>{for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));};
+  write(0,'RIFF');view.setUint32(4,36+length*channels*2,true);write(8,'WAVE');
+  write(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);
+  view.setUint16(22,channels,true);view.setUint32(24,rate,true);
+  view.setUint32(28,rate*channels*2,true);view.setUint16(32,channels*2,true);
+  view.setUint16(34,16,true);write(36,'data');view.setUint32(40,length*channels*2,true);
+  let offset=44;
+  for(let i=0;i<length;i++)for(let c=0;c<channels;c++){
+   const sample=Math.max(-1,Math.min(1,decoded.getChannelData(c)[from+i]));
+   view.setInt16(offset,sample<0?sample*32768:sample*32767,true);offset+=2;
+  }
+  const base=(musicFile.name.replace(/\.[^.]+$/,'')||'cancion');
+  const filename=base+'-recortada.wav';
+  const blob=new Blob([wavBuffer],{type:'audio/wav'});
+  const trimmedFile=new File([blob],filename,{type:'audio/wav',lastModified:Date.now()});
+  try{
+   const savedId=await saveAudioTrack(trimmedFile);
+   activeMusicId=savedId;
+   await renderMusicLibrary();
+   $('musicNote').textContent='Audio recortado guardado en Mi biblioteca: '+filename;
+  }catch(storageError){
+   $('musicNote').textContent='Audio recortado listo. El navegador no permitió guardarlo en Mi biblioteca.';
+  }
+  showExportOptions(blob,filename);
+  toast('Recorte listo. Elige dónde guardarlo o compartirlo.');
+ }catch(error){
+  toast(error.message||'No se pudo procesar este formato de audio.');
+ }finally{
+  if(context&&context.state!=='closed')await context.close().catch(()=>{});
+  button.disabled=false;button.textContent=originalLabel;
+ }
+});
 
 $('extractAudioBtn').addEventListener('click',async()=>{if(!video.src){toast('Primero carga un video.');return;}if(!video.captureStream||!window.MediaRecorder){toast('La extracción requiere Chrome actualizado.');return;}const btn=$('extractAudioBtn');btn.disabled=true;btn.textContent='Extrayendo audio…';let stream=null,recorder=null,raf=0;try{const start=Math.max(0,Number($('trimStart').value)||0),end=Math.min(video.duration,Number($('trimEnd').value)||video.duration);if(!(end>start))throw new Error('Revisa el inicio y final del video.');video.pause();video.currentTime=start;await new Promise((resolve,reject)=>{if(Math.abs(video.currentTime-start)<.05){resolve();return;}video.addEventListener('seeked',resolve,{once:true});video.addEventListener('error',()=>reject(new Error('No se pudo abrir el video.')),{once:true});});stream=video.captureStream();const audioTracks=stream.getAudioTracks();if(!audioTracks.length)throw new Error('Este video no contiene una pista de audio.');const audioStream=new MediaStream(audioTracks);const types=['audio/webm;codecs=opus','audio/webm'];const mime=types.find(t=>MediaRecorder.isTypeSupported(t));if(!mime)throw new Error('Este navegador no permite exportar audio WebM.');recorder=new MediaRecorder(audioStream,{mimeType:mime});const chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const done=new Promise(resolve=>recorder.onstop=resolve);recorder.start(200);await video.play();await new Promise(resolve=>{const tick=()=>{if(video.currentTime>=end||video.ended){video.pause();resolve();}else raf=requestAnimationFrame(tick);};tick();});cancelAnimationFrame(raf);recorder.stop();await done;const blob=new Blob(chunks,{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='tato-audio-extraido.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);$('extractAudioNote').textContent='Audio extraído del tramo '+start.toFixed(1)+' a '+end.toFixed(1)+' segundos.';toast('Audio extraído y descargado.');}catch(err){if(recorder&&recorder.state!=='inactive')recorder.stop();toast(err.message||'No se pudo extraer el audio.');}finally{cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());btn.disabled=false;btn.textContent='♫ Extraer audio del video';}});
 
 $('clearMusic').addEventListener('click',()=>{if(musicAudio)musicAudio.pause();if(musicUrl)URL.revokeObjectURL(musicUrl);musicUrl=null;musicAudio=null;musicFile=null;$('musicInput').value='';$('musicLibrary').innerHTML='';$('musicNote').textContent='No hay pistas añadidas todavía.';$('audioDuration').textContent='Carga una canción para conocer su duración.';$('previewMusic').textContent='▶ Escuchar fragmento';toast('Música eliminada.');});
-function updateAnimatedTitle(){const title=$('animatedTitle'),overlay=$('videoOverlay'),value=$('animatedText').value.trim();title.textContent=value;title.hidden=!value;overlay.className='video-overlay title-'+$('titlePosition').value+' anim-'+$('titleAnimation').value;title.style.fontSize=$('titleSize').value+'px';}
-['animatedText','titleAnimation','titlePosition','titleSize'].forEach(id=>$(id).addEventListener('input',updateAnimatedTitle));
+function updateAnimatedTitle(){const title=$('animatedTitle'),overlay=$('videoOverlay'),value=$('animatedText').value.trim();title.textContent=value;title.hidden=!value;overlay.className='video-overlay title-'+$('titlePosition').value+' anim-'+$('titleAnimation').value;title.style.fontSize=$('titleSize').value+'px';title.style.color=$('titleColor').value;}
+['animatedText','titleAnimation','titlePosition','titleSize','titleColor'].forEach(id=>$(id).addEventListener('input',updateAnimatedTitle));
 $('clearAnimatedText').addEventListener('click',()=>{$('animatedText').value='';updateAnimatedTitle();toast('Texto animado eliminado.');});
 $('openInstagram').addEventListener('click',()=>{window.open('https://www.instagram.com/','_blank','noopener');$('socialStatus').textContent='Instagram abierto. Para publicar, usa la opción Crear dentro de tu cuenta y selecciona el video exportado.';});
 $('openFacebook').addEventListener('click',()=>{window.open('https://www.facebook.com/','_blank','noopener');$('socialStatus').textContent='Facebook abierto. Para publicar, crea un Reel desde tu cuenta y selecciona el video exportado.';});
@@ -664,16 +725,16 @@ function renderTimeline(){const track=$('timelineTrack');if(!track)return;track.
 function syncExtraClipsFromTimeline(){extraClips=timelineItems.filter(item=>!item.isMain);}
 $('fileInput').addEventListener('change',()=>{const file=$('fileInput').files?.[0];if(!file||!objectUrl)return;timelineItems=timelineItems.filter(item=>!item.isMain);const main={id:'main-'+Date.now(),name:file.name,url:objectUrl,file,isMain:true,start:0,end:null,duration:0};timelineItems.unshift(main);selectedTimelineId=main.id;inspectTimelineClip(main);renderTimeline();});
 $('clipsInput').addEventListener('change',()=>{const added=extraClips.filter(item=>!timelineItems.some(existing=>existing.url===item.url));added.forEach((item,index)=>{item.id='clip-'+Date.now()+'-'+index;item.name=item.file.name;item.start=0;item.end=null;item.duration=0;timelineItems.push(item);inspectTimelineClip(item);});renderTimeline();});
-$('timelineTrack').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const index=timelineItems.findIndex(item=>item.id===b.dataset.id);if(index<0)return;const item=timelineItems[index],action=b.dataset.action;if(action==='up'&&index>0){timelineItems.splice(index,1);timelineItems.splice(index-1,0,item);}else if(action==='down'&&index<timelineItems.length-1){timelineItems.splice(index,1);timelineItems.splice(index+1,0,item);}else if(action==='duplicate'){const copy={...item,id:'copy-'+Date.now(),name:item.name+' (copia)',start:item.start,end:item.end,isMain:false};timelineItems.splice(index+1,0,copy);}else if(action==='remove'){if(item.url&&item.url!==objectUrl)URL.revokeObjectURL(item.url);timelineItems.splice(index,1);if(item.isMain){objectUrl=null;video.pause();video.removeAttribute('src');video.load();$('fileInput').value='';}else extraClips=extraClips.filter(clip=>clip.url!==item.url);}selectedTimelineId=timelineItems[Math.min(index,timelineItems.length-1)]?.id||null;renderTimeline();syncExtraClipsFromTimeline();});
+$('timelineTrack').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const index=timelineItems.findIndex(item=>item.id===b.dataset.id);if(index<0)return;const item=timelineItems[index],action=b.dataset.action;if(action==='up'&&index>0){timelineItems.splice(index,1);timelineItems.splice(index-1,0,item);}else if(action==='down'&&index<timelineItems.length-1){timelineItems.splice(index,1);timelineItems.splice(index+1,0,item);}else if(action==='duplicate'){const copy={...item,id:'copy-'+Date.now(),name:item.name+' (copia)',url:item.file?URL.createObjectURL(item.file):item.url,file:item.file,start:item.start,end:item.end,isMain:false};timelineItems.splice(index+1,0,copy);}else if(action==='remove'){if(item.url&&item.url!==objectUrl)URL.revokeObjectURL(item.url);timelineItems.splice(index,1);if(item.isMain){const removedUrl=objectUrl;objectUrl=null;if(removedUrl)URL.revokeObjectURL(removedUrl);video.pause();video.removeAttribute('src');video.load();$('fileInput').value='';}else extraClips=extraClips.filter(clip=>clip.url!==item.url);}selectedTimelineId=timelineItems[Math.min(index,timelineItems.length-1)]?.id||null;renderTimeline();syncExtraClipsFromTimeline();});
 $('timelineTrack').addEventListener('change',e=>{const input=e.target.closest('input[data-trim]');if(!input)return;const item=timelineItems.find(x=>x.id===input.dataset.id);if(!item)return;const value=Math.max(0,Number(input.value)||0);if(input.dataset.trim==='start')item.start=Math.min(value,(item.end??item.duration)-0.1);else item.end=Math.min(item.duration||value,Math.max(value,(item.start||0)+0.1));if(item.end!=null&&item.end<=(item.start||0)){toast('El final debe ser posterior al inicio.');return;}renderTimeline();});
 $('resetTimelineBtn').addEventListener('click',()=>{timelineItems.forEach(item=>{item.start=0;item.end=item.duration||null;});renderTimeline();toast('Recortes de la línea de tiempo restablecidos.');});
 $('previewSequenceBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Carga al menos un clip.');return;}editSequence=timelineItems.map(item=>({...item}));sequenceIndex=0;sequenceActive=true;video.pause();video.src=editSequence[0].url;video.load();video.addEventListener('loadedmetadata',function startAtTrim(){video.removeEventListener('loadedmetadata',startAtTrim);video.currentTime=editSequence[0].start||0;video.play().catch(()=>{});});$('videoStatus').textContent='Vista previa · clip 1 de '+editSequence.length;toast('Reproduciendo la secuencia con los recortes de cada clip.');});
-video.addEventListener('timeupdate',()=>{if(!sequenceActive||!editSequence.length)return;const current=editSequence[sequenceIndex];if(current&&current.end!=null&&video.currentTime>=current.end){if(sequenceIndex<editSequence.length-1){sequenceIndex++;const next=editSequence[sequenceIndex];video.src=next.url;video.addEventListener('loadedmetadata',function seekNext(){video.removeEventListener('loadedmetadata',seekNext);video.currentTime=next.start||0;video.play().catch(()=>{});});$('videoStatus').textContent='Vista previa · clip '+(sequenceIndex+1)+' de '+editSequence.length;}else{sequenceActive=false;video.pause();$('videoStatus').textContent='Secuencia completa';}}});
+video.addEventListener('timeupdate',advanceSequence);
 $('combineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Carga y agrega clips en la línea de tiempo.');return;}editSequence=timelineItems.map(item=>({...item}));sequenceIndex=0;sequenceActive=true;video.pause();video.src=editSequence[0].url;video.load();video.addEventListener('loadedmetadata',function seekFirst(){video.removeEventListener('loadedmetadata',seekFirst);video.currentTime=editSequence[0].start||0;});$('videoStatus').textContent='Secuencia editable · '+editSequence.length+' clips';$('sequenceNote').textContent='Secuencia actualizada con los clips y recortes de la línea de tiempo. Los videos originales siguen separados.';$('combineBtn').textContent='Actualizar secuencia editable';toast('Secuencia actualizada. Puedes seguir editando los clips.');});
 // Exporta la secuencia completa dibujando cada clip y el título sobre un canvas.
 function waitForMedia(target,event){return new Promise((resolve,reject)=>{const ok=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(new Error('No se pudo leer uno de los videos.'));};const cleanup=()=>{target.removeEventListener(event,ok);target.removeEventListener('error',fail);};target.addEventListener(event,ok,{once:true});target.addEventListener('error',fail,{once:true});});}
 function drawCover(ctx,source,width,height){const sw=source.videoWidth,sh=source.videoHeight;if(!sw||!sh)return;const scale=Math.max(width/sw,height/sh),dw=sw*scale,dh=sh*scale;ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);}
-function drawExportTitle(ctx,time){const value=$('animatedText').value.trim();if(!value)return;const duration=Math.max(1,Number($('titleDuration').value)||5);if(time>duration)return;const animation=$('titleAnimation').value;let alpha=1,offset=0,scale=1;if(animation==='fade')alpha=Math.min(1,time/0.8);if(animation==='pop'){const p=Math.min(1,time/0.8);scale=.55+.45*p;alpha=p;}if(animation==='slide'){const p=Math.min(1,time/.8);offset=(1-p)*-90;alpha=p;}if(animation==='bounce')offset=-Math.abs(Math.sin(time*5))*18;const size=Number($('titleSize').value)||28;const position=$('titlePosition').value;const lines=value.split('\n');const lineHeight=size*1.15;const blockHeight=lines.length*lineHeight;let y=position==='top'?100:position==='bottom'?1180-blockHeight:position==='left'||position==='right'?640-blockHeight/2:640-blockHeight/2;ctx.save();ctx.globalAlpha=alpha;ctx.translate(360+offset, y+blockHeight/2);ctx.scale(scale,scale);ctx.font='900 '+size*2+'px system-ui, sans-serif';ctx.textAlign=position==='left'?'left':position==='right'?'right':'center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=14;ctx.fillStyle='#fff';lines.forEach((line,index)=>ctx.fillText(line,position==='left'?-270:position==='right'?270:0,(index-(lines.length-1)/2)*lineHeight*2,540));ctx.restore();}
+function drawExportTitle(ctx,time){const value=$('animatedText').value.trim();if(!value)return;const duration=Math.max(1,Number($('titleDuration').value)||5);if(time>duration)return;const animation=$('titleAnimation').value;let alpha=1,offset=0,scale=1;if(animation==='fade')alpha=Math.min(1,time/0.8);if(animation==='pop'){const p=Math.min(1,time/0.8);scale=.55+.45*p;alpha=p;}if(animation==='slide'){const p=Math.min(1,time/.8);offset=(1-p)*-90;alpha=p;}if(animation==='bounce')offset=-Math.abs(Math.sin(time*5))*18;const size=Number($('titleSize').value)||28;const position=$('titlePosition').value;const lines=value.split('\n');const lineHeight=size*1.15;const blockHeight=lines.length*lineHeight;let y=position==='top'?100:position==='bottom'?1180-blockHeight:position==='left'||position==='right'?640-blockHeight/2:640-blockHeight/2;ctx.save();ctx.globalAlpha=alpha;ctx.translate(360+offset, y+blockHeight/2);ctx.scale(scale,scale);ctx.font='900 '+size*2+'px system-ui, sans-serif';ctx.textAlign=position==='left'?'left':position==='right'?'right':'center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=14;ctx.fillStyle=$('titleColor')?.value||'#fff';lines.forEach((line,index)=>ctx.fillText(line,position==='left'?-270:position==='right'?270:0,(index-(lines.length-1)/2)*lineHeight*2,540));ctx.restore();}
 $('exportSequenceBtn').addEventListener('click',async()=>{
  const items=timelineItems.length?timelineItems.map(item=>({...item})):video.src?[{name:'Video principal',url:objectUrl,start:Number($('trimStart').value)||0,end:Number($('trimEnd').value)||video.duration,duration:video.duration}]:[];
  if(!items.length){toast('Carga un video y agrega los clips que quieras incluir.');return;}
@@ -752,6 +813,30 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  });
 })();
 renderTimeline();
+
+// Visor flotante: se puede mover con mouse o dedo y minimizar.
+(()=>{
+ const panel=$('floatingPreview'),handle=$('previewDragbar'),toggle=$('minimizePreview');
+ if(!panel||!handle||!toggle)return;
+ toggle.addEventListener('click',()=>{const mini=panel.classList.toggle('is-minimized');toggle.textContent=mini?'+':'−';toggle.setAttribute('aria-label',mini?'Restaurar visor':'Minimizar visor');});
+ let dragging=false,startX=0,startY=0,originX=0,originY=0;
+ handle.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button'))return;
+  const rect=panel.getBoundingClientRect();dragging=true;startX=e.clientX;startY=e.clientY;originX=rect.left;originY=rect.top;
+  panel.style.left=rect.left+'px';panel.style.top=rect.top+'px';panel.style.right='auto';
+  handle.setPointerCapture(e.pointerId);e.preventDefault();
+ });
+ handle.addEventListener('pointermove',e=>{
+  if(!dragging)return;
+  const rect=panel.getBoundingClientRect();
+  const x=Math.max(4,Math.min(window.innerWidth-rect.width-4,originX+e.clientX-startX));
+  const y=Math.max(4,Math.min(window.innerHeight-rect.height-4,originY+e.clientY-startY));
+  panel.style.left=x+'px';panel.style.top=y+'px';
+ });
+ const stop=()=>{dragging=false;};
+ handle.addEventListener('pointerup',stop);handle.addEventListener('pointercancel',stop);
+ window.addEventListener('resize',()=>{if(!panel.style.left)return;const rect=panel.getBoundingClientRect();panel.style.left=Math.max(4,Math.min(window.innerWidth-rect.width-4,rect.left))+'px';panel.style.top=Math.max(4,Math.min(window.innerHeight-rect.height-4,rect.top))+'px';});
+})();
 </script>
 </body>
 </html>
