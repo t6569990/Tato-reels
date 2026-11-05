@@ -425,6 +425,39 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .upload-options-grid .upload-zone span{font-size:9px;line-height:1.35;overflow-wrap:anywhere}
 .upload-options-grid .upload-zone button{width:100%;min-width:0;padding:9px 5px;font-size:10px;white-space:normal;line-height:1.2}
 @media(max-width:360px){.upload-options-grid{gap:6px}.upload-options-grid .upload-zone{padding:10px 6px}.upload-options-grid .upload-zone button{font-size:9px}}
+
+/* En Video: panel de carga y panel de secuencia lado a lado, también en móvil */
+@media(max-width:720px){
+ .editor-tool-pane[data-pane="video"].active{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+  align-items:stretch;
+ }
+ .editor-tool-pane[data-pane="video"]>.panel{
+  min-width:0;
+  padding:10px 8px!important;
+ }
+ .editor-tool-pane[data-pane="video"]>.panel h3{
+  font-size:11px!important;
+  line-height:1.3;
+ }
+ .editor-tool-pane[data-pane="video"] .upload-zone{
+  padding:10px 6px;
+ }
+ .editor-tool-pane[data-pane="video"] button{
+  width:100%;
+  min-width:0;
+  padding:8px 4px;
+  font-size:9px;
+  white-space:normal;
+  line-height:1.2;
+ }
+}
+@media(max-width:360px){
+ .editor-tool-pane[data-pane="video"].active{gap:6px!important}
+ .editor-tool-pane[data-pane="video"]>.panel{padding:8px 6px!important}
+}
 </style>
 </head>
 <body>
