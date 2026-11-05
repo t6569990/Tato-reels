@@ -417,6 +417,14 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .toolbar-group-label{grid-column:1/-1;padding:3px 5px 0;color:light-dark(#81768e,#b8a9c6);font-size:9px;font-weight:900;letter-spacing:.12em;text-align:left}
 .secondary-tools-label{margin-top:4px;padding-top:8px;border-top:1px solid light-dark(#e9e3ef,#383044)}
 @media(max-width:720px){.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))}.toolbar-group-label{font-size:9px}.secondary-tools-label{margin-top:2px}}
+
+/* Carga de video y fotografías en tarjetas paralelas */
+.upload-options-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
+.upload-options-grid .upload-zone{height:100%;min-width:0;display:flex;flex-direction:column;justify-content:space-between;padding:13px 9px}
+.upload-options-grid .upload-zone b{font-size:11px;line-height:1.3}
+.upload-options-grid .upload-zone span{font-size:9px;line-height:1.35;overflow-wrap:anywhere}
+.upload-options-grid .upload-zone button{width:100%;min-width:0;padding:9px 5px;font-size:10px;white-space:normal;line-height:1.2}
+@media(max-width:360px){.upload-options-grid{gap:6px}.upload-options-grid .upload-zone{padding:10px 6px}.upload-options-grid .upload-zone button{font-size:9px}}
 </style>
 </head>
 <body>
@@ -482,9 +490,9 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
       <section class="editor-panel">
         <div class="panel">
           <h3>🎬 Tu video</h3>
-          <div class="upload-zone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></svg><b>Sube tu video</b><span>MP4, MOV o WEBM<br>Elige un archivo de tu dispositivo</span><div style="margin-top:12px"><button class="primary" id="uploadBtn">Seleccionar video</button></div><input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden></div>
-          <div class="upload-zone" style="margin-top:10px"><b>📸 Agrega fotografías</b><span>JPG, PNG o WebP. Selecciona varias para crear un Reel de fotos o combinarlas con videos.</span><div style="margin-top:10px"><button class="secondary" id="addPhotosBtn" type="button">Seleccionar fotos</button></div><input id="photosInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden></div>
-          <div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:10px">Tus videos y fotografías se procesan localmente en este prototipo.</div>
+          <div class="upload-options-grid"><div class="upload-zone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></svg><b>Sube tu video</b><span>MP4, MOV o WEBM<br>Elige un archivo de tu dispositivo</span><div style="margin-top:12px"><button class="primary" id="uploadBtn">Seleccionar video</button></div><input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden></div>
+          <div class="upload-zone"><b>📸 Agrega fotografías</b><span>JPG, PNG o WebP. Selecciona varias para crear un Reel de fotos o combinarlas con videos.</span><div style="margin-top:10px"><button class="secondary" id="addPhotosBtn" type="button">Seleccionar fotos</button></div><input id="photosInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden></div>
+          </div><div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:10px">Tus videos y fotografías se procesan localmente en este prototipo.</div>
         </div>
         <div class="panel">
           <h3>🎞️ SECUENCIA DE REELS</h3>
