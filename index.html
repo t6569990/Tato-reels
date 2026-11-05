@@ -480,9 +480,11 @@ html,body,#app{background:#050407;color:#f5f1f5}
    let key='video';
    if(/Música/i.test(h))key='music';
    else if(/Texto animado|Detalles del Reel/i.test(h))key='text';
-   else if(/Estilo de vista/i.test(h))key='style';\n   else if(/^📐?\\s*Formato|Formato/i.test(h))key='format';\n   else if(/Imagen/i.test(h))key='image';
-   else if(/Compartir Tato Reels|Salida a redes/i.test(h))key='share';
+   else if(/Estilo de vista/i.test(h))key='style';
    else if(/Formato de descarga/i.test(h)||card.querySelector('#saveBtn'))key='publish';
+   else if(/^📐\s*Formato/i.test(h))key='format';
+   else if(/Imagen/i.test(h))key='image';
+   else if(/Compartir Tato Reels|Salida a redes/i.test(h))key='share';
    panes[key].append(card);
  });
  const tabs=[...toolbar.querySelectorAll('[data-pane]')];
