@@ -11,3 +11,4 @@ run_worker_first = ["/api/*"]
 binding = "DB"
 database_name = "tato-reels-db"
 database_id = "604040f0-a03d-44f0-9b4e-0f9e315f02e8"
+migrations_dir = "backend/migrations"
