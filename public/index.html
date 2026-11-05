@@ -1300,7 +1300,7 @@ renderTimeline();
 (()=>{
  document.querySelectorAll('.editor-toolbar .editor-tool').forEach(button=>{
   if(button.querySelector('.tool-icon')) return;
-  const parts=(button.textContent||'').trim().split(/\\s+/);
+  const parts=(button.textContent||'').trim().split(/\s+/);
   const icon=parts.shift()||'•';
   const label=parts.join(' ')||button.dataset.pane||'Herramienta';
   const iconNode=document.createElement('span');iconNode.className='tool-icon';iconNode.textContent=icon;
