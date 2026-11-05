@@ -86,3 +86,14 @@ Este documento y las correcciones indicadas pertenecen a la rama de trabajo. No 
 - Los dos recursos SVG de identidad tienen raíz SVG y no contienen etiquetas `script` ni `foreignObject`, ni referencias `href` HTTP(S) externas en el texto revisado.
 
 Estas comprobaciones son estáticas y acotadas al contenido de los archivos consultados. No validan ejecución, compatibilidad de renderizado, comportamiento de lectores de pantalla, recursos servidos por el hosting ni seguridad integral del navegador.
+
+
+## Revisión adicional del flujo de exportación — 2026-11-05
+
+- Se revisó estáticamente el flujo de exportación del Reel completo (canvas, MediaRecorder, pistas de audio y clips temporales).
+- Se detectó que, si la exportación fallaba a mitad del proceso, el clip de video temporal y las pistas de captura podían quedar sin una limpieza explícita.
+- Se actualizó el bloque `finally` para pausar y liberar el video temporal activo, detener las pistas del flujo combinado y del canvas, pausar la música y cerrar el AudioContext.
+- Se verificó en GitHub que las nuevas referencias y la limpieza quedaron guardadas en la rama de trabajo.
+- Se comparó el bloque de `renderTimeline()` antes y después del cambio: permanece idéntico.
+
+La corrección reduce el riesgo de dejar recursos multimedia activos después de una exportación fallida, pero no demuestra por sí sola que la exportación funcione en todos los navegadores. Sigue pendiente la prueba funcional en Android y escritorio, con videos de distintas duraciones y con/sin música.
