@@ -607,7 +607,52 @@ $('audioStart').addEventListener('change',()=>{const t=getAudioTrim();if(t&&musi
 $('audioEnd').addEventListener('change',()=>{const t=getAudioTrim();if(t&&musicAudio&&musicAudio.currentTime>t.end)musicAudio.currentTime=t.start;});
 $('musicVolume').addEventListener('input',()=>{if(musicAudio)musicAudio.volume=Number($('musicVolume').value);});
 $('previewMusic').addEventListener('click',()=>{if(!musicAudio){toast('Añade primero una pista de audio.');return;}if(musicAudio.paused){const t=getAudioTrim();if(!t)return;if(musicAudio.currentTime<t.start||musicAudio.currentTime>=t.end)musicAudio.currentTime=t.start;musicAudio.volume=Number($('musicVolume').value);musicAudio.play().catch(()=>toast('No se pudo reproducir la pista.'));$('previewMusic').textContent='Ⅱ Pausar fragmento';}else{musicAudio.pause();$('previewMusic').textContent='▶ Escuchar fragmento';}});
-$('exportTrimmedAudio').addEventListener('click',async()=>{if(!musicFile){toast('Primero carga una canción.');return;}const t=getAudioTrim();if(!t)return;const button=$('exportTrimmedAudio');button.disabled=true;button.textContent='Procesando audio…';try{const data=await musicFile.arrayBuffer();const context=new AudioContext();const decoded=await context.decodeAudioData(data);const rate=decoded.sampleRate,from=Math.floor(t.start*rate),to=Math.min(decoded.length,Math.floor(t.end*rate)),length=to-from,channels=decoded.numberOfChannels;const wavBuffer=new ArrayBuffer(44+length*channels*2),view=new DataView(wavBuffer);const write=(offset,str)=>{for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));};write(0,'RIFF');view.setUint32(4,36+length*channels*2,true);write(8,'WAVE');write(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);view.setUint16(22,channels,true);view.setUint32(24,rate,true);view.setUint32(28,rate*channels*2,true);view.setUint16(32,channels*2,true);view.setUint16(34,16,true);write(36,'data');view.setUint32(40,length*channels*2,true);let offset=44;for(let i=0;i<length;i++){for(let c=0;c<channels;c++){const sample=Math.max(-1,Math.min(1,decoded.getChannelData(c)[from+i]));view.setInt16(offset,sample<0?sample*32768:sample*32767,true);offset+=2;}}await context.close();const url=URL.createObjectURL(new Blob([wavBuffer],{type:'audio/wav'}));const a=document.createElement('a');a.href=url;a.download=(musicFile.name.replace(/\.[^.]+$/,'')||'cancion')+'-recortada.wav';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);toast('Canción recortada y descargada en WAV.');}catch(error){toast('No se pudo procesar este formato de audio.');}finally{button.disabled=false;button.textContent='⬇ Descargar canción recortada';}});
+$('exportTrimmedAudio').addEventListener('click',async()=>{
+ if(!musicFile){toast('Primero carga una canción.');return;}
+ const trim=getAudioTrim();if(!trim)return;
+ const button=$('exportTrimmedAudio'),originalLabel=button.textContent;
+ button.disabled=true;button.textContent='Procesando audio…';
+ let context=null;
+ try{
+  const data=await musicFile.arrayBuffer();
+  context=new (window.AudioContext||window.webkitAudioContext)();
+  const decoded=await context.decodeAudioData(data.slice(0));
+  const rate=decoded.sampleRate,from=Math.floor(trim.start*rate),to=Math.min(decoded.length,Math.floor(trim.end*rate));
+  const length=to-from,channels=decoded.numberOfChannels;
+  if(length<=0)throw new Error('El tramo seleccionado está vacío.');
+  const wavBuffer=new ArrayBuffer(44+length*channels*2),view=new DataView(wavBuffer);
+  const write=(offset,str)=>{for(let i=0;i<str.length;i++)view.setUint8(offset+i,str.charCodeAt(i));};
+  write(0,'RIFF');view.setUint32(4,36+length*channels*2,true);write(8,'WAVE');
+  write(12,'fmt ');view.setUint32(16,16,true);view.setUint16(20,1,true);
+  view.setUint16(22,channels,true);view.setUint32(24,rate,true);
+  view.setUint32(28,rate*channels*2,true);view.setUint16(32,channels*2,true);
+  view.setUint16(34,16,true);write(36,'data');view.setUint32(40,length*channels*2,true);
+  let offset=44;
+  for(let i=0;i<length;i++)for(let c=0;c<channels;c++){
+   const sample=Math.max(-1,Math.min(1,decoded.getChannelData(c)[from+i]));
+   view.setInt16(offset,sample<0?sample*32768:sample*32767,true);offset+=2;
+  }
+  const base=(musicFile.name.replace(/\.[^.]+$/,'')||'cancion');
+  const filename=base+'-recortada.wav';
+  const blob=new Blob([wavBuffer],{type:'audio/wav'});
+  const trimmedFile=new File([blob],filename,{type:'audio/wav',lastModified:Date.now()});
+  try{
+   const savedId=await saveAudioTrack(trimmedFile);
+   activeMusicId=savedId;
+   await renderMusicLibrary();
+   $('musicNote').textContent='Audio recortado guardado en Mi biblioteca: '+filename;
+  }catch(storageError){
+   $('musicNote').textContent='Audio recortado listo. El navegador no permitió guardarlo en Mi biblioteca.';
+  }
+  showExportOptions(blob,filename);
+  toast('Recorte listo. Elige dónde guardarlo o compartirlo.');
+ }catch(error){
+  toast(error.message||'No se pudo procesar este formato de audio.');
+ }finally{
+  if(context&&context.state!=='closed')await context.close().catch(()=>{});
+  button.disabled=false;button.textContent=originalLabel;
+ }
+});
 
 $('extractAudioBtn').addEventListener('click',async()=>{if(!video.src){toast('Primero carga un video.');return;}if(!video.captureStream||!window.MediaRecorder){toast('La extracción requiere Chrome actualizado.');return;}const btn=$('extractAudioBtn');btn.disabled=true;btn.textContent='Extrayendo audio…';let stream=null,recorder=null,raf=0;try{const start=Math.max(0,Number($('trimStart').value)||0),end=Math.min(video.duration,Number($('trimEnd').value)||video.duration);if(!(end>start))throw new Error('Revisa el inicio y final del video.');video.pause();video.currentTime=start;await new Promise((resolve,reject)=>{if(Math.abs(video.currentTime-start)<.05){resolve();return;}video.addEventListener('seeked',resolve,{once:true});video.addEventListener('error',()=>reject(new Error('No se pudo abrir el video.')),{once:true});});stream=video.captureStream();const audioTracks=stream.getAudioTracks();if(!audioTracks.length)throw new Error('Este video no contiene una pista de audio.');const audioStream=new MediaStream(audioTracks);const types=['audio/webm;codecs=opus','audio/webm'];const mime=types.find(t=>MediaRecorder.isTypeSupported(t));if(!mime)throw new Error('Este navegador no permite exportar audio WebM.');recorder=new MediaRecorder(audioStream,{mimeType:mime});const chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};const done=new Promise(resolve=>recorder.onstop=resolve);recorder.start(200);await video.play();await new Promise(resolve=>{const tick=()=>{if(video.currentTime>=end||video.ended){video.pause();resolve();}else raf=requestAnimationFrame(tick);};tick();});cancelAnimationFrame(raf);recorder.stop();await done;const blob=new Blob(chunks,{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='tato-audio-extraido.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);$('extractAudioNote').textContent='Audio extraído del tramo '+start.toFixed(1)+' a '+end.toFixed(1)+' segundos.';toast('Audio extraído y descargado.');}catch(err){if(recorder&&recorder.state!=='inactive')recorder.stop();toast(err.message||'No se pudo extraer el audio.');}finally{cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());btn.disabled=false;btn.textContent='♫ Extraer audio del video';}});
 
