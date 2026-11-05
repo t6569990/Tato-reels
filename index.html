@@ -305,6 +305,11 @@ html,body,#app{background:#050407;color:#f5f1f5}
 .editor-toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:100%;padding:9px;margin:0 0 14px;border:1px solid light-dark(#E8E3EE,#302B3D);border-radius:15px;background:light-dark(#FFFFFF,#171521);position:relative;z-index:12}
 .editor-tool{min-width:0;min-height:42px;padding:8px 5px;border:1px solid transparent;border-radius:10px;background:transparent;color:inherit;font-size:11px;font-weight:750;white-space:normal;overflow-wrap:anywhere}
 .editor-tool.active{background:var(--site-primary);color:#fff}
+ .editor-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 12px;width:100%}
+ .editor-shortcut{min-width:0;min-height:42px;padding:9px 7px;border:1px solid #d77a22;border-radius:11px;background:linear-gradient(135deg,#ffb34d,#f08a24);color:#241407;font-size:11px;font-weight:850;white-space:normal;overflow-wrap:anywhere}
+ .editor-shortcut:disabled{opacity:.55;cursor:wait}
+ .editor-tool-panes{width:100%;min-width:0}
+ @media(max-width:720px){.editor-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.editor-shortcut{min-height:39px;font-size:10px;padding:7px 4px}.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .creator{gap:0}
 .floating-stage{position:relative;isolation:isolate;width:100%;min-height:850px;margin:0 0 20px;border:1px dashed light-dark(#D8D0E3,#393247);border-radius:18px;background:light-dark(#F8F6FB,#0B0A10);overflow:hidden;contain:layout paint}
 .floating-stage:before{content:"ÁREA DE VISTA PREVIA · MUEVE Y ACOMODA";position:absolute;top:12px;left:16px;font-size:10px;letter-spacing:.08em;color:light-dark(#93899F,#827990);pointer-events:none}
@@ -375,7 +380,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <nav class="editor-toolbar" aria-label="Herramientas del editor">
-      <button class="editor-tool active" data-pane="video">🎬 Video</button><button class="editor-tool" data-pane="text">✍️ Texto</button><button class="editor-tool" data-pane="music">🎵 Música</button><button class="editor-tool" data-pane="image">🖼️ Imagen</button><button class="editor-tool" data-pane="style">🎨 Estilo y formato</button><button class="editor-tool" data-pane="sharepublish">🔗 Compartir y publicar</button>
+      <button class="editor-tool active" data-pane="video">🎬 Video</button><button class="editor-tool" data-pane="text">✍️ Texto</button><button class="editor-tool" data-pane="music">🎵 Música</button><button class="editor-tool" data-pane="image">🖼️ Imagen</button><button class="editor-tool" data-pane="format">📐 Formato</button><button class="editor-tool" data-pane="explore">🌐 Explorar</button><button class="editor-tool" data-pane="share">🔗 Compartir</button><button class="editor-tool" data-pane="publish">📣 Publicar</button>
     </nav>
     <div class="creator">
       <section class="preview-shell">
@@ -402,8 +407,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
           <div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:10px">Tus videos y fotografías se procesan localmente en este prototipo.</div>
         </div>
         <div class="panel">
-          <h3>🎞️ Unir varios clips</h3>
-          <div class="upload-zone"><b>Agrega más videos</b><span>Selecciona varios archivos para crear un solo Reel.</span><div style="margin-top:10px"><button class="secondary" id="addClipsBtn">Agregar clips</button></div><input id="clipsInput" type="file" accept="video/*" multiple hidden></div>
+          <h3>🎞️ SECUENCIA DE REELS</h3>
+          <div class="upload-zone"><b>Agrega más videos</b><span>Combina varios clips y organiza tu Reel en la línea de tiempo.</span><div style="margin-top:10px"><button class="secondary" id="addClipsBtn">Agregar clips</button></div><input id="clipsInput" type="file" accept="video/*" multiple hidden></div>
           <div class="clip-list" id="clipList"><div class="file-note">Aún no agregas clips adicionales.</div></div>
           <button class="primary" id="combineBtn" style="margin-top:10px">Crear secuencia de clips</button>
           <div class="file-note" id="sequenceNote">Crea una secuencia editable dentro de Tato Reels. No se descarga ni se exporta ningún archivo.</div>
@@ -532,20 +537,37 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
  creator.insertBefore(stage,preview);stage.append(preview,trim);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
- const paneNames=['video','text','music','image','style','sharepublish'],panes={};
- paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;panes[name]=p;editor.append(p);});
- const cards=[...editor.children].filter(el=>el.classList.contains('panel')||el.classList.contains('export-progress')||el.tagName==='DIV');
+ const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
+ const paneWrap=document.createElement('div');paneWrap.className='editor-tool-panes';
+ paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;panes[name]=p;paneWrap.append(p);});
+ const timeline=editor.querySelector(':scope > .timeline-panel');
+ let photoPanel=null;
+ const photoZone=editor.querySelector('#addPhotosBtn')?.closest('.upload-zone');
+ if(photoZone){photoPanel=document.createElement('div');photoPanel.className='panel';const heading=document.createElement('h3');heading.textContent='🖼️ Imagen y fotografías';photoPanel.append(heading,photoZone);photoZone.style.marginTop='0';}
+ const cards=[...editor.querySelectorAll(':scope > .panel')];
  cards.forEach(card=>{
-   const h=card.querySelector('h3')?.textContent||'';
-   let key='video';
-   if(/Música/i.test(h))key='music';
-   else if(/Texto animado|Detalles del Reel/i.test(h))key='text';
-   else if(/Estilo de vista|Formato de descarga|^📐\s*Formato/i.test(h))key='style';
-   else if(card.querySelector('#saveBtn'))key='sharepublish';
-   else if(/Imagen/i.test(h))key='image';
-   else if(/Compartir Tato Reels|Salida a redes/i.test(h))key='sharepublish';
-   panes[key].append(card);
+  if(card===timeline)return;
+  const h=card.querySelector('h3')?.textContent||'';
+  let key='video';
+  if(/Estilo de vista/i.test(h))key='image';
+  else if(/Música/i.test(h))key='music';
+  else if(/Texto animado|Detalles del Reel/i.test(h))key='text';
+  else if(/Formato de descarga|^📐\s*Formato/i.test(h))key='format';
+  else if(/Explorar redes y biblioteca/i.test(h))key='explore';
+  else if(/Compartir Tato Reels/i.test(h))key='share';
+  else if(/Salida a redes/i.test(h))key='publish';
+  panes[key].append(card);
  });
+ if(photoPanel)panes.image.append(photoPanel);
+ editor.insertBefore(paneWrap,timeline||editor.firstChild);
+ if(timeline)editor.append(timeline);
+ const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
+ if(actionRow){
+  const shortcuts=document.createElement('div');shortcuts.className='editor-shortcuts';shortcuts.setAttribute('aria-label','Accesos directos');
+  const labels={saveBtn:'💾 Guardar borrador',exportBtn:'⬇ Exportar clip',exportSequenceBtn:'🎬 Exportar Reel',publishBtn:'📣 Preparar publicación'};
+  Object.entries(labels).forEach(([id,label])=>{const button=document.getElementById(id);if(button){button.textContent=label;button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
+  toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
+ }
  const tabs=[...toolbar.querySelectorAll('[data-pane]')];
  function activate(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.pane===name));Object.entries(panes).forEach(([k,p])=>p.classList.toggle('active',k===name));}
  tabs.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.pane)));
@@ -887,65 +909,6 @@ $('importInspirationFiles').addEventListener('click',()=>$('inspirationFiles').c
 $('inspirationFiles').addEventListener('change',async event=>{const files=Array.from(event.target.files||[]).filter(file=>file.type.startsWith('video/'));if(!files.length){event.target.value='';return;}try{for(const file of files){const id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'video-'+Date.now()+'-'+Math.random().toString(36).slice(2);await inspirationDB('put',{id,name:file.name,type:file.type,size:file.size,blob:file,addedAt:Date.now()});}toast(files.length+' video(s) guardado(s) en Mi biblioteca.');$('inspirationStatus').textContent='Archivos guardados localmente. Pulsa “Usar en editor” para incorporarlos como clips.';renderInspirationLibrary();}catch(error){toast(error.message||'No se pudieron guardar los videos.');$('inspirationStatus').textContent='No se pudo guardar en este navegador. Revisa el espacio disponible.';}finally{event.target.value='';}});
 renderInspirationLibrary();
 
-// Organiza las herramientas en el flujo normal y fija el visualizador arriba a la derecha.
-(function setupToolTabs(){
- const editor=document.querySelector('.editor-panel');
- if(!editor)return;
- const sidebar=document.querySelector('.sidebar');
- const preview=document.querySelector('.preview-shell');
-   const trim=document.querySelector('.trim-panel');
- const panels=Array.from(editor.querySelectorAll(':scope > .panel'));
- const timeline=panels.find(p=>p.querySelector('#timelineTrack'));
- const groups=[
-  {id:'video',label:'🎬 Video',match:['Tu video','Unir varios clips']},
-  {id:'text',label:'✍️ Texto',match:['Detalles del Reel','Texto animado']},
-  {id:'music',label:'🎵 Música',match:['Música de fondo']},
-  {id:'image',label:'🖼️ Imagen',match:['Estilo de vista']},
-  {id:'format',label:'📐 Formato',match:['Formato','Formato de descarga']},
-  {id:'explore',label:'🌐 Explorar',match:['Explorar redes y biblioteca']},
-  {id:'share',label:'🔗 Compartir',match:['Compartir Tato Reels']},
-  {id:'publish',label:'📣 Publicar',match:['Salida a redes sociales']}
- ];
- const tabs=document.createElement('nav');tabs.className='tool-tabs';tabs.setAttribute('aria-label','Familias de herramientas');
- const panes=document.createElement('div');
- groups.forEach((group,index)=>{
-  group.pane=document.createElement('section');group.pane.className='tool-pane'+(index===0?' active':'');group.pane.dataset.pane=group.id;panes.append(group.pane);
-  const tab=document.createElement('button');tab.type='button';tab.className='tool-tab'+(index===0?' active':'');tab.textContent=group.label;tab.dataset.tab=group.id;tabs.append(tab);
- });
- panels.forEach(panel=>{
-  if(panel===timeline)return;
-  const title=panel.querySelector('h3')?.textContent||'';
-  const group=groups.find(g=>g.match.some(m=>title.includes(m)));
-  if(group)group.pane.append(panel);
- });
- if(trim)groups[0].pane.append(trim);
- const publishGroup=groups.find(group=>group.id==='publish');
- const publishAction=document.getElementById('publishBtn');
- if(publishGroup&&publishAction){publishAction.classList.add('primary');publishAction.textContent='Preparar publicación ↗';publishGroup.pane.append(publishAction);}
- const footer=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
- tabs.classList.add('tool-tabs');
- panes.classList.add('tool-panes');
- if(timeline){timeline.classList.add('timeline-panel');}
- editor.insertBefore(tabs,footer||null);
- editor.insertBefore(panes,footer||null);
- tabs.querySelectorAll('.tool-tab').forEach(tab=>tab.addEventListener('click',()=>{
-  tabs.querySelectorAll('.tool-tab').forEach(t=>t.classList.toggle('active',t===tab));
-  panes.querySelectorAll('.tool-pane').forEach(p=>p.classList.toggle('active',p.dataset.pane===tab.dataset.tab));
- }));
- groups.forEach((group,index)=>{
-  const row=document.createElement('div');row.className='tool-next-row';
-  const next=document.createElement('button');next.type='button';next.className='primary tool-next';
-  next.textContent=index===groups.length-1?'Volver al inicio ↑':'Siguiente herramienta →';
-  next.addEventListener('click',()=>{
-   const nextIndex=index===groups.length-1?0:index+1;
-   const target=groups[nextIndex];
-   tabs.querySelectorAll('.tool-tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.tab===target.id));
-   panes.querySelectorAll('.tool-pane').forEach(pane=>pane.classList.toggle('active',pane.dataset.pane===target.id));
-   tabs.scrollIntoView({behavior:'smooth',block:'nearest'});
-  });
-  row.append(next);group.pane.append(row);
- });
-})();
 renderTimeline();
 
 /* Economía inicial gratuita: Banco de Monedas Tato */
