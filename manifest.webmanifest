@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "Tato Reels",
+  "short_name": "Tato Reels",
+  "description": "Crea y edita tus Reels con Tato Reels.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0D0C13",
+  "theme_color": "#10104c",
+  "icons": [
+    {
+      "src": "assets/tato-reels-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
