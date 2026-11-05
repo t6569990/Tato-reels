@@ -329,7 +329,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
 </style>
 </head>
 <body>
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginEmail">CORREO ELECTRÓNICO</label><input id="loginEmail" type="email" autocomplete="email" maxlength="254" placeholder="tu@correo.com" required><label for="loginPass">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPass" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Tu cuenta se guarda de forma segura y podrás acceder desde distintos dispositivos.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USER</label><input id="loginUser" type="text" autocomplete="username" maxlength="30" placeholder="Ej. Tato 007" required><button class="login-main" type="submit">SIGN IN</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Tu nombre se guarda en este dispositivo.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 10 6-10 6z"/></svg></div>Tato <span style="color:#A98AEF">Reels</span></div>
@@ -471,56 +471,26 @@ html,body,#app{background:#050407;color:#f5f1f5}
 <script>
 const $ = id => document.getElementById(id);
 const APP_PUBLIC_URL='https://tato-reels.t6569990.workers.dev';
-let registerMode=false;
 function showAuthError(message){$('authError').textContent=message||'';}
-function enterApp(user){$('loginScreen').style.display='none';$('app').classList.add('authenticated');}
-async function api(path,data,method='POST'){
-  const response=await fetch(path,{method,credentials:'same-origin',headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined});
-  let result={};try{result=await response.json();}catch(_){}
-  if(!response.ok)throw new Error(result.error||'No se pudo completar la solicitud. Inténtalo de nuevo.');
-  return result;
+function enterApp(user){
+  $('loginScreen').style.display='none';
+  $('app').classList.add('authenticated');
+  const avatar=document.querySelector('.topbar .avatar');
+  if(avatar)avatar.textContent=(user||'T').trim().charAt(0).toUpperCase();
 }
-$('togglePassword').addEventListener('click',()=>{const field=$('loginPass');const showing=field.type==='password';field.type=showing?'text':'password';$('togglePassword').textContent=showing?'🙈':'👁';$('togglePassword').setAttribute('aria-label',showing?'Ocultar contraseña':'Mostrar contraseña');$('togglePassword').title=showing?'Ocultar contraseña':'Mostrar contraseña';});
-$('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('.login-main').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('loginPass').autocomplete=registerMode?'new-password':'current-password';$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';showAuthError('');});
-$('forgotPassword').addEventListener('click',async()=>{
-  const email=$('loginEmail').value.trim().toLowerCase();
-  if(!email){showAuthError('Escribe primero el correo de tu cuenta.');$('loginEmail').focus();return;}
-  showAuthError('Enviando solicitud…');
-  try{const result=await api('/api/forgot-password',{email});showAuthError(result.message||'Si el correo está registrado, recibirás un enlace para recuperar tu cuenta.');}
-  catch(error){showAuthError(error.message);}
-});
-$('loginForm').addEventListener('submit',async e=>{
+try{
+  const savedUser=localStorage.getItem('tatoReelsUser');
+  if(savedUser)$('loginUser').value=savedUser;
+}catch(_){}
+$('loginForm').addEventListener('submit',e=>{
   e.preventDefault();
-  const email=$('loginEmail').value.trim().toLowerCase();
-  const password=$('loginPass').value;
-  showAuthError(registerMode?'Creando tu cuenta…':'Verificando tus datos…');
-  $('loginForm').querySelector('.login-main').disabled=true;
-  try{
-    const result=await api(registerMode?'/api/register':'/api/login',{email,password});
-    showAuthError('');
-    enterApp(result.user.email);
-  }catch(error){showAuthError(error.message);}
-  finally{$('loginForm').querySelector('.login-main').disabled=false;}
+  const user=$('loginUser').value.trim();
+  if(!user){showAuthError('Escribe tu nombre para continuar.');return;}
+  if(user.length>30){showAuthError('Usa un nombre de hasta 30 caracteres.');return;}
+  try{localStorage.setItem('tatoReelsUser',user);}catch(_){}
+  showAuthError('');
+  enterApp(user);
 });
-async function checkExistingSession(){
-  try{const result=await api('/api/me',null,'GET');if(result.authenticated)enterApp(result.user.email);}
-  catch(_){}
-}
-async function handlePasswordReset(){
-  const params=new URLSearchParams(location.search);
-  const token=params.get('reset');
-  if(!token)return;
-  const next=prompt('Crea tu nueva contraseña (mínimo 8 caracteres):');
-  if(next===null)return;
-  if(next.length<8||next.length>128){showAuthError('La contraseña debe tener entre 8 y 128 caracteres.');return;}
-  const confirmPassword=prompt('Escribe otra vez la nueva contraseña:');
-  if(confirmPassword===null)return;
-  if(next!==confirmPassword){showAuthError('Las contraseñas no coinciden.');return;}
-  try{const result=await api('/api/reset-password',{token,password:next});history.replaceState({},'',location.pathname);showAuthError(result.message||'Contraseña actualizada. Ya puedes iniciar sesión.');}
-  catch(error){showAuthError(error.message);}
-}
-checkExistingSession();
-handlePasswordReset();
 
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
