@@ -444,6 +444,16 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  .editor-tool-pane[data-pane="video"].active{gap:6px!important}
  .editor-tool-pane[data-pane="video"]>.panel{padding:8px 6px!important}
 }
+
+/* Selector de área: visualizador y carga se muestran por separado */
+.workspace-switch{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;width:100%;margin:0 auto 14px;padding:9px;border:1px solid light-dark(#E8E3EE,#302B3D);border-radius:14px;background:light-dark(#FFFFFF,#171521)}
+.workspace-switch-btn{flex:1 1 220px;max-width:320px;min-height:42px;padding:10px 14px;border:1px solid light-dark(#E2D9EE,#3B334D);border-radius:10px;background:light-dark(#F6F2FB,#211C2C);color:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.workspace-switch-btn.active{background:var(--site-primary);border-color:var(--site-primary);color:#fff;box-shadow:0 6px 16px #6c3ce833}
+.creator.workspace-mode-preview .editor-tool-pane[data-pane="video"]{display:none!important}
+.creator.workspace-mode-add .floating-stage{display:none!important}
+.floating-stage{min-height:740px}
+.floating-stage:before{content:"VISUALIZADOR · VISTA PREVIA DEL REEL"}
+@media(max-width:720px){.workspace-switch{gap:7px;padding:7px}.workspace-switch-btn{flex-basis:100%;max-width:none;min-height:40px;font-size:11px}.floating-stage{min-height:760px}}
 </style>
 </head>
 <body>
@@ -666,7 +676,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   else if(/Salida a redes/i.test(h))key='publish';
   panes[key].append(card);
  });
- if(photoPanel)panes.image.append(photoPanel);
+ if(photoPanel)panes.video.append(photoPanel);
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline)editor.append(timeline);
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
@@ -676,10 +686,23 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   Object.entries(labels).forEach(([id,label])=>{const button=document.getElementById(id);if(button){button.textContent=label;button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
+ const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
+ const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
+ const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
+ switchBar.append(previewSwitch,addSwitch);creator.insertBefore(switchBar,stage);
  const tabs=[...toolbar.querySelectorAll('[data-pane]')];
  function activate(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.pane===name));Object.entries(panes).forEach(([k,p])=>p.classList.toggle('active',k===name));}
- tabs.forEach(b=>b.addEventListener('click',()=>activate(b.dataset.pane)));
- activate('video');
+ function setWorkspace(mode){
+  const adding=mode==='add';
+  creator.classList.toggle('workspace-mode-add',adding);
+  creator.classList.toggle('workspace-mode-preview',!adding);
+  previewSwitch.classList.toggle('active',!adding);addSwitch.classList.toggle('active',adding);
+  previewSwitch.setAttribute('aria-pressed',String(!adding));addSwitch.setAttribute('aria-pressed',String(adding));
+ }
+ previewSwitch.addEventListener('click',()=>{activate('video');setWorkspace('preview');stage.scrollIntoView({behavior:'smooth',block:'start'});});
+ addSwitch.addEventListener('click',()=>{activate('video');setWorkspace('add');panes.video.scrollIntoView({behavior:'smooth',block:'start'});});
+ tabs.forEach(b=>b.addEventListener('click',()=>{const name=b.dataset.pane;activate(name);setWorkspace(name==='video'?'add':'preview');}));
+ activate('video');setWorkspace('preview');
  let moving=false,resizing=false,startX=0,startY=0,startLeft=0,startTop=0,startW=0,startH=0;
  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
  function begin(e,mode){e.preventDefault();e.stopPropagation();const r=preview.getBoundingClientRect(),b=stage.getBoundingClientRect();moving=mode==='move';resizing=mode==='resize';startX=e.clientX;startY=e.clientY;startLeft=r.left-b.left;startTop=r.top-b.top;startW=r.width;startH=r.height;(mode==='resize'?handle:preview).setPointerCapture?.(e.pointerId);preview.classList.toggle('dragging',moving);}
