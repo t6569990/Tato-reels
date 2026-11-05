@@ -326,7 +326,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
 .settings-window{width:min(100%,760px);max-height:min(90vh,900px);overflow:auto;background:#111019;border:1px solid #393044;border-radius:22px;padding:22px;color:#f5f1f5;box-shadow:0 24px 80px #0009}
 .settings-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}.settings-head h2{font-size:21px;margin:0}.settings-close{border:1px solid #45394f;border-radius:10px;background:#211b2a;color:#fff;padding:9px 12px}
 .settings-intro{color:#b9aab7;font-size:12px;line-height:1.6;margin:7px 0 17px}
-.settings-list{display:grid;gap:8px}.settings-row{display:flex;align-items:center;gap:13px;width:100%;padding:14px;border:1px solid #30283a;border-radius:14px;background:#171420;color:#f5f1f5;text-align:left}.settings-row:active{background:#241b31}.settings-icon{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:12px;background:#2a2038;font-size:19px}.settings-copy{flex:1;min-width:0}.settings-copy b{display:block;font-size:13px}.settings-copy small{display:block;color:#b9aab7;font-size:11px;line-height:1.4;margin-top:3px}.settings-arrow{color:#a99ab4;font-size:18px}.settings-detail{display:none;margin-top:12px;padding:16px;border:1px solid #393044;border-radius:14px;background:#171420}.settings-detail.active{display:block}.settings-detail h3{font-size:14px;margin:0 0 9px}.settings-detail p{font-size:12px;line-height:1.65;color:#c8bfcc;margin:7px 0}.settings-detail .secondary{margin:5px 5px 0 0}.settings-switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;font-size:12px}.settings-switch input{width:19px;height:19px;accent-color:#e50920}
+.settings-list{display:grid;gap:8px}.settings-row{display:flex;align-items:center;gap:13px;width:100%;padding:14px;border:1px solid #30283a;border-radius:14px;background:#171420;color:#f5f1f5;text-align:left}.settings-row:active{background:#241b31}.settings-row[aria-expanded="true"]{border-color:#9875ea;background:#241b31}.settings-row:focus-visible,.settings-close:focus-visible{outline:3px solid #c5a7ff;outline-offset:3px}.settings-icon{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:12px;background:#2a2038;font-size:19px}.settings-copy{flex:1;min-width:0}.settings-copy b{display:block;font-size:13px}.settings-copy small{display:block;color:#b9aab7;font-size:11px;line-height:1.4;margin-top:3px}.settings-arrow{color:#a99ab4;font-size:18px}.settings-detail{display:none;margin-top:12px;padding:16px;border:1px solid #393044;border-radius:14px;background:#171420}.settings-detail.active{display:block}.settings-detail h3{font-size:14px;margin:0 0 9px}.settings-detail p{font-size:12px;line-height:1.65;color:#c8bfcc;margin:7px 0}.settings-detail .secondary{margin:5px 5px 0 0}.settings-switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;font-size:12px}.settings-switch input{width:19px;height:19px;accent-color:#e50920}
 body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-contrast .settings-window{background:#000;border-color:#fff}body.settings-high-contrast .settings-row,body.settings-high-contrast .settings-detail{background:#080808;border-color:#fff}
 @media(max-width:560px){.settings-backdrop{padding:8px;align-items:flex-end}.settings-window{max-height:94vh;border-radius:20px 20px 12px 12px;padding:16px}.settings-head h2{font-size:18px}.settings-row{padding:12px}}
 .settings-open{border:1px solid #45394f;border-radius:11px;background:#211b2a;color:#fff;width:38px;height:38px;font-size:17px;display:grid;place-items:center}.settings-open:hover{background:#30233b}@media(max-width:720px){.top-actions .settings-open{display:grid}}</style>
@@ -339,7 +339,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   <div class="top-actions"><button class="coin-wallet-trigger" id="openRewards" type="button" aria-label="Abrir Banco de Monedas"><span>🪙</span><b id="coinBalance">0</b></button><button class="pill" id="helpBtn">Centro de ayuda</button><button class="pill" id="topDraftsBtn">Borradores</button><button class="settings-open" id="openSettings" type="button" aria-label="Abrir ajustes" title="Ajustes">⚙️</button><div class="avatar">T</div></div>
 </header>
 
-<section class="settings-backdrop" id="settingsWindow" aria-hidden="true"><div class="settings-window" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-head"><h2 id="settingsTitle">⚙️ Ajustes de Tato Reels</h2><button class="settings-close" id="closeSettings" type="button">Cerrar ✕</button></div><p class="settings-intro">Configura tu experiencia. Tus herramientas de edición y tu línea de tiempo permanecen en su espacio habitual.</p><div class="settings-list">
+<section class="settings-backdrop" id="settingsWindow" aria-hidden="true"><div class="settings-window" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"><div class="settings-head"><h2 id="settingsTitle">⚙️ Ajustes de Tato Reels</h2><button class="settings-close" id="closeSettings" type="button">Cerrar ✕</button></div><p class="settings-intro">Administra tu cuenta, almacenamiento, accesibilidad y privacidad. Tus herramientas de edición y la línea de tiempo permanecen en su espacio habitual.</p><div class="settings-list">
 <button class="settings-row" type="button" data-settings-target="account"><span class="settings-icon">👤</span><span class="settings-copy"><b>Mi cuenta</b><small>Estado de acceso y perfil local</small></span><span class="settings-arrow">›</span></button>
 <button class="settings-row" type="button" data-settings-target="storage"><span class="settings-icon">📁</span><span class="settings-copy"><b>Almacenamiento y datos</b><small>Archivos, biblioteca y descargas en este dispositivo</small></span><span class="settings-arrow">›</span></button>
 <button class="settings-row" type="button" data-settings-target="accessibility"><span class="settings-icon">♿</span><span class="settings-copy"><b>Accesibilidad</b><small>Tamaño de texto y contraste</small></span><span class="settings-arrow">›</span></button>
@@ -558,26 +558,40 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 // Ajustes generales: navegación independiente del editor y sin alterar la línea de tiempo.
 (()=>{
  const modal=document.getElementById('settingsWindow');if(!modal)return;
- const open=()=>{modal.classList.add('open');modal.setAttribute('aria-hidden','false');};
- const close=()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true');};
- document.getElementById('openSettings')?.addEventListener('click',open);
- document.getElementById('mobileSettings')?.addEventListener('click',open);
- document.getElementById('closeSettings')?.addEventListener('click',close);
+ const openButtons=[document.getElementById('openSettings'),document.getElementById('mobileSettings')].filter(Boolean);
+ const closeButton=document.getElementById('closeSettings');
+ const rows=[...modal.querySelectorAll('[data-settings-target]')];
+ const panels=[...modal.querySelectorAll('[data-settings-panel]')];
+ let lastTrigger=null;
+ const open=trigger=>{lastTrigger=trigger||document.activeElement;modal.classList.add('open');modal.setAttribute('aria-hidden','false');closeButton?.focus();};
+ const close=()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true');rows.forEach(row=>row.setAttribute('aria-expanded','false'));panels.forEach(panel=>panel.classList.remove('active'));if(lastTrigger?.isConnected)lastTrigger.focus();};
+ openButtons.forEach(button=>button.addEventListener('click',()=>open(button)));
+ closeButton?.addEventListener('click',close);
  modal.addEventListener('click',event=>{if(event.target===modal)close();});
- modal.querySelectorAll('[data-settings-target]').forEach(button=>button.addEventListener('click',()=>{
+ rows.forEach(button=>{
+  button.setAttribute('aria-expanded','false');
   const target=button.dataset.settingsTarget;
-  modal.querySelectorAll('[data-settings-panel]').forEach(panel=>panel.classList.toggle('active',panel.dataset.settingsPanel===target));
- }));
+  const panel=panels.find(item=>item.dataset.settingsPanel===target);
+  if(panel){if(!panel.id)panel.id='settings-panel-'+target;button.setAttribute('aria-controls',panel.id);}
+  button.addEventListener('click',()=>{
+   const wasOpen=button.getAttribute('aria-expanded')==='true';
+   rows.forEach(row=>row.setAttribute('aria-expanded','false'));
+   panels.forEach(item=>item.classList.remove('active'));
+   if(!wasOpen&&panel){button.setAttribute('aria-expanded','true');panel.classList.add('active');panel.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  });
+ });
  const large=document.getElementById('settingsLargeText'),contrast=document.getElementById('settingsHighContrast');
- large.checked=localStorage.getItem('tatoSettingsLargeText')==='1';contrast.checked=localStorage.getItem('tatoSettingsHighContrast')==='1';
- document.body.classList.toggle('settings-large-text',large.checked);document.body.classList.toggle('settings-high-contrast',contrast.checked);
- large.addEventListener('change',()=>{document.body.classList.toggle('settings-large-text',large.checked);localStorage.setItem('tatoSettingsLargeText',large.checked?'1':'0');});
- contrast.addEventListener('change',()=>{document.body.classList.toggle('settings-high-contrast',contrast.checked);localStorage.setItem('tatoSettingsHighContrast',contrast.checked?'1':'0');});
+ if(large&&contrast){
+  large.checked=localStorage.getItem('tatoSettingsLargeText')==='1';contrast.checked=localStorage.getItem('tatoSettingsHighContrast')==='1';
+  document.body.classList.toggle('settings-large-text',large.checked);document.body.classList.toggle('settings-high-contrast',contrast.checked);
+  large.addEventListener('change',()=>{document.body.classList.toggle('settings-large-text',large.checked);localStorage.setItem('tatoSettingsLargeText',large.checked?'1':'0');});
+  contrast.addEventListener('change',()=>{document.body.classList.toggle('settings-high-contrast',contrast.checked);localStorage.setItem('tatoSettingsHighContrast',contrast.checked?'1':'0');});
+ }
  function showLegal(){close();const rewards=document.getElementById('rewardsWindow');rewards?.classList.add('open');rewards?.setAttribute('aria-hidden','false');setTimeout(()=>document.getElementById('legalTerms')?.scrollIntoView({behavior:'smooth',block:'start'}),80);}
  document.getElementById('openLegalFromSettings')?.addEventListener('click',showLegal);
  document.getElementById('openLegalAbout')?.addEventListener('click',showLegal);
  document.getElementById('settingsCommunity')?.addEventListener('click',()=>{close();document.getElementById('openRewards')?.click();});
- document.addEventListener('keydown',event=>{if(event.key==='Escape')close();});
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&modal.classList.contains('open'))close();});
 })();
 </script>
 <script>
