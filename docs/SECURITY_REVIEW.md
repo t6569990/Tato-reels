@@ -97,3 +97,14 @@ Estas comprobaciones son estáticas y acotadas al contenido de los archivos cons
 - Se comparó el bloque de `renderTimeline()` antes y después del cambio: permanece idéntico.
 
 La corrección reduce el riesgo de dejar recursos multimedia activos después de una exportación fallida, pero no demuestra por sí sola que la exportación funcione en todos los navegadores. Sigue pendiente la prueba funcional en Android y escritorio, con videos de distintas duraciones y con/sin música.
+
+
+## Revisión adicional de exportación de clips y música — 2026-11-05
+
+- Se revisó estáticamente la exportación de clip individual y la función que prepara la pista musical recortada.
+- La pista temporal ahora espera el evento de posicionamiento (`seeked`) antes de iniciar la reproducción cuando el recorte comienza después de cero.
+- La referencia a la pista musical temporal queda disponible para la limpieza final: se pausa, se libera su fuente y se detiene el flujo de captura; también se cierra el contexto de audio.
+- El ciclo de exportación ahora informa error si el video falla o si la reproducción se detiene inesperadamente antes de alcanzar el final del recorte, evitando continuar indefinidamente en ese escenario.
+- Se verificó en GitHub que estas comprobaciones están presentes y que el bloque de `renderTimeline()` no cambió.
+
+Pendiente: prueba funcional real en escritorio y Android para confirmar sincronía, audio original, mezcla musical, recortes al inicio y al final, cancelación y exportaciones con videos sin audio. La revisión estática no sustituye esas pruebas.
