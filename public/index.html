@@ -652,7 +652,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 </style>
 </head>
 <body>
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">CORREO ELECTRÓNICO</label><input id="loginUser" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="tucorreo@ejemplo.com" required><label for="loginPass">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPass" type="password" autocomplete="current-password" minlength="8" placeholder="Tu contraseña" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError"></div><p class="login-note">Las cuentas nuevas se guardan en el servicio de Tato Reels para que puedas iniciar sesión desde distintos dispositivos. Usa una contraseña única de al menos 8 caracteres. La recuperación se realiza mediante un enlace enviado a tu correo electrónico. Las cuentas de prueba creadas anteriormente en este dispositivo no se transfieren; tendrás que crear una cuenta nueva.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><img src="assets/tato-reels-icon.svg" alt="Icono de Tato Reels" style="width:42px;height:42px;border-radius:12px;object-fit:cover">Tato <span style="color:#A98AEF">Reels</span></div>
@@ -964,58 +964,17 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 <script>
 (()=>{
 const $ = id => document.getElementById(id);
-let registerMode=false;
-function enterApp(user){$('loginScreen').style.display='none';$('app').classList.add('authenticated');$('app').dataset.accountEmail=user||'';}
+function enterApp(user){$('loginScreen').style.display='none';$('app').classList.add('authenticated');$('app').dataset.username=user||'';}
 function showAuthError(message){$('authError').textContent=message||'';}
-async function authRequest(path,data={}) {
-  const response=await fetch(path,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(result.error||'No se pudo completar la solicitud. Inténtalo otra vez.');
-  return result;
-}
-$('togglePassword').addEventListener('click',()=>{const field=$('loginPass');const showing=field.type==='password';field.type=showing?'text':'password';$('togglePassword').textContent=showing?'🙈':'👁';$('togglePassword').setAttribute('aria-label',showing?'Ocultar contraseña':'Mostrar contraseña');$('togglePassword').title=showing?'Ocultar contraseña':'Mostrar contraseña';});
-$('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('.login-main').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('loginPass').setAttribute('autocomplete',registerMode?'new-password':'current-password');$('loginPass').minLength=8;$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';showAuthError(registerMode?'Crea tu cuenta con un correo válido y una contraseña de al menos 8 caracteres.':'');});
-$('forgotPassword').addEventListener('click',async()=>{
-  showAuthError('');
-  const email=($('loginUser').value||'').trim().toLowerCase()||prompt('Escribe el correo electrónico de tu cuenta:');
-  if(email===null||!email)return;
-  $('loginUser').value=email;
-  try{const result=await authRequest('/api/forgot-password',{email});showAuthError(result.message||'Si el correo está registrado, recibirás un enlace para recuperar tu contraseña.');}
-  catch(error){showAuthError(error.message);}
+const savedUsername=localStorage.getItem('tatoUsername')||'';
+$('loginUser').value=savedUsername;
+$('loginForm').addEventListener('submit',event=>{
+  event.preventDefault();
+  const username=$('loginUser').value.trim();
+  if(!username){showAuthError('Escribe tu usuario para continuar.');return;}
+  localStorage.setItem('tatoUsername',username);
+  enterApp(username);
 });
-$('loginForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const email=$('loginUser').value.trim().toLowerCase();
-  const password=$('loginPass').value;
-  showAuthError('');
-  if(!email||!password){showAuthError('Escribe tu correo electrónico y contraseña.');return;}
-  if(password.length<8){showAuthError('La contraseña debe tener al menos 8 caracteres.');return;}
-  const button=$('loginForm').querySelector('.login-main');
-  button.disabled=true;button.textContent=registerMode?'CREANDO…':'ENTRANDO…';
-  try{
-    const result=await authRequest(registerMode?'/api/register':'/api/login',{email,password});
-    enterApp(result.user?.email||email);
-  }catch(error){showAuthError(error.message);}
-  finally{button.disabled=false;button.textContent=registerMode?'CREAR CUENTA':'ENTRAR';}
-});
-async function restoreCloudSession(){
-  try{const response=await fetch('/api/me',{credentials:'same-origin',cache:'no-store'});if(!response.ok)return;const result=await response.json();if(result.authenticated&&result.user?.email)enterApp(result.user.email);}
-  catch(error){console.warn('No se pudo comprobar la sesión de Tato Reels.',error);}
-}
-async function handlePasswordResetLink(){
-  const params=new URLSearchParams(location.search),token=params.get('reset');
-  if(!token)return;
-  history.replaceState({},document.title,location.pathname);
-  const next=prompt('Crea tu nueva contraseña (mínimo 8 caracteres):');
-  if(next===null)return;
-  if(next.length<8){showAuthError('La contraseña debe tener al menos 8 caracteres. Solicita un nuevo enlace si este vence.');return;}
-  const confirmNext=prompt('Confirma tu nueva contraseña:');
-  if(confirmNext===null)return;
-  if(next!==confirmNext){showAuthError('Las contraseñas no coinciden. Solicita un nuevo enlace para intentarlo otra vez.');return;}
-  try{const result=await authRequest('/api/reset-password',{token,password:next});showAuthError(result.message||'Contraseña actualizada. Ya puedes iniciar sesión.');$('loginPass').value='';}
-  catch(error){showAuthError(error.message);}
-}
-(async()=>{await handlePasswordResetLink();await restoreCloudSession();})();
 
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
