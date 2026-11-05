@@ -1154,7 +1154,7 @@ $('exportBtn').addEventListener('click',async()=>{
   cancelAnimationFrame(raf);recorder.stop();if(exportMusic)exportMusic.pause();await finished;
   const blob=new Blob(chunks,{type:config.mime});
   showExportOptions(blob,'tato-reel.'+config.extension);
-  awardTatoCoin('Reel exportado');
+  awardTatoCoin('clip exportado');
   toast('Exportación lista en '+config.extension.toUpperCase()+'.');
  }catch(err){
   if(recorder&&recorder.state!=='inactive')recorder.stop();
@@ -1274,12 +1274,12 @@ renderTimeline();
 (()=>{
  const balanceKey='tatoReelsCoinBalance',wheelKey='tatoReelsWheel24h',stickersKey='tatoReelsStickerInventory';
  const catalog=[{id:'lol',name:'Carcajada',emoji:'😂',cost:5},{id:'wow',name:'¡Wow!',emoji:'🤯',cost:8},{id:'love',name:'Corazón',emoji:'💖',cost:10},{id:'fire',name:'Fuego',emoji:'🔥',cost:12},{id:'crown',name:'Rey del Reel',emoji:'👑',cost:18},{id:'party',name:'Fiesta',emoji:'🥳',cost:20}];
- const getBalance=()=>Math.max(0,Number(localStorage.getItem(balanceKey))||0);
+ const getBalance=()=>{const value=Number(localStorage.getItem(balanceKey));return Number.isFinite(value)?Math.max(0,Math.floor(value)):0;};
  const setBalance=value=>{localStorage.setItem(balanceKey,String(Math.max(0,Math.floor(value))));refreshWallet();};
- const inventory=()=>{try{return JSON.parse(localStorage.getItem(stickersKey)||'[]')}catch(_){return []}};
+ const inventory=()=>{try{const saved=JSON.parse(localStorage.getItem(stickersKey)||'[]');return Array.isArray(saved)?[...new Set(saved.filter(id=>catalog.some(item=>item.id===id)))]:[]}catch(_){return []}};
  function refreshWallet(){const n=getBalance();const top=document.getElementById('coinBalance'),large=document.getElementById('rewardsBalance');if(top)top.textContent=n;if(large)large.textContent=n;}
  window.awardTatoCoin=function(reason){setBalance(getBalance()+1);const status=document.getElementById('wheelStatus');if(status)status.textContent='🪙 +1 moneda por '+reason+'.';};
- function wheelState(){let s;try{s=JSON.parse(localStorage.getItem(wheelKey)||'null')}catch(_){s=null}const now=Date.now();if(!s||now>=s.resetAt){s={remaining:5,resetAt:now+86400000};localStorage.setItem(wheelKey,JSON.stringify(s));}return s;}
+ function wheelState(){let s;try{s=JSON.parse(localStorage.getItem(wheelKey)||'null')}catch(_){s=null}const now=Date.now(),valid=s&&Number.isInteger(s.remaining)&&s.remaining>=0&&s.remaining<=5&&Number.isFinite(s.resetAt)&&s.resetAt>now&&s.resetAt<=now+86400000;if(!valid){s={remaining:5,resetAt:now+86400000};localStorage.setItem(wheelKey,JSON.stringify(s));}return s;}
  function renderWheel(){const s=wheelState(),status=document.getElementById('wheelStatus'),button=document.getElementById('spinWheel');if(status)status.textContent='Te quedan '+s.remaining+' de 5 tiradas. '+(s.remaining?'Se renuevan en 24 horas desde que comenzaste.':'Vuelve cuando se renueve tu periodo.');if(button)button.disabled=s.remaining<=0;}
  function renderShop(){const shop=document.getElementById('stickerShop'),owned=inventory();if(!shop)return;shop.innerHTML='';catalog.forEach(item=>{const row=document.createElement('div');row.className='sticker-item';const label=document.createElement('span');label.textContent=item.emoji+' '+item.name+' · '+item.cost+' 🪙';const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=owned.includes(item.id)?'Desbloqueado':'Canjear';button.disabled=owned.includes(item.id)||getBalance()<item.cost;button.addEventListener('click',()=>{if(owned.includes(item.id)||getBalance()<item.cost)return;setBalance(getBalance()-item.cost);const next=inventory();next.push(item.id);localStorage.setItem(stickersKey,JSON.stringify(next));renderShop();renderOwned();document.getElementById('stickerStatus').textContent='¡Sticker desbloqueado! Ya está en Mis premios.';});row.append(label,button);shop.append(row);});}
  function renderOwned(){const target=document.getElementById('myStickers'),owned=inventory();if(target)target.textContent=owned.length?catalog.filter(x=>owned.includes(x.id)).map(x=>x.emoji+' '+x.name).join(' · '):'Todavía no has desbloqueado stickers.';}
