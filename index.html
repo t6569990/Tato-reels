@@ -297,7 +297,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
 }
 
 /* Espacio de trabajo: barra superior, escenario flotante y herramientas debajo */
-.editor-toolbar{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;width:100%;padding:9px;margin:0 0 14px;border:1px solid light-dark(#E8E3EE,#302B3D);border-radius:15px;background:light-dark(#FFFFFF,#171521);position:relative;z-index:12}
+.editor-toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:100%;padding:9px;margin:0 0 14px;border:1px solid light-dark(#E8E3EE,#302B3D);border-radius:15px;background:light-dark(#FFFFFF,#171521);position:relative;z-index:12}
 .editor-tool{min-width:0;min-height:42px;padding:8px 5px;border:1px solid transparent;border-radius:10px;background:transparent;color:inherit;font-size:11px;font-weight:750;white-space:normal;overflow-wrap:anywhere}
 .editor-tool.active{background:var(--site-primary);color:#fff}
 .creator{gap:0}
@@ -313,7 +313,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
 .editor-tool-pane>*{min-width:0;max-width:100%}
 .editor-tool-pane .panel{min-width:0;max-width:100%;overflow-wrap:anywhere}
 .editor-tool-pane input,.editor-tool-pane select,.editor-tool-pane textarea,.editor-tool-pane audio{max-width:100%}
-@media(max-width:720px){.editor-toolbar{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:7px}.editor-tool{font-size:10px;min-height:39px;padding:7px 3px}.floating-stage{min-height:760px;margin-bottom:16px}.floating-stage .preview-shell{top:42px;width:min(100% - 24px,280px)}.floating-stage .trim-panel{left:9px;right:9px;bottom:9px;padding:10px}.editor-tool-pane.active{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:720px){.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:7px}.editor-tool{font-size:10px;min-height:39px;padding:7px 3px}.floating-stage{min-height:760px;margin-bottom:16px}.floating-stage .preview-shell{top:42px;width:min(100% - 24px,280px)}.floating-stage .trim-panel{left:9px;right:9px;bottom:9px;padding:10px}.editor-tool-pane.active{grid-template-columns:minmax(0,1fr)}}
 
 </style>
 </head>
@@ -337,7 +337,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <nav class="editor-toolbar" aria-label="Herramientas del editor">
-      <button class="editor-tool active" data-pane="video">🎬 Video</button><button class="editor-tool" data-pane="text">✍️ Texto</button><button class="editor-tool" data-pane="music">🎵 Música</button><button class="editor-tool" data-pane="image">🖼️ Imagen</button><button class="editor-tool" data-pane="share">🔗 Compartir</button><button class="editor-tool" data-pane="publish">🚀 Publicar</button>
+      <button class="editor-tool active" data-pane="video">🎬 Video</button><button class="editor-tool" data-pane="text">✍️ Texto</button><button class="editor-tool" data-pane="music">🎵 Música</button><button class="editor-tool" data-pane="image">🖼️ Imagen</button><button class="editor-tool" data-pane="format">📐 Formato</button><button class="editor-tool" data-pane="style">🎨 Estilo</button><button class="editor-tool" data-pane="share">🔗 Compartir</button><button class="editor-tool" data-pane="publish">📣 Publicar</button>
     </nav>
     <div class="creator">
       <section class="preview-shell">
@@ -472,7 +472,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
  creator.insertBefore(stage,preview);stage.append(preview,trim);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
- const paneNames=['video','text','music','image','share','publish'],panes={};
+ const paneNames=['video','text','music','image','format','style','share','publish'],panes={};
  paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;panes[name]=p;editor.append(p);});
  const cards=[...editor.children].filter(el=>el.classList.contains('panel')||el.classList.contains('export-progress')||el.tagName==='DIV');
  cards.forEach(card=>{
@@ -480,7 +480,7 @@ html,body,#app{background:#050407;color:#f5f1f5}
    let key='video';
    if(/Música/i.test(h))key='music';
    else if(/Texto animado|Detalles del Reel/i.test(h))key='text';
-   else if(/Estilo de vista|Formato/i.test(h))key='image';
+   else if(/Estilo de vista/i.test(h))key='style';\n   else if(/^📐?\\s*Formato|Formato/i.test(h))key='format';\n   else if(/Imagen/i.test(h))key='image';
    else if(/Compartir Tato Reels|Salida a redes/i.test(h))key='share';
    else if(/Formato de descarga/i.test(h)||card.querySelector('#saveBtn'))key='publish';
    panes[key].append(card);
