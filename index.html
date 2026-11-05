@@ -411,10 +411,16 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   .floating-stage .preview-shell{width:min(100%,195px)!important;max-width:195px!important}
   .trim-actions{grid-template-columns:1fr}
 }
+
+/* Jerarquía visual de herramientas */
+.editor-toolbar{grid-template-columns:repeat(5,minmax(0,1fr))}
+.toolbar-group-label{grid-column:1/-1;padding:3px 5px 0;color:light-dark(#81768e,#b8a9c6);font-size:9px;font-weight:900;letter-spacing:.12em;text-align:left}
+.secondary-tools-label{margin-top:4px;padding-top:8px;border-top:1px solid light-dark(#e9e3ef,#383044)}
+@media(max-width:720px){.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))}.toolbar-group-label{font-size:9px}.secondary-tools-label{margin-top:2px}}
 </style>
 </head>
 <body>
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" autocomplete="username" maxlength="30" placeholder="Tu usuario" required><label for="loginPass">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPass" type="password" autocomplete="current-password" minlength="6" placeholder="Tu contraseña" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError"></div><p class="login-note">Cuenta de prueba local: se guarda solo en este dispositivo y no se sincroniza entre teléfonos. La contraseña se almacena en este navegador; no uses una contraseña que utilices en otros servicios. La recuperación funciona con el código que aparece al crear la cuenta, no por correo.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">CORREO ELECTRÓNICO</label><input id="loginUser" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="tucorreo@ejemplo.com" required><label for="loginPass">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPass" type="password" autocomplete="current-password" minlength="6" placeholder="Tu contraseña" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError"></div><p class="login-note">Cuenta de prueba local: se guarda solo en este dispositivo y no se sincroniza entre teléfonos. La contraseña se almacena en este navegador; no uses una contraseña que utilices en otros servicios. La recuperación funciona con el código que aparece al crear la cuenta, no por correo.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><img src="assets/tato-reels-icon.svg" alt="Icono de Tato Reels" style="width:42px;height:42px;border-radius:12px;object-fit:cover">Tato <span style="color:#A98AEF">Reels</span></div>
@@ -454,7 +460,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <nav class="editor-toolbar" aria-label="Herramientas del editor">
-      <button class="editor-tool active" data-pane="video">🎬 Video</button><button class="editor-tool" data-pane="text">✍️ Texto</button><button class="editor-tool" data-pane="music">🎵 Música</button><button class="editor-tool" data-pane="image">🖼️ Imagen</button><button class="editor-tool" data-pane="format">📐 Formato</button><button class="editor-tool" data-pane="explore">🌐 Explorar</button><button class="editor-tool" data-pane="share">🔗 Compartir</button><button class="editor-tool" data-pane="publish">📣 Publicar</button>
+      <span class="toolbar-group-label">CREAR Y EDITAR</span><button class="editor-tool active" data-pane="video">🎬 Video</button><button class="editor-tool" data-pane="image">🖼️ Imagen</button><button class="editor-tool" data-pane="text">✍️ Texto</button><button class="editor-tool" data-pane="music">🎵 Música</button><button class="editor-tool" data-pane="format">📐 Formato</button><span class="toolbar-group-label secondary-tools-label">COMPARTIR Y DESCUBRIR</span><button class="editor-tool" data-pane="explore">🌐 Explorar</button><button class="editor-tool" data-pane="share">🔗 Compartir</button><button class="editor-tool" data-pane="publish">📣 Publicar</button>
     </nav>
     <div class="creator">
       <section class="preview-shell">
@@ -708,9 +714,9 @@ $('forgotPassword').addEventListener('click',()=>{
  $('authError').textContent='';
  let account=null;try{account=JSON.parse(localStorage.getItem('tatoReelsLocalAccount')||'null');}catch(_){}
  if(!account){$('authError').textContent='No hay una cuenta registrada en este dispositivo.';return;}
- const user=prompt('Escribe tu nombre de usuario para recuperar la cuenta:');
+ const user=prompt('Escribe el correo electrónico asociado a esta cuenta:');
  if(user===null)return;
- if(user.trim().toLowerCase()!==account.user){$('authError').textContent='El usuario no coincide con esta cuenta.';return;}
+ if(user.trim().toLowerCase()!==account.user){$('authError').textContent='El correo no coincide con esta cuenta.';return;}
  if(!account.recoveryCode){$('authError').textContent='Esta cuenta se creó antes del sistema de recuperación. Inicia sesión con tu contraseña actual para generar tu código de recuperación.';return;}
  const code=prompt('Introduce tu código de recuperación (lo recibiste al crear tu cuenta):');
  if(code===null)return;
@@ -727,7 +733,7 @@ $('loginForm').addEventListener('submit',e=>{
   const pass=$('loginPass').value;
   const key='tatoReelsLocalAccount';
   $('authError').textContent='';
-  if(!user||!pass){$('authError').textContent='Escribe tu usuario y contraseña.';return;}
+  if(!user||!pass){$('authError').textContent='Escribe tu correo electrónico y contraseña.';return;}
   if(registerMode){
     if(localStorage.getItem(key)){$('authError').textContent='Ya existe una cuenta en este dispositivo. Selecciona «Ya tengo cuenta · Entrar».';return;}
     const recoveryCode=makeRecoveryCode();
@@ -739,7 +745,7 @@ $('loginForm').addEventListener('submit',e=>{
   let account=null;
   try{account=JSON.parse(localStorage.getItem(key)||'null');}catch(_){}
   if(!account){$('authError').textContent='Primero crea una cuenta en este dispositivo.';return;}
-  if(account.user!==user||account.pass!==pass){$('authError').textContent='Usuario o contraseña incorrectos.';return;}
+  if(account.user!==user||account.pass!==pass){$('authError').textContent='Correo o contraseña incorrectos.';return;}
   if(!account.recoveryCode){account.recoveryCode=makeRecoveryCode();localStorage.setItem(key,JSON.stringify(account));alert('Para proteger tu cuenta, guarda este nuevo código de recuperación:\\n\\n'+account.recoveryCode+'\\n\\nGuárdalo en un lugar seguro.');}
   enterApp(user);
 });
