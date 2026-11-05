@@ -299,6 +299,33 @@ html,body,#app{background:#050407;color:#f5f1f5}
  .creator .tool-tabs{top:245px}
 }
 
+
+/* TATO REELS · VISOR FLOTANTE ARRASTRABLE */
+.creator>.preview-shell#floatingPreview{
+ position:fixed!important;left:auto!important;right:18px!important;top:104px!important;
+ width:220px!important;max-width:calc(100vw - 24px)!important;z-index:1000!important;
+ display:flex!important;flex-direction:column!important;gap:6px!important;
+ padding:8px!important;border:1px solid #713047!important;border-radius:15px!important;
+ background:#0c0a10!important;box-shadow:0 14px 42px #000b!important;margin:0!important;
+ touch-action:auto;
+}
+#previewDragbar{display:flex;align-items:center;justify-content:space-between;gap:8px;
+ min-height:30px;padding:2px 4px;color:#ffc1cc;font-size:10px;font-weight:900;letter-spacing:.6px;
+ cursor:grab;user-select:none;touch-action:none}
+#previewDragbar:active{cursor:grabbing}
+#previewDragbar button{border:1px solid #713047;border-radius:7px;background:#24101b;color:#fff;width:28px;height:26px;font-size:18px;line-height:1}
+#floatingPreview .video-frame{width:100%!important;max-height:none!important;aspect-ratio:9/16!important}
+#floatingPreview .player-controls{display:flex!important;justify-content:space-between;gap:5px;font-size:10px;padding:5px 2px 0!important}
+#floatingPreview.is-minimized{width:auto!important;min-width:150px!important;padding:5px 8px!important}
+#floatingPreview.is-minimized .video-frame,#floatingPreview.is-minimized .player-controls{display:none!important}
+#floatingPreview.is-minimized #previewDragbar{min-height:32px}
+@media(max-width:720px){
+ .creator>.preview-shell#floatingPreview{right:10px!important;top:82px!important;width:148px!important;padding:5px!important;border-radius:12px!important}
+ #floatingPreview .video-frame{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:9/16!important}
+ #floatingPreview .player-controls{font-size:9px!important;padding:4px 1px 0!important}
+ #previewDragbar{min-height:28px;font-size:9px}
+ #previewDragbar button{width:25px;height:24px}
+}
 </style>
 </head>
 <body>
@@ -321,7 +348,8 @@ html,body,#app{background:#050407;color:#f5f1f5}
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <div class="creator">
-      <section class="preview-shell">
+      <section class="preview-shell" id="floatingPreview">
+        <div class="preview-dragbar" id="previewDragbar"><span>↕ TATO REELS · VISTA</span><button type="button" id="minimizePreview" aria-label="Minimizar visor">−</button></div>
         <div class="video-frame" id="videoFrame">
           <div class="sample-art" id="sampleArt"><div class="spark">✦</div><b>Tu próxima<br>gran historia</b><small>Empieza a crear</small></div>
           <video id="video" playsinline controls></video>
@@ -753,6 +781,30 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  });
 })();
 renderTimeline();
+
+// Visor flotante: se puede mover con mouse o dedo y minimizar.
+(()=>{
+ const panel=$('floatingPreview'),handle=$('previewDragbar'),toggle=$('minimizePreview');
+ if(!panel||!handle||!toggle)return;
+ toggle.addEventListener('click',()=>{const mini=panel.classList.toggle('is-minimized');toggle.textContent=mini?'+':'−';toggle.setAttribute('aria-label',mini?'Restaurar visor':'Minimizar visor');});
+ let dragging=false,startX=0,startY=0,originX=0,originY=0;
+ handle.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button'))return;
+  const rect=panel.getBoundingClientRect();dragging=true;startX=e.clientX;startY=e.clientY;originX=rect.left;originY=rect.top;
+  panel.style.left=rect.left+'px';panel.style.top=rect.top+'px';panel.style.right='auto';
+  handle.setPointerCapture(e.pointerId);e.preventDefault();
+ });
+ handle.addEventListener('pointermove',e=>{
+  if(!dragging)return;
+  const rect=panel.getBoundingClientRect();
+  const x=Math.max(4,Math.min(window.innerWidth-rect.width-4,originX+e.clientX-startX));
+  const y=Math.max(4,Math.min(window.innerHeight-rect.height-4,originY+e.clientY-startY));
+  panel.style.left=x+'px';panel.style.top=y+'px';
+ });
+ const stop=()=>{dragging=false;};
+ handle.addEventListener('pointerup',stop);handle.addEventListener('pointercancel',stop);
+ window.addEventListener('resize',()=>{if(!panel.style.left)return;const rect=panel.getBoundingClientRect();panel.style.left=Math.max(4,Math.min(window.innerWidth-rect.width-4,rect.left))+'px';panel.style.top=Math.max(4,Math.min(window.innerHeight-rect.height-4,rect.top))+'px';});
+})();
 </script>
 </body>
 </html>
