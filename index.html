@@ -454,6 +454,15 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .floating-stage{min-height:740px}
 .floating-stage:before{content:"VISUALIZADOR · VISTA PREVIA DEL REEL"}
 @media(max-width:720px){.workspace-switch{gap:7px;padding:7px}.workspace-switch-btn{flex-basis:100%;max-width:none;min-height:40px;font-size:11px}.floating-stage{min-height:760px}}
+
+/* Tres modos de creación: video, fotos o híbrido */
+.creation-modes-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:stretch}
+.creation-mode-card{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:12px;min-width:0;min-height:180px;padding:16px!important;border:1px solid light-dark(#ded5e9,#393044);border-radius:14px;background:light-dark(#faf8fd,#171421)}
+.creation-mode-card b{font-size:13px;line-height:1.35}
+.creation-mode-card span{font-size:11px;line-height:1.5;flex:1}
+.creation-mode-card button{width:100%;min-height:42px;white-space:normal}
+.sequence-items-panel .clip-list{max-height:230px;overflow:auto}
+@media(max-width:720px){.creation-modes-grid{grid-template-columns:minmax(0,1fr);gap:9px}.creation-mode-card{min-height:0;padding:13px!important}.creation-mode-card span{font-size:12px}}
 </style>
 </head>
 <body>
@@ -518,18 +527,35 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         <button class="primary" id="previewTrim" style="margin-top:9px">▶ Ver mi recorte</button>
       </section>
       <section class="editor-panel">
-        <div class="panel">
-          <h3>🎬 Tu video</h3>
-          <div class="upload-options-grid"><div class="upload-zone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4m-4 4 4-4 4 4M4 16v4h16v-4"/></svg><b>Sube tu video</b><span>MP4, MOV o WEBM<br>Elige un archivo de tu dispositivo</span><div style="margin-top:12px"><button class="primary" id="uploadBtn">Seleccionar video</button></div><input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden></div>
-          <div class="upload-zone"><b>📸 Agrega fotografías</b><span>JPG, PNG o WebP. Selecciona varias para crear un Reel de fotos o combinarlas con videos.</span><div style="margin-top:10px"><button class="secondary" id="addPhotosBtn" type="button">Seleccionar fotos</button></div><input id="photosInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden></div>
-          </div><div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:10px">Tus videos y fotografías se procesan localmente en este prototipo.</div>
+        <div class="panel creation-modes-panel">
+          <h3>🎞️ ELIGE CÓMO CREAR TU REEL</h3>
+          <div class="creation-modes-grid">
+            <div class="upload-zone creation-mode-card">
+              <b>🎬 SOLO VIDEO</b>
+              <span>Agrega un video desde tu dispositivo. Ideal para editar un solo clip.</span>
+              <button class="primary" id="uploadBtn" type="button">Elegir video</button>
+              <input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden>
+            </div>
+            <div class="upload-zone creation-mode-card">
+              <b>📸 SOLO FOTOS</b>
+              <span>Selecciona varias fotos JPG, PNG o WebP y crea un Reel fotográfico.</span>
+              <button class="secondary" id="addPhotosBtn" type="button">Elegir fotos</button>
+              <input id="photosInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            </div>
+            <div class="upload-zone creation-mode-card">
+              <b>🎬＋📸 HÍBRIDO</b>
+              <span>Mezcla videos y fotografías en una sola secuencia y ordénalos.</span>
+              <button class="secondary" id="addClipsBtn" type="button">Elegir videos y fotos</button>
+              <input id="clipsInput" type="file" accept="video/*,image/jpeg,image/png,image/webp" multiple hidden>
+            </div>
+          </div>
+          <div class="file-note" style="margin-top:10px">Elige uno de los tres modos. Puedes volver a agregar elementos para ampliar tu secuencia.</div>
         </div>
-        <div class="panel">
-          <h3>🎞️ SECUENCIA DE REELS</h3>
-          <div class="upload-zone"><b>Agrega videos y fotografías</b><span>Combina videos con fotos JPG, PNG o WebP y organiza todo en tu Reel.</span><div style="margin-top:10px"><button class="secondary" id="addClipsBtn">Seleccionar videos y fotos</button></div><input id="clipsInput" type="file" accept="video/*,image/jpeg,image/png,image/webp" multiple hidden></div>
-          <div class="clip-list" id="clipList"><div class="file-note">Aún no agregas clips adicionales.</div></div>
-          <button class="primary" id="combineBtn" style="margin-top:10px">Crear secuencia de videos y fotos</button>
-          <div class="file-note" id="sequenceNote">Crea una secuencia editable dentro de Tato Reels. No se descarga ni se exporta ningún archivo.</div>
+        <div class="panel sequence-items-panel">
+          <h3>📚 ELEMENTOS AGREGADOS A TU REEL</h3>
+          <div class="clip-list" id="clipList"><div class="file-note">Todavía no agregas elementos.</div></div>
+          <button class="primary" id="combineBtn" style="margin-top:10px">Crear secuencia</button>
+          <div class="file-note" id="sequenceNote">Aquí aparecerán tus videos y fotografías para organizarlos en la línea de tiempo.</div>
         </div>
         <div class="panel timeline-panel" style="grid-column:1/-1">
           <h3>🧩 Línea de tiempo</h3>
@@ -659,9 +685,6 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const paneWrap=document.createElement('div');paneWrap.className='editor-tool-panes';
  paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;panes[name]=p;paneWrap.append(p);});
  const timeline=editor.querySelector(':scope > .timeline-panel');
- let photoPanel=null;
- const photoZone=editor.querySelector('#addPhotosBtn')?.closest('.upload-zone');
- if(photoZone){photoPanel=document.createElement('div');photoPanel.className='panel';const heading=document.createElement('h3');heading.textContent='🖼️ Imagen y fotografías';photoPanel.append(heading,photoZone);photoZone.style.marginTop='0';}
  const cards=[...editor.querySelectorAll(':scope > .panel')];
  cards.forEach(card=>{
   if(card===timeline)return;
@@ -676,7 +699,6 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   else if(/Salida a redes/i.test(h))key='publish';
   panes[key].append(card);
  });
- if(photoPanel)panes.video.append(photoPanel);
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline)editor.append(timeline);
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
