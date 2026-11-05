@@ -542,6 +542,86 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 @media(max-width:380px){
  .floating-stage .preview-shell{width:min(100% - 24px,210px)!important;max-width:210px!important}
 }
+
+/* AJUSTE FINAL DE DISTRIBUCIÓN: herramientas compactas en dos columnas */
+.editor-tool-panes{width:100%;min-width:0}
+.editor-tool-pane.active{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:12px!important;
+  align-items:stretch;
+}
+.editor-tool-pane.active>.panel,
+.editor-tool-pane.active>.panel.music-panel{
+  grid-column:auto!important;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  padding:12px;
+}
+.editor-tool-pane.active .music-layout{grid-template-columns:minmax(0,1fr)!important;gap:8px}
+.editor-tool-pane.active .music-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.creation-modes-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}
+.creation-mode-card{min-width:0;min-height:0;padding:10px!important;gap:8px}
+.creation-mode-card b{font-size:11px;line-height:1.25}
+.creation-mode-card span{font-size:10px;line-height:1.35}
+.creation-mode-card button{min-height:36px;padding:7px 4px;font-size:10px}
+.editor-tool-pane.active>.panel h3{font-size:12px;line-height:1.25;overflow-wrap:anywhere}
+.editor-tool-pane.active button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.25}
+.editor-tool-pane.active input,
+.editor-tool-pane.active select,
+.editor-tool-pane.active textarea,
+.editor-tool-pane.active audio{min-width:0;max-width:100%}
+
+/* Visualizador: área suficiente y controles visibles para mouse y tacto */
+.floating-stage{min-height:850px!important}
+.floating-stage .preview-shell{touch-action:auto}
+.preview-drag-handle{display:flex!important;touch-action:none!important;cursor:grab}
+.preview-resize-handle{display:grid!important;touch-action:none!important}
+@media(max-width:720px){
+  .floating-stage{
+    display:block!important;position:relative!important;
+    height:850px!important;min-height:850px!important;
+    padding:0!important;overflow:hidden!important;contain:layout paint!important
+  }
+  .floating-stage .preview-shell{
+    position:absolute!important;top:44px!important;left:50%!important;
+    right:auto!important;bottom:auto!important;
+    transform:translateX(-50%)!important;
+    width:min(calc(100% - 24px),245px)!important;
+    max-width:245px!important;max-height:none!important;
+    margin:0!important;display:block!important;z-index:3!important
+  }
+  .preview-drag-handle{display:flex!important;min-height:34px!important}
+  .preview-resize-handle{
+    display:grid!important;right:2px!important;bottom:2px!important;
+    width:29px!important;height:29px!important;z-index:8!important
+  }
+  .floating-stage .trim-panel{
+    position:absolute!important;left:9px!important;right:9px!important;
+    bottom:9px!important;top:auto!important;width:auto!important;
+    max-width:none!important;margin:0!important;z-index:2!important
+  }
+  .editor-tool-pane.active{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;align-items:stretch!important
+  }
+  .editor-tool-pane.active>.panel{padding:9px!important;border-radius:12px}
+  .editor-tool-pane.active>.panel h3{font-size:11px!important}
+  .editor-tool-pane.active .music-panel{grid-column:auto!important}
+  .editor-tool-pane.active .music-layout{grid-template-columns:minmax(0,1fr)!important}
+  .editor-tool-pane.active .music-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .creation-modes-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .creation-mode-card{padding:9px 7px!important}
+}
+@media(max-width:360px){
+  .editor-tool-pane.active{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+  .editor-tool-pane.active>.panel{padding:7px!important}
+  .editor-tool-pane.active>.panel h3{font-size:10px!important}
+  .creation-modes-grid{gap:6px!important}
+  .creation-mode-card{padding:7px 5px!important}
+}
+
 </style>
 </head>
 <body>
