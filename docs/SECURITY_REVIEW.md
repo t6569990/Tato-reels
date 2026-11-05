@@ -76,3 +76,13 @@ La sección **Línea de tiempo** queda congelada: no cambiar su texto, estructur
 ## Estado de publicación
 
 Este documento y las correcciones indicadas pertenecen a la rama de trabajo. No se ha hecho merge a `main` ni despliegue en Cloudflare. La revisión fue estática; no se afirma que la aplicación haya superado pruebas funcionales o de seguridad.
+
+## Comprobaciones estáticas adicionales — 2026-11-05
+
+- Se revisaron los identificadores del HTML: 133 identificadores, todos únicos; no se encontraron IDs duplicados.
+- Se contrastaron las referencias realizadas mediante el helper de búsqueda por ID (`$('...')`) con el marcado: no se encontraron referencias sin elemento correspondiente.
+- Las asignaciones detectadas a `innerHTML` revisadas en esta pasada usan estructuras estáticas o contenido añadido por nodos y `textContent`; no se identificó una nueva interpolación de nombre de archivo o URL en esas asignaciones.
+- El manifiesto `manifest.webmanifest` se pudo interpretar como JSON válido.
+- Los dos recursos SVG de identidad tienen raíz SVG y no contienen etiquetas `script` ni `foreignObject`, ni referencias `href` HTTP(S) externas en el texto revisado.
+
+Estas comprobaciones son estáticas y acotadas al contenido de los archivos consultados. No validan ejecución, compatibilidad de renderizado, comportamiento de lectores de pantalla, recursos servidos por el hosting ni seguridad integral del navegador.
