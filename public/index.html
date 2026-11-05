@@ -652,7 +652,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 </style>
 </head>
 <body>
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">CORREO ELECTRÓNICO</label><input id="loginUser" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="tucorreo@ejemplo.com" required><label for="loginPass">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPass" type="password" autocomplete="current-password" minlength="6" placeholder="Tu contraseña" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError"></div><p class="login-note">Cuenta de prueba local: se guarda solo en este dispositivo y no se sincroniza entre teléfonos. La contraseña se almacena en este navegador; no uses una contraseña que utilices en otros servicios. La recuperación funciona con el código que aparece al crear la cuenta, no por correo.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">CORREO ELECTRÓNICO</label><input id="loginUser" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="tucorreo@ejemplo.com" required><label for="loginPass">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPass" type="password" autocomplete="current-password" minlength="8" placeholder="Tu contraseña" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">👁</button></div><button class="login-main" type="submit">ENTRAR</button></form><button class="login-switch" id="registerMode" type="button">¿Primera vez? Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">¿Olvidaste tu contraseña?</button><div class="auth-error" id="authError"></div><p class="login-note">Las cuentas se guardan de forma segura en el servicio de Tato Reels y puedes iniciar sesión desde distintos dispositivos. Usa una contraseña única de al menos 8 caracteres. La recuperación se realiza mediante un enlace enviado a tu correo electrónico.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><img src="assets/tato-reels-icon.svg" alt="Icono de Tato Reels" style="width:42px;height:42px;border-radius:12px;object-fit:cover">Tato <span style="color:#A98AEF">Reels</span></div>
@@ -963,53 +963,58 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 </script>
 <script>
 const $ = id => document.getElementById(id);
-const APP_PUBLIC_URL='https://tato-reels.t6569990.workers.dev';
-
 let registerMode=false;
-function enterApp(user){sessionStorage.setItem('tatoReelsSession',user);$('loginScreen').style.display='none';$('app').classList.add('authenticated');}
+function enterApp(user){$('loginScreen').style.display='none';$('app').classList.add('authenticated');$('app').dataset.accountEmail=user||'';}
+function showAuthError(message){$('authError').textContent=message||'';}
+async function authRequest(path,data={}) {
+  const response=await fetch(path,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(result.error||'No se pudo completar la solicitud. Inténtalo otra vez.');
+  return result;
+}
 $('togglePassword').addEventListener('click',()=>{const field=$('loginPass');const showing=field.type==='password';field.type=showing?'text':'password';$('togglePassword').textContent=showing?'🙈':'👁';$('togglePassword').setAttribute('aria-label',showing?'Ocultar contraseña':'Mostrar contraseña');$('togglePassword').title=showing?'Ocultar contraseña':'Mostrar contraseña';});
-$('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('.login-main').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';$('authError').textContent='';});
-function makeRecoveryCode(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let code='';for(let i=0;i<10;i++)code+=chars[Math.floor(Math.random()*chars.length)];return code.match(/.{1,5}/g).join('-');}
-$('forgotPassword').addEventListener('click',()=>{
- $('authError').textContent='';
- let account=null;try{account=JSON.parse(localStorage.getItem('tatoReelsLocalAccount')||'null');}catch(_){}
- if(!account){$('authError').textContent='No hay una cuenta registrada en este dispositivo.';return;}
- const user=prompt('Escribe el correo electrónico asociado a esta cuenta:');
- if(user===null)return;
- if(user.trim().toLowerCase()!==account.user){$('authError').textContent='El correo no coincide con esta cuenta.';return;}
- if(!account.recoveryCode){$('authError').textContent='Esta cuenta se creó antes del sistema de recuperación. Inicia sesión con tu contraseña actual para generar tu código de recuperación.';return;}
- const code=prompt('Introduce tu código de recuperación (lo recibiste al crear tu cuenta):');
- if(code===null)return;
- if(code.trim().toUpperCase()!==account.recoveryCode){$('authError').textContent='Código de recuperación incorrecto.';return;}
- const next=prompt('Crea una contraseña nueva (mínimo 6 caracteres):');
- if(next===null)return;
- if(next.length<6){$('authError').textContent='La contraseña debe tener al menos 6 caracteres.';return;}
- account.pass=next;localStorage.setItem('tatoReelsLocalAccount',JSON.stringify(account));
- $('loginUser').value=account.user;$('loginPass').value='';$('authError').textContent='Contraseña actualizada. Ya puedes entrar con tu nueva contraseña.';
+$('registerMode').addEventListener('click',()=>{registerMode=!registerMode;$('loginForm').querySelector('.login-main').textContent=registerMode?'CREAR CUENTA':'ENTRAR';$('loginPass').setAttribute('autocomplete',registerMode?'new-password':'current-password');$('loginPass').minLength=8;$('registerMode').textContent=registerMode?'Ya tengo cuenta · Entrar':'¿Primera vez? Crear cuenta';showAuthError(registerMode?'Crea tu cuenta con un correo válido y una contraseña de al menos 8 caracteres.':'');});
+$('forgotPassword').addEventListener('click',async()=>{
+  showAuthError('');
+  const email=($('loginUser').value||'').trim().toLowerCase()||prompt('Escribe el correo electrónico de tu cuenta:');
+  if(email===null||!email)return;
+  $('loginUser').value=email;
+  try{const result=await authRequest('/api/forgot-password',{email});showAuthError(result.message||'Si el correo está registrado, recibirás un enlace para recuperar tu contraseña.');}
+  catch(error){showAuthError(error.message);}
 });
-$('loginForm').addEventListener('submit',e=>{
+$('loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  const user=$('loginUser').value.trim().toLowerCase();
-  const pass=$('loginPass').value;
-  const key='tatoReelsLocalAccount';
-  $('authError').textContent='';
-  if(!user||!pass){$('authError').textContent='Escribe tu correo electrónico y contraseña.';return;}
-  if(registerMode){
-    if(localStorage.getItem(key)){$('authError').textContent='Ya existe una cuenta en este dispositivo. Selecciona «Ya tengo cuenta · Entrar».';return;}
-    const recoveryCode=makeRecoveryCode();
-    localStorage.setItem(key,JSON.stringify({user,pass,recoveryCode}));
-    alert('¡Cuenta creada! GUARDA ESTE CÓDIGO DE RECUPERACIÓN EN UN LUGAR SEGURO.\\n\\n'+recoveryCode+'\\n\\nLo necesitarás si olvidas tu contraseña. No se puede consultar después.');
-    enterApp(user);
-    return;
-  }
-  let account=null;
-  try{account=JSON.parse(localStorage.getItem(key)||'null');}catch(_){}
-  if(!account){$('authError').textContent='Primero crea una cuenta en este dispositivo.';return;}
-  if(account.user!==user||account.pass!==pass){$('authError').textContent='Correo o contraseña incorrectos.';return;}
-  if(!account.recoveryCode){account.recoveryCode=makeRecoveryCode();localStorage.setItem(key,JSON.stringify(account));alert('Para proteger tu cuenta, guarda este nuevo código de recuperación:\\n\\n'+account.recoveryCode+'\\n\\nGuárdalo en un lugar seguro.');}
-  enterApp(user);
+  const email=$('loginUser').value.trim().toLowerCase();
+  const password=$('loginPass').value;
+  showAuthError('');
+  if(!email||!password){showAuthError('Escribe tu correo electrónico y contraseña.');return;}
+  if(password.length<8){showAuthError('La contraseña debe tener al menos 8 caracteres.');return;}
+  const button=$('loginForm').querySelector('.login-main');
+  button.disabled=true;button.textContent=registerMode?'CREANDO…':'ENTRANDO…';
+  try{
+    const result=await authRequest(registerMode?'/api/register':'/api/login',{email,password});
+    enterApp(result.user?.email||email);
+  }catch(error){showAuthError(error.message);}
+  finally{button.disabled=false;button.textContent=registerMode?'CREAR CUENTA':'ENTRAR';}
 });
-const savedSession=sessionStorage.getItem('tatoReelsSession');if(savedSession)enterApp(savedSession);
+async function restoreCloudSession(){
+  try{const response=await fetch('/api/me',{credentials:'same-origin',cache:'no-store'});if(!response.ok)return;const result=await response.json();if(result.authenticated&&result.user?.email)enterApp(result.user.email);}
+  catch(error){console.warn('No se pudo comprobar la sesión de Tato Reels.',error);}
+}
+async function handlePasswordResetLink(){
+  const params=new URLSearchParams(location.search),token=params.get('reset');
+  if(!token)return;
+  history.replaceState({},document.title,location.pathname);
+  const next=prompt('Crea tu nueva contraseña (mínimo 8 caracteres):');
+  if(next===null)return;
+  if(next.length<8){showAuthError('La contraseña debe tener al menos 8 caracteres. Solicita un nuevo enlace si este vence.');return;}
+  const confirmNext=prompt('Confirma tu nueva contraseña:');
+  if(confirmNext===null)return;
+  if(next!==confirmNext){showAuthError('Las contraseñas no coinciden. Solicita un nuevo enlace para intentarlo otra vez.');return;}
+  try{const result=await authRequest('/api/reset-password',{token,password:next});showAuthError(result.message||'Contraseña actualizada. Ya puedes iniciar sesión.');$('loginPass').value='';}
+  catch(error){showAuthError(error.message);}
+}
+(async()=>{await handlePasswordResetLink();await restoreCloudSession();})();
 
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
