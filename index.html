@@ -695,7 +695,7 @@ $('fileInput').addEventListener('change',e=>{
  const file=e.target.files && e.target.files[0]; if(!file) return;
  if(!file.type.startsWith('video/')) { toast('Selecciona un archivo de video válido.'); return; }
  if(objectUrl) URL.revokeObjectURL(objectUrl);
- objectUrl=URL.createObjectURL(file); video.src=objectUrl; video.classList.add('show'); $('sampleArt').style.display='none'; $('videoStatus').textContent=file.name.length>22?file.name.slice(0,19)+'…':file.name; video.load(); toast('Video cargado para vista previa.');
+ objectUrl=URL.createObjectURL(file);sequenceActive=false;stopSequenceTimer();if(sequencePhoto)sequencePhoto.style.display='none';video.style.display='';video.src=objectUrl;video.classList.add('show');$('sampleArt').style.display='none'; $('videoStatus').textContent=file.name.length>22?file.name.slice(0,19)+'…':file.name; video.load(); toast('Video cargado para vista previa.');
 });
 video.addEventListener('loadedmetadata',()=>{ $('trimStart').max=video.duration; $('trimEnd').max=video.duration; $('trimEnd').value=video.duration.toFixed(1); $('durationNote').textContent='Duración total: '+video.duration.toFixed(1)+' segundos.'; });
 video.addEventListener('ended',()=>{if(sequenceActive)advanceSequence();});
