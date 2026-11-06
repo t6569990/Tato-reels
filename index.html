@@ -1224,13 +1224,14 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 </style>
 
 <style id="tato-trim-under-visualizer-card">
-/* Recorte debajo del botón Visualizador, dentro de su propia tarjeta */
-.workspace-switch-card:first-child{flex-direction:column!important;align-items:stretch!important;gap:10px!important}
-.workspace-switch-card:first-child>.trim-panel{position:relative!important;inset:auto!important;display:block!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:12px!important;box-sizing:border-box!important;border:1px solid light-dark(#E2D9EE,#40364F)!important;border-radius:11px!important;background:light-dark(#F8F6FB,#100E17)!important;z-index:1!important}
-.workspace-switch-card:first-child>.trim-panel>*{max-width:100%!important;min-width:0!important}
-.workspace-switch-card:first-child>.trim-panel input{width:100%!important;max-width:100%!important}
-.workspace-switch-card:first-child>.trim-panel button{max-width:100%!important;white-space:normal!important}
-@media(max-width:720px){.workspace-switch-card:first-child>.trim-panel{padding:9px!important;font-size:11px!important}}
+/* Visualizador, carga y recorte viven en contenedores independientes */
+.workspace-switch-card{min-width:0!important;box-sizing:border-box!important}
+.workspace-trim-card{grid-column:1/-1!important;display:block!important;width:100%!important;max-width:none!important;padding:12px!important}
+.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;display:block!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:12px!important;box-sizing:border-box!important;border:1px solid light-dark(#E2D9EE,#40364F)!important;border-radius:11px!important;background:light-dark(#F8F6FB,#100E17)!important;z-index:1!important}
+.workspace-trim-card>.trim-panel>*{max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
+.workspace-trim-card>.trim-panel input{width:100%!important;max-width:100%!important}
+.workspace-trim-card>.trim-panel button{max-width:100%!important;white-space:normal!important}
+@media(max-width:720px){.workspace-trim-card{padding:9px!important}.workspace-trim-card>.trim-panel{padding:9px!important;font-size:11px!important}}
 </style>
 </head>
 <body>
@@ -1523,7 +1524,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
- previewCard.append(previewSwitch,trim);addCard.append(addSwitch);switchBar.append(previewCard,addCard);stage.after(switchBar);
+ const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
+ previewCard.append(previewSwitch);addCard.append(addSwitch);trimCard.append(trim);switchBar.append(previewCard,addCard,trimCard);stage.after(switchBar);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.pane===name));Object.entries(panes).forEach(([k,p])=>p.classList.toggle('active',k===name));}
  function setWorkspace(mode){
