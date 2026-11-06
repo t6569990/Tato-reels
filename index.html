@@ -1128,6 +1128,71 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .creation-mode-card>span{order:2!important;display:block!important;flex:none!important;width:100%!important}
 .creation-mode-card>button{order:3!important;display:block!important;width:100%!important;margin-top:2px!important}
 </style>
+
+<style id="tato-trim-layout-isolation">
+/* Contenedor exclusivo del visualizador: no incluir aquí la herramienta de recorte */
+.floating-stage.tato-preview-container-locked{
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:12px 10px 8px!important;
+  margin:0 0 8px!important;
+  overflow:visible!important;
+  contain:layout!important;
+}
+.floating-stage.tato-preview-container-locked:before{
+  position:static!important;
+  display:block!important;
+  align-self:stretch!important;
+  margin:0 2px 8px!important;
+  content:"VISTA PREVIA" !important;
+}
+.floating-stage.tato-preview-container-locked>.preview-shell{
+  position:relative!important;
+  inset:auto!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  width:min(100%,260px)!important;
+  max-width:260px!important;
+  max-height:none!important;
+  margin:0 auto!important;
+  z-index:1!important;
+}
+/* Recorte independiente, inmediatamente después del visualizador: 2 espacios (8 px) */
+.creator>.trim-panel{
+  position:relative!important;
+  inset:auto!important;
+  width:min(100%,390px)!important;
+  max-width:390px!important;
+  margin:0 auto!important;
+  z-index:1!important;
+}
+@media(max-width:720px){
+  .floating-stage.tato-preview-container-locked{
+    height:auto!important;
+    min-height:0!important;
+    padding:10px 8px 8px!important;
+    margin-bottom:8px!important;
+  }
+  .floating-stage.tato-preview-container-locked>.preview-shell{
+    width:min(100%,245px)!important;
+    max-width:245px!important;
+  }
+  .creator>.trim-panel{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1348,7 +1413,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const creator=document.querySelector('.creator'), preview=creator?.querySelector('.preview-shell'), trim=creator?.querySelector('.trim-panel'), editor=creator?.querySelector('.editor-panel'), toolbar=document.querySelector('.editor-toolbar');
  if(!creator||!preview||!trim||!editor||!toolbar)return;
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
- creator.insertBefore(stage,preview);stage.append(preview,trim);
+ creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);stage.after(trim);
  const dragHandle=document.createElement('button');dragHandle.type='button';dragHandle.className='preview-drag-handle';dragHandle.textContent='⠿ MOVER VISUALIZADOR';dragHandle.setAttribute('aria-label','Arrastrar visualizador a otra posición');preview.insertBefore(dragHandle,preview.firstChild);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
  const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
