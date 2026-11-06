@@ -1499,27 +1499,26 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  function setFloating(enabled){
   floating=enabled;
   if(floating){
-   // El contenedor recortaba el elemento fixed: liberar sus límites al activar el modo flotante.
+   // Se mueve el contenedor completo; el visualizador y sus controles viajan juntos.
+   const r=stage.getBoundingClientRect();
+   stage.style.setProperty('position','fixed','important');
+   stage.style.setProperty('left',clamp(r.left,0,Math.max(0,window.innerWidth-r.width))+'px','important');
+   stage.style.setProperty('top',clamp(r.top,0,Math.max(0,window.innerHeight-r.height))+'px','important');
+   stage.style.setProperty('right','auto','important');
+   stage.style.setProperty('bottom','auto','important');
+   stage.style.setProperty('width',r.width+'px','important');
+   stage.style.setProperty('height',r.height+'px','important');
+   stage.style.setProperty('min-height',r.height+'px','important');
+   stage.style.setProperty('margin','0','important');
+   stage.style.setProperty('transform','none','important');
    stage.style.setProperty('contain','none','important');
    stage.style.setProperty('overflow','visible','important');
-   const r=preview.getBoundingClientRect();
-   preview.style.setProperty('position','fixed','important');
-   preview.style.setProperty('left',clamp(r.left,0,Math.max(0,window.innerWidth-r.width))+'px','important');
-   preview.style.setProperty('top',clamp(r.top,0,Math.max(0,window.innerHeight-r.height))+'px','important');
-   preview.style.setProperty('right','auto','important');
-   preview.style.setProperty('bottom','auto','important');
-   preview.style.setProperty('transform','none','important');
-   preview.style.setProperty('margin','0','important');
-   preview.style.setProperty('z-index','99999','important');
-   preview.style.setProperty('max-height','none','important');
+   stage.style.setProperty('z-index','99999','important');
    dragHandle.textContent='⠿ VISUALIZADOR FLOTANTE · ARRASTRA';
    dragHandle.setAttribute('aria-pressed','true');
    dragHandle.title='Modo flotante activo. Pulsa para fijar de nuevo.';
   }else{
-   ['position','left','top','right','bottom','transform','margin','z-index','max-height'].forEach(p=>preview.style.removeProperty(p));
-   // Al fijarlo de nuevo, restaurar exactamente las restricciones originales del contenedor.
-   stage.style.removeProperty('contain');
-   stage.style.removeProperty('overflow');
+   ['position','left','top','right','bottom','width','height','min-height','margin','transform','contain','overflow','z-index'].forEach(p=>stage.style.removeProperty(p));
    dragHandle.textContent='⠿ MOVER VISUALIZADOR';
    dragHandle.setAttribute('aria-pressed','false');
    dragHandle.title='Pulsa para activar el modo flotante y arrastrar por la página.';
@@ -1534,7 +1533,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  function begin(e,mode){
   if(mode==='move'&&!floating)return;
   e.preventDefault();e.stopPropagation();
-  const r=preview.getBoundingClientRect(),b=stage.getBoundingClientRect();
+  const r=mode==='move'?stage.getBoundingClientRect():preview.getBoundingClientRect(),b=stage.getBoundingClientRect();
   moving=mode==='move';resizing=mode==='resize';dragMoved=false;
   startX=e.clientX;startY=e.clientY;
   startLeft=floating?r.left:r.left-b.left;startTop=floating?r.top:r.top-b.top;
@@ -1548,14 +1547,19 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   if(!moving&&!resizing)return;
   if(Math.abs(e.clientX-startX)>2||Math.abs(e.clientY-startY)>2)dragMoved=true;
   if(moving){
-   const w=preview.offsetWidth,h=preview.offsetHeight;
+   const w=stage.offsetWidth,h=stage.offsetHeight;
    const maxX=floating?window.innerWidth-w:stage.clientWidth-w;
    const maxY=floating?window.innerHeight-h:stage.clientHeight-h-8;
    const x=clamp(startLeft+e.clientX-startX,0,Math.max(0,maxX));
    const y=clamp(startTop+e.clientY-startY,floating?0:34,Math.max(floating?0:34,maxY));
-   preview.style.setProperty('left',x+'px','important');
-   preview.style.setProperty('top',y+'px','important');
-   preview.style.setProperty('transform','none','important');
+   if(floating){
+    stage.style.setProperty('left',x+'px','important');
+    stage.style.setProperty('top',y+'px','important');
+   }else{
+    preview.style.setProperty('left',x+'px','important');
+    preview.style.setProperty('top',y+'px','important');
+    preview.style.setProperty('transform','none','important');
+   }
   }else{
    const maxWidth=floating?window.innerWidth-12:stage.clientWidth-12;
    preview.style.width=clamp(startW+e.clientX-startX,190,Math.min(520,maxWidth))+'px';
