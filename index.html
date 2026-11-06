@@ -785,6 +785,34 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 
 .title-color-picker{display:flex;align-items:center;gap:12px;width:100%}.title-hue-slider{appearance:none;-webkit-appearance:none;flex:1;min-width:0;width:100%;height:14px;border:1px solid #ffffff55;border-radius:999px;background:linear-gradient(90deg,#ff0000 0%,#ffff00 16.66%,#00ff00 33.33%,#00ffff 50%,#0000ff 66.66%,#ff00ff 83.33%,#ff0000 100%);cursor:pointer;touch-action:pan-y}.title-hue-slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:23px;height:23px;border:3px solid #fff;border-radius:50%;background:#ff0000;box-shadow:0 1px 5px #0009}.title-hue-slider::-moz-range-thumb{width:18px;height:18px;border:3px solid #fff;border-radius:50%;background:#ff0000;box-shadow:0 1px 5px #0009}.title-color-preview{display:inline-flex;align-items:center;justify-content:center;min-width:64px;height:30px;padding:0 9px;border:1px solid #ffffff55;border-radius:8px;background:hsl(0 100% 50%);color:#fff;font-size:10px;font-weight:800;text-shadow:0 1px 3px #000;white-space:nowrap}.title-hue-slider:focus-visible{outline:2px solid var(--site-primary);outline-offset:4px}@media(max-width:560px){.title-hue-slider{height:16px}.title-hue-slider::-webkit-slider-thumb{width:25px;height:25px}}
+
+
+/* La barra inferior replica la jerarquía visual de la barra superior */
+.editor-bottom-actions{
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;
+ width:100%!important;margin:14px 0 18px!important;padding:9px!important;
+ border:1px solid light-dark(#E8E3EE,#302B3D)!important;border-radius:15px!important;
+ background:light-dark(#FFFFFF,#171521)!important;
+}
+.editor-bottom-action{
+ display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+ min-width:0!important;min-height:58px!important;padding:8px 5px!important;
+ border:1px solid light-dark(#E8E3EE,#302B3D)!important;border-radius:10px!important;
+ background:light-dark(#F8F6FB,#211D2B)!important;color:inherit!important;
+ font-size:11px!important;font-weight:750!important;line-height:1.15!important;text-align:center!important;
+ white-space:normal!important;overflow-wrap:anywhere!important;box-shadow:none!important;
+}
+.editor-bottom-action.is-primary{background:var(--site-primary)!important;border-color:var(--site-primary)!important;color:#fff!important}
+.bottom-action-icon{display:block!important;font-size:18px!important;line-height:20px!important}
+.bottom-action-label{display:block!important;max-width:100%!important;font-size:11px!important;line-height:1.15!important}
+.editor-bottom-action:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:720px){
+ .editor-bottom-actions{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;padding:7px!important}
+ .editor-bottom-action{height:74px!important;min-height:74px!important;max-height:74px!important;padding:6px 3px!important;gap:5px!important}
+ .bottom-action-icon{font-size:21px!important;line-height:23px!important}
+ .bottom-action-label{font-size:10px!important;overflow-wrap:normal!important;word-break:normal!important}
+}
+@media(max-width:380px){.editor-bottom-actions{gap:5px!important;padding:6px!important}.editor-bottom-action{padding:5px 2px!important}.bottom-action-label{font-size:9px!important}}
 </style>
 
 <style id="tato-mobile-tool-size-fix">
@@ -1334,10 +1362,10 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  bottomActions.className='editor-bottom-actions';
  bottomActions.setAttribute('aria-label','Acciones del editor al final de la página');
  const bottomButtons=[
-  {id:'saveBtn',label:'💾 Guardar borrador',primary:false},
-  {id:'exportBtn',label:'⬇ Exportar clip',primary:true},
-  {id:'exportSequenceBtn',label:'🎬 Exportar Reel',primary:true},
-  {id:'publishBtn',label:'📣 Preparar publicación',primary:false}
+  {id:'saveBtn',icon:'💾',label:'Guardar borrador',primary:false},
+  {id:'exportBtn',icon:'⬇️',label:'Exportar clip',primary:true},
+  {id:'exportSequenceBtn',icon:'🎬',label:'Exportar Reel',primary:true},
+  {id:'publishBtn',icon:'📣',label:'Preparar publicación',primary:false}
  ];
  bottomButtons.forEach(item=>{
   const original=document.getElementById(item.id);
@@ -1345,7 +1373,9 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   const button=document.createElement('button');
   button.type='button';
   button.className='editor-bottom-action'+(item.primary?' is-primary':'');
-  button.textContent=item.label;
+  const icon=document.createElement('span');icon.className='bottom-action-icon';icon.textContent=item.icon;
+  const label=document.createElement('span');label.className='bottom-action-label';label.textContent=item.label;
+  button.append(icon,label);
   button.addEventListener('click',()=>original.click());
   bottomActions.append(button);
  });
