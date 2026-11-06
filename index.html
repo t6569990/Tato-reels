@@ -1494,14 +1494,75 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  addSwitch.addEventListener('click',()=>{activate('video');setWorkspace('add');panes.video.scrollIntoView({behavior:'smooth',block:'start'});});
  tabs.forEach(b=>b.addEventListener('click',()=>{const name=b.dataset.pane;activate(name);setWorkspace(name==='video'?'add':'preview');}));
  activate('video');setWorkspace('preview');
- let moving=false,resizing=false,startX=0,startY=0,startLeft=0,startTop=0,startW=0,startH=0;
+ let floating=false,moving=false,resizing=false,dragMoved=false,suppressToggle=false,startX=0,startY=0,startLeft=0,startTop=0,startW=0,startH=0;
  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
- function begin(e,mode){e.preventDefault();e.stopPropagation();const r=preview.getBoundingClientRect(),b=stage.getBoundingClientRect();moving=mode==='move';resizing=mode==='resize';startX=e.clientX;startY=e.clientY;startLeft=r.left-b.left;startTop=r.top-b.top;startW=r.width;startH=r.height;(mode==='resize'?handle:preview).setPointerCapture?.(e.pointerId);preview.classList.toggle('dragging',moving);}
- dragHandle.addEventListener('pointerdown',e=>begin(e,'move'));
+ function setFloating(enabled){
+  const r=preview.getBoundingClientRect();
+  floating=enabled;
+  if(floating){
+   preview.style.setProperty('position','fixed','important');
+   preview.style.setProperty('left',clamp(r.left,0,Math.max(0,window.innerWidth-r.width))+'px','important');
+   preview.style.setProperty('top',clamp(r.top,0,Math.max(0,window.innerHeight-r.height))+'px','important');
+   preview.style.setProperty('right','auto','important');
+   preview.style.setProperty('bottom','auto','important');
+   preview.style.setProperty('transform','none','important');
+   preview.style.setProperty('margin','0','important');
+   preview.style.setProperty('z-index','99999','important');
+   preview.style.setProperty('max-height','none','important');
+   dragHandle.textContent='⠿ VISUALIZADOR FLOTANTE · ARRASTRA';
+   dragHandle.setAttribute('aria-pressed','true');
+   dragHandle.title='Modo flotante activo. Pulsa para fijar de nuevo.';
+  }else{
+   ['position','left','top','right','bottom','transform','margin','z-index','max-height'].forEach(p=>preview.style.removeProperty(p));
+   dragHandle.textContent='⠿ MOVER VISUALIZADOR';
+   dragHandle.setAttribute('aria-pressed','false');
+   dragHandle.title='Pulsa para activar el modo flotante y arrastrar por la página.';
+  }
+ }
+ dragHandle.setAttribute('aria-pressed','false');
+ dragHandle.title='Pulsa para activar el modo flotante y arrastrar por la página.';
+ dragHandle.addEventListener('click',e=>{
+  if(suppressToggle){suppressToggle=false;e.preventDefault();return;}
+  setFloating(!floating);
+ });
+ function begin(e,mode){
+  if(mode==='move'&&!floating)return;
+  e.preventDefault();e.stopPropagation();
+  const r=preview.getBoundingClientRect(),b=stage.getBoundingClientRect();
+  moving=mode==='move';resizing=mode==='resize';dragMoved=false;
+  startX=e.clientX;startY=e.clientY;
+  startLeft=floating?r.left:r.left-b.left;startTop=floating?r.top:r.top-b.top;
+  startW=r.width;startH=r.height;
+  (mode==='resize'?handle:dragHandle).setPointerCapture?.(e.pointerId);
+  preview.classList.toggle('dragging',moving);
+ }
+ dragHandle.addEventListener('pointerdown',e=>{if(floating)begin(e,'move');});
  handle.addEventListener('pointerdown',e=>begin(e,'resize'));
- function move(e){if(!moving&&!resizing)return;const bounds=stage.getBoundingClientRect();if(moving){const w=preview.offsetWidth,h=preview.offsetHeight;const x=clamp(startLeft+e.clientX-startX,0,Math.max(0,bounds.width-w));const y=clamp(startTop+e.clientY-startY,34,Math.max(34,bounds.height-h-8));preview.style.left=x+'px';preview.style.top=y+'px';preview.style.transform='none';}else{preview.style.width=clamp(startW+e.clientX-startX,190,Math.min(520,bounds.width-12))+'px';preview.style.maxHeight='none';}}
- function stop(){moving=false;resizing=false;preview.classList.remove('dragging');}
- stage.addEventListener('pointermove',move);stage.addEventListener('pointerup',stop);stage.addEventListener('pointercancel',stop);
+ function move(e){
+  if(!moving&&!resizing)return;
+  if(Math.abs(e.clientX-startX)>2||Math.abs(e.clientY-startY)>2)dragMoved=true;
+  if(moving){
+   const w=preview.offsetWidth,h=preview.offsetHeight;
+   const maxX=floating?window.innerWidth-w:stage.clientWidth-w;
+   const maxY=floating?window.innerHeight-h:stage.clientHeight-h-8;
+   const x=clamp(startLeft+e.clientX-startX,0,Math.max(0,maxX));
+   const y=clamp(startTop+e.clientY-startY,floating?0:34,Math.max(floating?0:34,maxY));
+   preview.style.setProperty('left',x+'px','important');
+   preview.style.setProperty('top',y+'px','important');
+   preview.style.setProperty('transform','none','important');
+  }else{
+   const maxWidth=floating?window.innerWidth-12:stage.clientWidth-12;
+   preview.style.width=clamp(startW+e.clientX-startX,190,Math.min(520,maxWidth))+'px';
+   preview.style.maxHeight='none';
+  }
+ }
+ function stop(){
+  if(moving&&dragMoved)suppressToggle=true;
+  moving=false;resizing=false;preview.classList.remove('dragging');
+ }
+ window.addEventListener('pointermove',move);
+ window.addEventListener('pointerup',stop);
+ window.addEventListener('pointercancel',stop);
 })();
 
 // Ajustes generales: navegación independiente del editor y sin alterar la línea de tiempo.
