@@ -1320,18 +1320,31 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 <script>
 (()=>{
 const $ = id => document.getElementById(id);
-function enterApp(user){$('loginScreen').style.display='none';$('app').classList.add('authenticated');$('app').dataset.username=user||'';}
-function showAuthError(message){$('authError').textContent=message||'';}
-const savedUsername=localStorage.getItem('tatoUsername')||'Tato';
-$('loginUser').value=savedUsername;
-if(localStorage.getItem('tatoUsername')) enterApp(savedUsername);
-$('loginForm').addEventListener('submit',event=>{
-  event.preventDefault();
-  const username=$('loginUser').value.trim();
-  if(!username){showAuthError('Escribe tu usuario para continuar.');return;}
-  localStorage.setItem('tatoUsername',username);
-  enterApp(username);
-});
+const safeGet=key=>{try{return window.localStorage.getItem(key)||'';}catch(error){return '';}};
+const safeSet=(key,value)=>{try{window.localStorage.setItem(key,value);return true;}catch(error){return false;}};
+function enterApp(user){
+ const screen=$('loginScreen'),app=$('app');
+ if(!screen||!app){showAuthError('No se pudo cargar el editor. Recarga la página e inténtalo otra vez.');return;}
+ screen.style.display='none';
+ screen.setAttribute('aria-hidden','true');
+ app.classList.add('authenticated');
+ app.style.display='block';
+ app.dataset.username=user||'';
+}
+function showAuthError(message){const error=$('authError');if(error)error.textContent=message||'';}
+const input=$('loginUser'),form=$('loginForm'),button=form?.querySelector('button[type="submit"]');
+if(input)input.value=safeGet('tatoUsername')||'Tato';
+if(safeGet('tatoUsername'))enterApp(safeGet('tatoUsername'));
+function handleLogin(event){
+ if(event)event.preventDefault();
+ const username=(input?.value||'').trim();
+ if(!username){showAuthError('Escribe tu usuario para continuar.');input?.focus();return;}
+ safeSet('tatoUsername',username);
+ showAuthError('');
+ enterApp(username);
+}
+form?.addEventListener('submit',handleLogin);
+button?.addEventListener('click',event=>{event.preventDefault();handleLogin(event);});
 
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
