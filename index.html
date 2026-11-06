@@ -477,7 +477,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .workspace-switch-btn{flex:1 1 220px;max-width:320px;min-height:42px;padding:10px 14px;border:1px solid light-dark(#E2D9EE,#3B334D);border-radius:10px;background:light-dark(#F6F2FB,#211C2C);color:inherit;font-size:12px;font-weight:800;cursor:pointer}
 .workspace-switch-btn.active{background:var(--site-primary);border-color:var(--site-primary);color:#fff;box-shadow:0 6px 16px #6c3ce833}
 .creator.workspace-mode-preview .editor-tool-pane[data-pane="video"]{display:none!important}
-.creator.workspace-mode-add .floating-stage{display:none!important}
+
 .floating-stage{min-height:740px}
 .floating-stage:before{content:"VISUALIZADOR · VISTA PREVIA DEL REEL"}
 @media(max-width:720px){.workspace-switch{gap:7px;padding:7px}.workspace-switch-btn{flex-basis:100%;max-width:none;min-height:40px;font-size:11px}.floating-stage{min-height:760px}}
@@ -1004,6 +1004,30 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   }
   .editor-tool-pane[data-pane="video"] .creation-mode-card button{min-height:46px!important}
 }
+
+/* Tutorial guiado, navegación secuencial y visualizador persistente */
+.tato-tour-backdrop{position:fixed;inset:0;z-index:99990;background:rgba(7,5,15,.68);display:flex;align-items:flex-end;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.tato-tour-card{position:relative;width:min(100%,560px);max-height:min(72vh,520px);overflow:auto;padding:20px;border:1px solid #8066b5;border-radius:18px;background:light-dark(#fff,#171321);color:light-dark(#21182e,#f7f2ff);box-shadow:0 24px 80px #0009;pointer-events:auto}
+.tato-tour-card:before{content:"";position:absolute;top:-9px;left:var(--tour-arrow-left,50%);width:16px;height:16px;transform:translateX(-50%) rotate(45deg);background:light-dark(#fff,#171321);border-left:1px solid #8066b5;border-top:1px solid #8066b5}
+.tato-tour-kicker{font-size:10px;font-weight:900;letter-spacing:.12em;color:#9b7be6;text-transform:uppercase}
+.tato-tour-card h2{font-size:19px;margin:8px 0}
+.tato-tour-card p{font-size:13px;line-height:1.6;margin:0 0 14px}
+.tato-tour-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tato-tour-actions button,.tato-tour-card button{min-height:38px;padding:9px 13px;border-radius:10px;border:1px solid light-dark(#ded5eb,#514663);background:light-dark(#f6f2fb,#292236);color:inherit;font-weight:800;font-size:12px}
+.tato-tour-actions .tour-next{background:var(--site-primary);border-color:var(--site-primary);color:#fff}
+.tato-tour-dismiss{margin-right:auto}
+.tato-tour-preference{display:flex;align-items:center;gap:8px;margin:12px 0 0;font-size:11px;color:light-dark(#6e657a,#b8aec8)}
+.tato-tour-highlight{outline:3px solid #f4bd55!important;outline-offset:5px!important;box-shadow:0 0 0 8px #f4bd5533!important;border-radius:12px!important}
+.tool-navigation{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-5px 0 14px;padding:8px 10px;border:1px solid light-dark(#e8e3ee,#302b3d);border-radius:12px;background:light-dark(#fff,#171521)}
+.tool-navigation button{min-height:36px;padding:7px 12px;border:1px solid light-dark(#e2d9ee,#3b334d);border-radius:9px;background:light-dark(#f6f2fb,#211c2c);color:inherit;font-size:11px;font-weight:850}
+.tool-navigation .tool-next{background:var(--site-primary);border-color:var(--site-primary);color:#fff}
+.tool-navigation-label{font-size:10px;font-weight:800;color:light-dark(#776d85,#c2b5d4);text-align:center}
+.preview-open-bottom{display:flex;justify-content:center;width:100%;margin:12px 0 4px}
+.preview-open-bottom button,.preview-hide-btn{min-height:38px;padding:9px 14px;border:1px solid light-dark(#ded5eb,#514663);border-radius:10px;background:light-dark(#f6f2fb,#211c2c);color:inherit;font-size:11px;font-weight:850}
+.preview-hide-btn{position:absolute;top:9px;right:9px;z-index:8;background:light-dark(#fff,#211c2c)}
+.creator.preview-hidden .floating-stage{display:none!important}
+@media(max-width:560px){.tato-tour-backdrop{padding:10px}.tato-tour-card{padding:16px}.tato-tour-card h2{font-size:17px}.tool-navigation{gap:5px;padding:7px}.tool-navigation button{padding:7px 8px;font-size:10px}.tool-navigation-label{font-size:9px}}
+
 </style>
 
 </head>
@@ -1254,9 +1278,22 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
+ previewSwitch.textContent='↑ Abrir visualizador';
  switchBar.append(previewSwitch,addSwitch);creator.insertBefore(switchBar,stage);
+ const hidePreview=document.createElement('button');hidePreview.type='button';hidePreview.className='preview-hide-btn';hidePreview.textContent='Ocultar visualizador ✕';hidePreview.addEventListener('click',()=>{creator.classList.add('preview-hidden');});
+ stage.append(hidePreview);
+ const bottomPreviewBar=document.createElement('div');bottomPreviewBar.className='preview-open-bottom';
+ const bottomPreviewButton=document.createElement('button');bottomPreviewButton.type='button';bottomPreviewButton.textContent='↑ Volver al visualizador';
+ bottomPreviewBar.append(bottomPreviewButton);
  const tabs=[...toolbar.querySelectorAll('[data-pane]')];
- function activate(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.pane===name));Object.entries(panes).forEach(([k,p])=>p.classList.toggle('active',k===name));}
+ const toolNavigation=document.createElement('div');toolNavigation.className='tool-navigation';toolNavigation.setAttribute('aria-label','Navegación entre herramientas');
+ const previousTool=document.createElement('button');previousTool.type='button';previousTool.textContent='← Anterior';
+ const toolLabel=document.createElement('span');toolLabel.className='tool-navigation-label';
+ const nextTool=document.createElement('button');nextTool.type='button';nextTool.className='tool-next';nextTool.textContent='Siguiente herramienta →';
+ toolNavigation.append(previousTool,toolLabel,nextTool);toolbar.parentNode.insertBefore(toolNavigation,toolbar.nextSibling);
+ function activate(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.pane===name));Object.entries(panes).forEach(([k,p])=>p.classList.toggle('active',k===name));const index=tabs.findIndex(b=>b.dataset.pane===name);toolLabel.textContent=(index+1)+' de '+tabs.length+' · '+(tabs[index]?.textContent.trim()||'Herramienta');previousTool.disabled=index<=0;nextTool.disabled=index<0||index>=tabs.length-1;}
+ function moveTool(direction){const index=tabs.findIndex(b=>b.classList.contains('active'));const next=Math.max(0,Math.min(tabs.length-1,index+direction));if(next===index)return;const name=tabs[next].dataset.pane;activate(name);setWorkspace(name==='video'?'add':'preview');panes[name]?.scrollIntoView({behavior:'smooth',block:'nearest'});}
+ previousTool.addEventListener('click',()=>moveTool(-1));nextTool.addEventListener('click',()=>moveTool(1));
  function setWorkspace(mode){
   const adding=mode==='add';
   creator.classList.toggle('workspace-mode-add',adding);
@@ -1264,7 +1301,11 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   previewSwitch.classList.toggle('active',!adding);addSwitch.classList.toggle('active',adding);
   previewSwitch.setAttribute('aria-pressed',String(!adding));addSwitch.setAttribute('aria-pressed',String(adding));
  }
- previewSwitch.addEventListener('click',()=>{activate('video');setWorkspace('preview');stage.scrollIntoView({behavior:'smooth',block:'start'});});
+ function openVisualizer(){creator.classList.remove('preview-hidden');stage.scrollIntoView({behavior:'smooth',block:'start'});}
+ previewSwitch.addEventListener('click',()=>openVisualizer());
+ bottomPreviewButton.addEventListener('click',()=>openVisualizer());
+ editor.append(bottomPreviewBar);
+ addSwitch.addEventListener('click',()=>{activate('video');setWorkspace('add');panes.video.scrollIntoView({behavior:'smooth',block:'start'});});
  addSwitch.addEventListener('click',()=>{activate('video');setWorkspace('add');panes.video.scrollIntoView({behavior:'smooth',block:'start'});});
  tabs.forEach(b=>b.addEventListener('click',()=>{const name=b.dataset.pane;activate(name);setWorkspace(name==='video'?'add':'preview');}));
  activate('video');setWorkspace('preview');
@@ -1323,6 +1364,46 @@ const $ = id => document.getElementById(id);
 const safeGet=key=>{try{return window.localStorage.getItem(key)||'';}catch(error){return '';}};
 const safeSet=(key,value)=>{try{window.localStorage.setItem(key,value);return true;}catch(error){return false;}};
 function showAuthError(message){const error=$('authError');if(error)error.textContent=message||'';}
+let tatoTourOpen=false;
+function showTatoOnboarding(force=false){
+ if(tatoTourOpen)return;
+ if(!force&&safeGet('tatoOnboardingDisabled')==='1')return;
+ try{if(!force&&sessionStorage.getItem('tatoTourShown')==='1')return;sessionStorage.setItem('tatoTourShown','1');}catch(error){}
+ tatoTourOpen=true;
+ const steps=[
+  {selector:'.creation-modes-panel',title:'1. Elige cómo empezar',copy:'Carga un video, varias fotos o combina videos y fotografías. Puedes volver a agregar archivos para ampliar el mismo proyecto.'},
+  {selector:'.timeline-panel',title:'2. Ordena tu Reel',copy:'En la Línea de tiempo puedes seleccionar clips, cambiar su orden, recortar, duplicar o eliminar. Tus controles de edición están aquí.'},
+  {selector:'.editor-toolbar',title:'3. Dale tu estilo',copy:'Avanza entre Video, Imagen, Texto, Música y Formato. Usa Siguiente herramienta para recorrer el editor paso a paso.'},
+  {selector:'.floating-stage',title:'4. Revisa y prepara tu Reel',copy:'El visualizador permanece abierto mientras editas. Cuando termines, revisa la vista previa y usa las opciones de exportación o publicación.'}
+ ];
+ let index=0,highlighted=null;
+ const backdrop=document.createElement('div');backdrop.className='tato-tour-backdrop';backdrop.setAttribute('role','dialog');backdrop.setAttribute('aria-modal','true');backdrop.setAttribute('aria-label','Tutorial guiado de Tato Reels Creator');
+ const card=document.createElement('section');card.className='tato-tour-card';
+ const kicker=document.createElement('div');kicker.className='tato-tour-kicker';
+ const heading=document.createElement('h2');const copy=document.createElement('p');
+ const actions=document.createElement('div');actions.className='tato-tour-actions';
+ const skip=document.createElement('button');skip.type='button';skip.className='tato-tour-dismiss';skip.textContent='Omitir tutorial';
+ const previous=document.createElement('button');previous.type='button';previous.textContent='← Anterior';
+ const next=document.createElement('button');next.type='button';next.className='tour-next';next.textContent='Siguiente →';
+ const preference=document.createElement('label');preference.className='tato-tour-preference';
+ const dontShow=document.createElement('input');dontShow.type='checkbox';dontShow.checked=safeGet('tatoOnboardingDisabled')==='1';
+ const preferenceText=document.createElement('span');preferenceText.textContent='No mostrar automáticamente al entrar';
+ preference.append(dontShow,preferenceText);actions.append(skip,previous,next);card.append(kicker,heading,copy,actions,preference);backdrop.append(card);document.body.append(backdrop);
+ function closeTour(){if(highlighted)highlighted.classList.remove('tato-tour-highlight');safeSet('tatoOnboardingDisabled',dontShow.checked?'1':'0');backdrop.remove();tatoTourOpen=false;}
+ function renderStep(){
+  if(highlighted)highlighted.classList.remove('tato-tour-highlight');
+  const step=steps[index];highlighted=document.querySelector(step.selector);
+  if(highlighted){if(step.selector==='.floating-stage')document.querySelector('.creator')?.classList.remove('preview-hidden');highlighted.scrollIntoView({behavior:'smooth',block:'center'});highlighted.classList.add('tato-tour-highlight');}
+  kicker.textContent='TATO REELS CREATOR · PASO '+(index+1)+' DE '+steps.length;heading.textContent=step.title;copy.textContent=step.copy;
+  previous.disabled=index===0;next.textContent=index===steps.length-1?'Finalizar ✓':'Siguiente →';
+  requestAnimationFrame(()=>{const rect=highlighted?.getBoundingClientRect();const cardRect=card.getBoundingClientRect();let top=window.innerHeight-cardRect.height-16;if(rect){const below=rect.bottom+16;top=below+cardRect.height<window.innerHeight-10?below:Math.max(10,rect.top-cardRect.height-16);}card.style.top=Math.max(10,Math.min(top,window.innerHeight-cardRect.height-10))+'px';card.style.left='50%';card.style.transform='translateX(-50%)';});
+ }
+ skip.addEventListener('click',closeTour);previous.addEventListener('click',()=>{if(index>0){index--;renderStep();}});
+ next.addEventListener('click',()=>{if(index<steps.length-1){index++;renderStep();}else closeTour();});
+ dontShow.addEventListener('change',()=>safeSet('tatoOnboardingDisabled',dontShow.checked?'1':'0'));
+ backdrop.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();closeTour();}});
+ renderStep();
+}
 function enterApp(user){
  const screen=$('loginScreen'),app=$('app');
  if(!screen||!app){showAuthError('No se pudo abrir el editor. Tu usuario se conserva; recarga e inténtalo otra vez.');return false;}
@@ -1331,6 +1412,7 @@ function enterApp(user){
  app.style.display='block';
  screen.style.display='none';
  screen.setAttribute('aria-hidden','true');
+ setTimeout(()=>showTatoOnboarding(false),250);
  return true;
 }
 const input=$('loginUser'),form=$('loginForm');
@@ -1519,7 +1601,7 @@ function showProfile(){toast('Perfil de creador: '+($('username').value||'@cread
 ['postsNav','publishedTab','mobilePosts'].forEach(id=>$(id).addEventListener('click',showPosts));
 ['profileNav','mobileProfile'].forEach(id=>$(id).addEventListener('click',showProfile));
 $('tipsBtn').addEventListener('click',()=>toast('Tip: usa buena luz, encuadre vertical y una idea clara.'));
-$('helpBtn').addEventListener('click',()=>toast('Selecciona un video y personaliza los detalles en el panel de edición.'));
+$('helpBtn').addEventListener('click',()=>showTatoOnboarding(true));
 updateCaption();
 refreshDraftCount();
 refreshExportFormats();
