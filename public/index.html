@@ -1130,42 +1130,38 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 </style>
 
 <style id="tato-trim-layout-isolation">
-/* Contenedor exclusivo del visualizador: no incluir aquí la herramienta de recorte */
+/* Contenedor exclusivo del visualizador; conserva su arrastre y redimensionamiento */
 .floating-stage.tato-preview-container-locked{
   position:relative!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
+  display:block!important;
   width:100%!important;
+  min-height:520px!important;
   height:auto!important;
-  min-height:0!important;
-  padding:12px 10px 8px!important;
+  padding:0!important;
   margin:0 0 8px!important;
-  overflow:visible!important;
+  overflow:hidden!important;
   contain:layout!important;
 }
 .floating-stage.tato-preview-container-locked:before{
-  position:static!important;
-  display:block!important;
-  align-self:stretch!important;
-  margin:0 2px 8px!important;
+  position:absolute!important;
+  top:12px!important;
+  left:16px!important;
   content:"VISTA PREVIA" !important;
 }
 .floating-stage.tato-preview-container-locked>.preview-shell{
-  position:relative!important;
-  inset:auto!important;
-  top:auto!important;
-  left:auto!important;
-  right:auto!important;
-  bottom:auto!important;
-  transform:none!important;
-  width:min(100%,260px)!important;
+  position:absolute!important;
+  top:42px;
+  left:50%;
+  right:auto;
+  bottom:auto;
+  transform:translateX(-50%);
+  width:min(100% - 28px,260px);
   max-width:260px!important;
   max-height:none!important;
-  margin:0 auto!important;
-  z-index:1!important;
+  margin:0!important;
+  z-index:3!important;
 }
-/* Recorte independiente, inmediatamente después del visualizador: 2 espacios (8 px) */
+/* El recorte queda fuera del contenedor del visualizador, a 2 espacios (8 px) */
 .creator>.trim-panel{
   position:relative!important;
   inset:auto!important;
@@ -1176,14 +1172,17 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 @media(max-width:720px){
   .floating-stage.tato-preview-container-locked{
+    display:block!important;
+    min-height:480px!important;
     height:auto!important;
-    min-height:0!important;
-    padding:10px 8px 8px!important;
+    padding:0!important;
     margin-bottom:8px!important;
   }
   .floating-stage.tato-preview-container-locked>.preview-shell{
-    width:min(100%,245px)!important;
-    max-width:245px!important;
+    top:36px;
+    left:50%;
+    width:min(100%,220px);
+    max-width:220px!important;
   }
   .creator>.trim-panel{
     width:100%!important;
