@@ -1192,6 +1192,27 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 </style>
 
+<style id="tato-fixed-action-dock">
+/* Acciones principales siempre visibles en el borde inferior */
+.creator{padding-bottom:105px!important}
+.editor-bottom-actions{
+ position:fixed!important;left:50%!important;right:auto!important;bottom:0!important;
+ transform:translateX(-50%)!important;width:min(calc(100% - 32px),980px)!important;
+ margin:0!important;z-index:20!important;
+ box-shadow:0 -8px 28px #0009!important;
+ background:#0c0a10!important;border-color:#573044!important;
+}
+@media(max-width:720px){
+ .creator{padding-bottom:165px!important}
+ .editor-bottom-actions{
+  bottom:65px!important;width:100%!important;max-width:none!important;
+  border-radius:13px 13px 0 0!important;
+  padding:7px!important;gap:6px!important;
+  box-shadow:0 -8px 24px #000b!important;
+ }
+ .editor-bottom-action{min-height:44px!important}
+}
+</style>
 </head>
 <body>
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
