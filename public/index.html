@@ -1070,6 +1070,13 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .trim-panel .file-note{margin-top:4px;margin-bottom:4px}
 .trim-panel #previewTrim{margin-top:6px!important}
 @media(max-width:720px){.sequence-marker-wrap{display:block;margin:4px 0 0}.sequence-marker-track{height:13px}.player-controls{padding-top:3px}.trim-panel{padding:9px}}
+
+/* Modos de creación: título y descripción agrupados arriba, botón debajo */
+.creation-mode-card{display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:7px;min-height:180px}
+.creation-mode-card b{order:1;display:block;margin:0 0 2px;text-align:left}
+.creation-mode-card span{order:2;display:block;flex:1 0 auto;text-align:left}
+.creation-mode-card button{order:3;display:block;width:100%;margin-top:auto}
+@media(max-width:720px){.creation-mode-card{min-height:0;gap:6px}.creation-mode-card span{flex:0 0 auto}.creation-mode-card button{margin-top:5px}}
 </style>
 
 </head>
