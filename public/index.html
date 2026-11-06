@@ -1472,7 +1472,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const creator=document.querySelector('.creator'), preview=creator?.querySelector('.preview-shell'), trim=creator?.querySelector('.trim-panel'), editor=creator?.querySelector('.editor-panel'), toolbar=document.querySelector('.editor-toolbar');
  if(!creator||!preview||!trim||!editor||!toolbar)return;
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
- creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);stage.after(trim);toolbar.before(trim);
+ creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);stage.after(trim);
  const dragHandle=document.createElement('button');dragHandle.type='button';dragHandle.className='preview-drag-handle';dragHandle.textContent='⠿ MOVER VISUALIZADOR';dragHandle.setAttribute('aria-label','Arrastrar visualizador a otra posición');preview.insertBefore(dragHandle,preview.firstChild);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
  const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
@@ -1544,7 +1544,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);toolbar.after(trimCard);stage.after(switchBar);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.after(trimCard);stage.after(switchBar);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.pane===name));Object.entries(panes).forEach(([k,p])=>p.classList.toggle('active',k===name));}
  function setWorkspace(mode){
