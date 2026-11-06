@@ -1107,6 +1107,16 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 @media(max-width:720px){.creation-mode-card{min-height:0;gap:6px}.creation-mode-card span{flex:0 0 auto}.creation-mode-card button{margin-top:5px}}
 </style>
 
+<style id="tato-brand-and-bottom-buttons">
+/* Acciones inferiores con el mismo formato visual que los botones superiores */
+.editor-bottom-actions{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;width:100%!important;margin:0 0 14px!important;padding:9px!important;border:1px solid light-dark(#E8E3EE,#302B3D)!important;border-radius:15px!important;background:light-dark(#FFFFFF,#171521)!important}
+.editor-bottom-action{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:100%!important;min-width:0!important;height:auto!important;min-height:42px!important;max-height:none!important;padding:9px 7px!important;border:1px solid #d77a22!important;border-radius:11px!important;background:linear-gradient(135deg,#ffb34d,#f08a24)!important;color:#241407!important;font-size:11px!important;font-weight:850!important;line-height:1.2!important;text-align:center!important;white-space:normal!important;overflow-wrap:anywhere!important}
+.editor-bottom-action.is-primary{background:linear-gradient(135deg,#ffb34d,#f08a24)!important;border-color:#d77a22!important;color:#241407!important}
+.bottom-action-icon{display:inline!important;flex:0 0 auto!important;font-size:15px!important;line-height:1!important}
+.bottom-action-label{display:inline!important;max-width:100%!important;font-size:11px!important;line-height:1.2!important}
+.tato-reel-watermark{position:absolute;z-index:7;top:12px;left:50%;transform:translateX(-50%);padding:5px 9px;border:1px solid #ffffff38;border-radius:7px;background:#08070c55;color:#ffffffc9;font-size:10px;font-weight:800;letter-spacing:1.4px;line-height:1.1;white-space:nowrap;text-shadow:0 1px 4px #0009;pointer-events:none;opacity:.82}
+@media(max-width:720px){.editor-bottom-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;padding:7px!important}.editor-bottom-action{min-height:42px!important;padding:8px 5px!important;font-size:10px!important}.bottom-action-label{font-size:10px!important}.tato-reel-watermark{top:8px;padding:4px 7px;font-size:8px;letter-spacing:1.1px}}
+</style>
 </head>
 <body>
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1155,7 +1165,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
       <section class="preview-shell">
         <div class="video-frame" id="videoFrame">
           <div class="sample-art" id="sampleArt"><div class="spark">✦</div><b>Tu próxima<br>gran historia</b><small>Empieza a crear</small></div>
-          <video id="video" playsinline controls></video>
+          <video id="video" playsinline controls></video><div class="tato-reel-watermark" aria-label="Tato Reels Creator">TATO REELS CREATOR</div>
           <div class="video-overlay" id="videoOverlay"><div class="overlay-copy"><strong id="overlayName">@tato.reels</strong><p id="overlayCaption">Tu idea merece ser vista. ✨</p></div><span class="overlay-tag">9:16 · REEL</span><strong class="animated-title" id="animatedTitle" hidden></strong></div><div class="reel-sticker-layer" id="reelStickerLayer" aria-label="Stickers colocados sobre el Reel"></div>
         </div>
         <div class="sequence-marker-wrap" id="sequenceMarkerWrap" aria-label="Divisiones de la secuencia"><div class="sequence-marker-caption">DIVISIONES DE LA SECUENCIA</div><div class="sequence-marker-track" id="sequenceMarkerTrack"><span class="sequence-marker-empty">Agrega videos o fotos para ver las divisiones</span></div></div>
@@ -1668,7 +1678,7 @@ $('exportBtn').addEventListener('click',async()=>{
   const finished=new Promise(resolve=>{recorder.onstop=resolve;});
   recorder.start(250);await video.play();
   await new Promise((resolve,reject)=>{
-   const tick=()=>{if(video.error){reject(new Error('Ocurrió un error durante la reproducción del video.'));return;}watermarkCtx.fillStyle='#000';watermarkCtx.fillRect(0,0,720,1280);drawCover(watermarkCtx,video,720,1280);window.drawExportReelStickers?.(watermarkCtx);if(video.currentTime>=end||video.ended){video.pause();resolve();return;}if(video.paused){reject(new Error('La reproducción del video se detuvo antes de terminar.'));return;}raf=requestAnimationFrame(tick);};
+   const tick=()=>{if(video.error){reject(new Error('Ocurrió un error durante la reproducción del video.'));return;}watermarkCtx.fillStyle='#000';watermarkCtx.fillRect(0,0,720,1280);drawCover(watermarkCtx,video,720,1280);drawExportBrandWatermark(watermarkCtx);window.drawExportReelStickers?.(watermarkCtx);if(video.currentTime>=end||video.ended){video.pause();resolve();return;}if(video.paused){reject(new Error('La reproducción del video se detuvo antes de terminar.'));return;}raf=requestAnimationFrame(tick);};
    tick();
   });
   cancelAnimationFrame(raf);await playExportOutro(watermarkCtx);recorder.stop();if(exportMusic)exportMusic.pause();await finished;
@@ -1742,6 +1752,8 @@ $('combineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('C
 // Exporta la secuencia completa dibujando cada clip y el título sobre un canvas.
 function waitForMedia(target,event){return new Promise((resolve,reject)=>{const ok=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(new Error('No se pudo leer uno de los videos.'));};const cleanup=()=>{target.removeEventListener(event,ok);target.removeEventListener('error',fail);};target.addEventListener(event,ok,{once:true});target.addEventListener('error',fail,{once:true});});}
 function drawCover(ctx,source,width,height){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const scale=Math.max(width/sw,height/sh),dw=sw*scale,dh=sh*scale;ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);}
+function drawExportBrandWatermark(ctx){ctx.save();ctx.globalAlpha=.78;ctx.font='800 22px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';const label='TATO REELS CREATOR',x=360,y=48,w=ctx.measureText(label).width+30,h=38;ctx.fillStyle='rgba(8,7,12,.34)';ctx.fillRect(x-w/2,y-h/2,w,h);ctx.strokeStyle='rgba(255,255,255,.24)';ctx.lineWidth=1;ctx.strokeRect(x-w/2,y-h/2,w,h);ctx.fillStyle='rgba(255,255,255,.88)';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=5;ctx.fillText(label,x,y);ctx.restore();}
+
 function drawExportTitle(ctx,time){const value=$('animatedText').value.trim();if(!value)return;const duration=Math.max(1,Number($('titleDuration').value)||5);if(time>duration)return;const animation=$('titleAnimation').value;let alpha=1,offset=0,scale=1;if(animation==='fade')alpha=Math.min(1,time/0.8);if(animation==='pop'){const p=Math.min(1,time/0.8);scale=.55+.45*p;alpha=p;}if(animation==='slide'){const p=Math.min(1,time/.8);offset=(1-p)*-90;alpha=p;}if(animation==='bounce')offset=-Math.abs(Math.sin(time*5))*18;const size=Number($('titleSize').value)||28;const lines=value.split('\n');const lineHeight=size*1.15;const left=parseFloat($('animatedTitle').style.left)||50;const top=parseFloat($('animatedTitle').style.top)||50;const x=left/100*720;const y=top/100*1280;ctx.save();ctx.globalAlpha=alpha;ctx.translate(x+offset,y);ctx.scale(scale,scale);ctx.font='900 '+size*2+'px '+($('titleFont').value||'Arial,sans-serif');ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=14;ctx.fillStyle=getAnimatedTitleColor();lines.forEach((line,index)=>ctx.fillText(line,0,(index-(lines.length-1)/2)*lineHeight*2,600));ctx.restore();}
 const EXPORT_OUTRO_DURATION_MS=2500;
 let exportOutroLogoPromise=null;
@@ -1785,7 +1797,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
    }else{
     activeClip=document.createElement('video');activeClip.src=item.url;activeClip.muted=false;activeClip.playsInline=true;activeClip.preload='auto';await waitForMedia(activeClip,'loadedmetadata');end=Math.min(activeClip.duration,Number(item.end)||activeClip.duration);if(!(end>start))throw new Error('Hay un recorte inválido en '+(item.name||'un clip'));
     const source=audioContext.createMediaElementSource(activeClip);source.connect(audioOut);activeClip.currentTime=start;await waitForMedia(activeClip,'seeked');await activeClip.play();
-    await new Promise((resolve,reject)=>{const frame=()=>{if(activeClip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,activeClip,720,1280);window.drawExportReelStickers?.(ctx);const elapsed=completedDuration+(activeClip.currentTime-start);drawExportTitle(ctx,elapsed);updateProgress(totalDuration?((elapsed/totalDuration)*100):0);if(activeClip.currentTime>=end||activeClip.ended){activeClip.pause();resolve();return;}raf=requestAnimationFrame(frame);};frame();});
+    await new Promise((resolve,reject)=>{const frame=()=>{if(activeClip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,activeClip,720,1280);drawExportBrandWatermark(ctx);window.drawExportReelStickers?.(ctx);const elapsed=completedDuration+(activeClip.currentTime-start);drawExportTitle(ctx,elapsed);updateProgress(totalDuration?((elapsed/totalDuration)*100):0);if(activeClip.currentTime>=end||activeClip.ended){activeClip.pause();resolve();return;}raf=requestAnimationFrame(frame);};frame();});
     activeClip.pause();activeClip.removeAttribute('src');activeClip.load();activeClip=null;
    }
    cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);
