@@ -1454,7 +1454,7 @@ $('exportBtn').addEventListener('click',async()=>{
    video.addEventListener('seeked',onSeek,{once:true});video.addEventListener('error',onError,{once:true});
   });
   stream=video.captureStream();
-  if(musicUrl){
+  if(musicIntegrated&&musicUrl){
    audioContext=new AudioContext();
    const destination=audioContext.createMediaStreamDestination();
    destination.stream.getAudioTracks().forEach(track=>stream.addTrack(track));
