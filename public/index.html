@@ -1433,7 +1433,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const creator=document.querySelector('.creator'), preview=creator?.querySelector('.preview-shell'), trim=creator?.querySelector('.trim-panel'), editor=creator?.querySelector('.editor-panel'), toolbar=document.querySelector('.editor-toolbar');
  if(!creator||!preview||!trim||!editor||!toolbar)return;
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
- creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);stage.after(trim);
+ creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);stage.after(trim);toolbar.before(trim);
  const dragHandle=document.createElement('button');dragHandle.type='button';dragHandle.className='preview-drag-handle';dragHandle.textContent='⠿ MOVER VISUALIZADOR';dragHandle.setAttribute('aria-label','Arrastrar visualizador a otra posición');preview.insertBefore(dragHandle,preview.firstChild);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
  const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
