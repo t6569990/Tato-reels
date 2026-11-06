@@ -1397,12 +1397,48 @@ function showExportOptions(blob,filename){
  const old=document.getElementById('exportDestModal');if(old)old.remove();
  const backdrop=document.createElement('div');backdrop.id='exportDestModal';backdrop.className='export-dest-backdrop';
  const card=document.createElement('section');card.className='export-dest-card';
- card.innerHTML='<h2>🎬 Tu Reel está listo</h2><p class="export-file-name"></p><button class="export-dest-action" id="destSave"><span>📂</span><div>Elegir dónde guardar<small>Selecciona memoria interna, tarjeta SD u otra carpeta</small></div></button><button class="export-dest-action" id="destShare"><span>↗️</span><div>Compartir / publicar<small>Enviar a WhatsApp, Instagram, Facebook y otras apps</small></div></button><p class="file-note" style="margin:8px 2px 0">La ubicación depende del selector de archivos disponible en tu teléfono. Si no está disponible, Android usará Descargas.</p><button class="export-dest-close" id="destClose">Ahora no</button>';
+ card.innerHTML='<h2>🎬 Tu Reel está listo</h2><p class="export-file-name"></p><button class="export-dest-action" id="destSave"><span>📂</span><div>Elegir dónde guardar<small>Abre el selector de carpetas o descarga el archivo si tu navegador no lo admite</small></div></button><button class="export-dest-action" id="destShare"><span>↗️</span><div>Compartir / publicar<small>Abre el menú para compartir el video; si no está disponible, lo descarga para adjuntarlo manualmente</small></div></button><p class="file-note" style="margin:8px 2px 0">En algunos navegadores móviles, el video se guarda primero en Descargas. Después puedes adjuntarlo desde WhatsApp, Instagram o Facebook.</p><button class="export-dest-close" id="destClose">Ahora no</button>';
  const fileLabel=card.querySelector('.export-file-name');fileLabel.append(document.createTextNode('¿Dónde quieres guardar o enviar '));const safeFilename=document.createElement('b');safeFilename.textContent=filename;fileLabel.append(safeFilename,document.createTextNode('?'));
  backdrop.append(card);document.body.append(backdrop);
- const save=async()=>{try{if(window.showSaveFilePicker){const ext=filename.includes('.')?'.'+filename.split('.').pop():'.webm';const mime=blob.type||'application/octet-stream';const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Video de Tato Reels',accept:{[mime]:[ext]}}]});const writable=await handle.createWritable();await writable.write(blob);await writable.close();toast('Video guardado en la ubicación que elegiste.');backdrop.remove();return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),120000);toast('Archivo enviado a las descargas del dispositivo.');backdrop.remove();}catch(error){if(error.name!=='AbortError')toast('No se pudo guardar el archivo.');}};
+ const downloadFile=()=>{
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=filename;a.rel='noopener';a.style.display='none';
+  document.body.append(a);a.click();a.remove();
+  window.setTimeout(()=>URL.revokeObjectURL(url),120000);
+ };
+ const save=async()=>{
+  try{
+   if(window.isSecureContext&&typeof window.showSaveFilePicker==='function'){
+    const ext=filename.includes('.')?'.'+filename.split('.').pop():'.webm';
+    const mime=blob.type||'application/octet-stream';
+    const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Video de Tato Reels',accept:{[mime]:[ext]}}]});
+    const writable=await handle.createWritable();await writable.write(blob);await writable.close();
+    toast('Video guardado en la ubicación que elegiste.');backdrop.remove();return;
+   }
+   downloadFile();toast('Descarga iniciada. Busca el video en Descargas.');backdrop.remove();
+  }catch(error){
+   if(error.name==='AbortError')return;
+   try{downloadFile();toast('El selector no está disponible. Descarga iniciada; revisa Descargas.');backdrop.remove();}
+   catch(fallbackError){toast('No se pudo iniciar la descarga. Revisa los permisos del navegador e inténtalo otra vez.');}
+  }
+ };
  card.querySelector('#destSave').addEventListener('click',save);
- card.querySelector('#destShare').addEventListener('click',async()=>{const file=new File([blob],filename,{type:blob.type||'application/octet-stream'});try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({files:[file],title:'Mi Reel de Tato Reels',text:'Creado con Tato Reels'});backdrop.remove();}else{toast('Este dispositivo no permite compartir archivos desde la app. Usa Guardar en el dispositivo.');}}catch(error){if(error.name!=='AbortError')toast('No se pudo abrir el menú para compartir.');}});
+ card.querySelector('#destShare').addEventListener('click',async()=>{
+  const file=new File([blob],filename,{type:blob.type||'application/octet-stream'});
+  try{
+   if(typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files:[file]})){
+    await navigator.share({files:[file],title:'Mi Reel de Tato Reels',text:'Creado con Tato Reels'});
+    backdrop.remove();return;
+   }
+   downloadFile();
+   toast('Este navegador no comparte videos directamente. Descargado: ahora adjúntalo desde la app que quieras.');
+   backdrop.remove();
+  }catch(error){
+   if(error.name==='AbortError')return;
+   try{downloadFile();toast('No se pudo abrir el menú compartir. El video se descargó para adjuntarlo manualmente.');backdrop.remove();}
+   catch(fallbackError){toast('No se pudo compartir ni descargar. Revisa los permisos del navegador.');}
+  }
+ });
  card.querySelector('#destClose').addEventListener('click',()=>backdrop.remove());backdrop.addEventListener('click',e=>{if(e.target===backdrop)backdrop.remove();});
 }
 
