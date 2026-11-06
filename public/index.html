@@ -1721,6 +1721,7 @@ let drafts = JSON.parse(localStorage.getItem('tatoReelsDrafts') || '[]');
 let filter = 'none';
 function refreshDraftCount(){ $('draftCount').textContent=drafts.length; }
 function toast(message) { const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>el.classList.remove('show'),2600); }
+function openVisualizerAfterVideoAdded(){const previewButton=document.querySelector('.workspace-switch-btn');if(previewButton)previewButton.click();}
 $('uploadBtn').addEventListener('click',()=>$('fileInput').click());
 $('addClipsBtn').addEventListener('click',()=>$('clipsInput').click());
 // La carga de videos y fotos se gestiona en un único listener más abajo.
@@ -1730,7 +1731,7 @@ $('fileInput').addEventListener('change',e=>{
  const file=e.target.files && e.target.files[0]; if(!file) return;
  if(!file.type.startsWith('video/')) { toast('Selecciona un archivo de video válido.'); return; }
  if(objectUrl) URL.revokeObjectURL(objectUrl);
- objectUrl=URL.createObjectURL(file);sequenceActive=false;stopSequenceTimer();if(sequencePhoto)sequencePhoto.style.display='none';video.style.display='';video.src=objectUrl;video.classList.add('show');$('sampleArt').style.display='none'; $('videoStatus').textContent=file.name.length>22?file.name.slice(0,19)+'…':file.name; video.load(); toast('Video cargado para vista previa.');
+ objectUrl=URL.createObjectURL(file);sequenceActive=false;stopSequenceTimer();if(sequencePhoto)sequencePhoto.style.display='none';video.style.display='';video.src=objectUrl;video.classList.add('show');$('sampleArt').style.display='none'; $('videoStatus').textContent=file.name.length>22?file.name.slice(0,19)+'…':file.name; video.load(); openVisualizerAfterVideoAdded(); toast('Video cargado para vista previa.');
 });
 video.addEventListener('loadedmetadata',()=>{ $('trimStart').max=video.duration; $('trimEnd').max=video.duration; $('trimEnd').value=video.duration.toFixed(1); $('durationNote').textContent='Duración total: '+video.duration.toFixed(1)+' segundos.'; });
 video.addEventListener('ended',()=>{if(sequenceActive)advanceSequence();});
@@ -1876,15 +1877,17 @@ function renderTimeline(){const track=$('timelineTrack');if(!track)return;track.
 function syncExtraClipsFromTimeline(){extraClips=timelineItems.filter(item=>!item.isMain);}
 $('fileInput').addEventListener('change',()=>{const file=$('fileInput').files?.[0];if(!file||!objectUrl)return;timelineItems=timelineItems.filter(item=>!item.isMain);const main={id:'main-'+Date.now(),name:file.name,url:objectUrl,file,isMain:true,start:0,end:null,duration:0};timelineItems.unshift(main);selectedTimelineId=main.id;inspectTimelineClip(main);renderTimeline();});
 $('clipsInput').addEventListener('change',event=>{
-  const files=Array.from(event.target.files||[]);let added=0,skipped=0;
+  const files=Array.from(event.target.files||[]);let added=0,skipped=0,addedVideo=false;
   files.forEach((file,index)=>{
    const isImage=['image/jpeg','image/png','image/webp'].includes(file.type);
    if(!file.type.startsWith('video/')&&!isImage){skipped++;return;}
+   if(file.type.startsWith('video/'))addedVideo=true;
    const url=URL.createObjectURL(file),item={id:(isImage?'photo-':'clip-')+Date.now()+'-'+index+'-'+Math.random().toString(36).slice(2,6),name:file.name,file,url,isMain:false,isImage,start:0,end:isImage?3:null,duration:isImage?3:0};
    extraClips.push(item);timelineItems.push(item);inspectTimelineClip(item);added++;
   });
   renderClips();renderTimeline();
   if(added)toast(added+' archivo(s) agregado(s) a la secuencia.');
+  if(addedVideo)openVisualizerAfterVideoAdded();
   if(skipped)toast(skipped+' archivo(s) omitido(s). Usa videos o fotos JPG, PNG y WebP.');
   event.target.value='';
  });
