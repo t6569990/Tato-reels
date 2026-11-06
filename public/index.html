@@ -310,10 +310,10 @@ html,body,#app{background:#050407;color:#f5f1f5}
  .editor-shortcut{min-width:0;min-height:42px;padding:9px 7px;border:1px solid #d77a22;border-radius:11px;background:linear-gradient(135deg,#ffb34d,#f08a24);color:#241407;font-size:11px;font-weight:850;white-space:normal;overflow-wrap:anywhere}
  .editor-shortcut:disabled{opacity:.55;cursor:wait}
  .editor-tool-panes{width:100%;min-width:0}
- .editor-bottom-toolbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:100%;padding:9px;margin:14px 0 18px;border:1px solid light-dark(#E8E3EE,#302B3D);border-radius:15px;background:light-dark(#FFFFFF,#171521);position:relative;z-index:8}
+ .editor-bottom-toolbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;width:100%;padding:9px;margin:14px 0 18px;border:1px solid light-dark(#E8E3EE,#302B3D);border-radius:15px;background:light-dark(#FFFFFF,#171521);position:relative;z-index:8}
  .editor-bottom-toolbar .editor-tool{min-width:0;min-height:42px;padding:8px 5px;border:1px solid light-dark(#E8E3EE,#302B3D);border-radius:10px;background:light-dark(#F8F6FB,#211D2B);color:inherit;font-size:11px;font-weight:750;white-space:normal;overflow-wrap:anywhere}
  .editor-bottom-toolbar .editor-tool.active{background:var(--site-primary);color:#fff}
- @media(max-width:720px){.editor-bottom-toolbar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:7px}.editor-bottom-toolbar .editor-tool{min-height:40px;font-size:10px;padding:6px 3px}}
+ @media(max-width:720px){.editor-bottom-toolbar{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:7px}.editor-bottom-toolbar .editor-tool{min-height:40px;font-size:10px;padding:6px 3px}.editor-bottom-toolbar .toolbar-group-label{font-size:9px}.editor-bottom-toolbar .secondary-tools-label{margin-top:2px}}
 
  @media(max-width:720px){.editor-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.editor-shortcut{min-height:39px;font-size:10px;padding:7px 4px}.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .creator{gap:0}
@@ -1302,7 +1302,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const bottomButtons=[
   {id:'saveBtn',label:'💾 Guardar borrador',primary:false},
   {id:'exportBtn',label:'⬇ Exportar clip',primary:true},
-  {id:'exportSequenceBtn',label:'🎬 Exportar Reel completo ↓',primary:true},
+  {id:'exportSequenceBtn',label:'🎬 Exportar Reel',primary:true},
   {id:'publishBtn',label:'📣 Preparar publicación',primary:false}
  ];
  bottomButtons.forEach(item=>{
