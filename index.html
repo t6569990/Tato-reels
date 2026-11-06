@@ -1008,7 +1008,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 
 </head>
 <body>
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><img src="assets/tato-reels-icon.svg" alt="Icono de Tato Reels Creator" style="width:42px;height:42px;border-radius:12px;object-fit:cover">Tato <span style="color:#A98AEF">Reels</span> Creator</div>
@@ -1322,29 +1322,29 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 const $ = id => document.getElementById(id);
 const safeGet=key=>{try{return window.localStorage.getItem(key)||'';}catch(error){return '';}};
 const safeSet=(key,value)=>{try{window.localStorage.setItem(key,value);return true;}catch(error){return false;}};
+function showAuthError(message){const error=$('authError');if(error)error.textContent=message||'';}
 function enterApp(user){
  const screen=$('loginScreen'),app=$('app');
- if(!screen||!app){showAuthError('No se pudo cargar el editor. Recarga la página e inténtalo otra vez.');return;}
- screen.style.display='none';
- screen.setAttribute('aria-hidden','true');
+ if(!screen||!app){showAuthError('No se pudo abrir el editor. Tu usuario se conserva; recarga e inténtalo otra vez.');return false;}
+ app.dataset.username=user||'';
  app.classList.add('authenticated');
  app.style.display='block';
- app.dataset.username=user||'';
+ screen.style.display='none';
+ screen.setAttribute('aria-hidden','true');
+ return true;
 }
-function showAuthError(message){const error=$('authError');if(error)error.textContent=message||'';}
-const input=$('loginUser'),form=$('loginForm'),button=form?.querySelector('button[type="submit"]');
+const input=$('loginUser'),form=$('loginForm');
 if(input)input.value=safeGet('tatoUsername')||'Tato';
-if(safeGet('tatoUsername'))enterApp(safeGet('tatoUsername'));
-function handleLogin(event){
- if(event)event.preventDefault();
+const savedUser=safeGet('tatoUsername');
+if(savedUser)enterApp(savedUser);
+form?.addEventListener('submit',event=>{
+ event.preventDefault();
  const username=(input?.value||'').trim();
  if(!username){showAuthError('Escribe tu usuario para continuar.');input?.focus();return;}
  safeSet('tatoUsername',username);
  showAuthError('');
  enterApp(username);
-}
-form?.addEventListener('submit',handleLogin);
-button?.addEventListener('click',event=>{event.preventDefault();handleLogin(event);});
+});
 
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
