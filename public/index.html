@@ -1004,6 +1004,29 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   }
   .editor-tool-pane[data-pane="video"] .creation-mode-card button{min-height:46px!important}
 }
+
+/* Acciones duplicadas al final del editor: reutilizan las funciones originales. */
+.editor-bottom-actions{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;
+ width:100%;margin:18px 0 10px;padding:12px;
+ border:1px solid light-dark(#E8E3EE,#302B3D);border-radius:16px;
+ background:light-dark(#FFFFFF,#171521);
+}
+.editor-bottom-action{
+ display:flex;align-items:center;justify-content:center;gap:8px;
+ min-width:0;min-height:54px;padding:11px 12px;border:1px solid light-dark(#E5DFED,#373144);
+ border-radius:12px;background:light-dark(#F7F4FC,#242031);color:inherit;
+ font-size:12px;font-weight:800;line-height:1.25;text-align:center;
+ white-space:normal;overflow-wrap:anywhere;
+}
+.editor-bottom-action.is-primary{background:var(--site-primary);border-color:var(--site-primary);color:#fff}
+.editor-bottom-action:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:900px){.editor-bottom-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){
+ .editor-bottom-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0 18px;padding:9px}
+ .editor-bottom-action{min-height:56px;padding:10px 8px;font-size:11px}
+}
+
 </style>
 
 </head>
@@ -1251,6 +1274,27 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   Object.entries(labels).forEach(([id,label])=>{const button=document.getElementById(id);if(button){button.textContent=label;button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
+ // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
+ const bottomActions=document.createElement('div');
+ bottomActions.className='editor-bottom-actions';
+ bottomActions.setAttribute('aria-label','Acciones del editor al final de la página');
+ const bottomButtons=[
+  {id:'saveBtn',label:'💾 Guardar borrador',primary:false},
+  {id:'exportBtn',label:'⬇ Exportar clip',primary:true},
+  {id:'exportSequenceBtn',label:'🎬 Exportar Reel completo ↓',primary:true},
+  {id:'publishBtn',label:'📣 Preparar publicación',primary:false}
+ ];
+ bottomButtons.forEach(item=>{
+  const original=document.getElementById(item.id);
+  if(!original)return;
+  const button=document.createElement('button');
+  button.type='button';
+  button.className='editor-bottom-action'+(item.primary?' is-primary':'');
+  button.textContent=item.label;
+  button.addEventListener('click',()=>original.click());
+  bottomActions.append(button);
+ });
+ creator.append(bottomActions);
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
