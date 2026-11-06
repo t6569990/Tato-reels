@@ -875,6 +875,55 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 </style>
 
+
+<style id="tato-creation-cards-container-fix">
+/* La cuadrícula de modos responde al ancho REAL de su tarjeta, no al ancho total de pantalla */
+.creation-modes-panel{container-type:inline-size;min-width:0!important}
+.creation-modes-panel .creation-modes-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:10px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+.creation-modes-panel .creation-mode-card{
+  min-width:0!important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+@container (max-width:560px){
+  .creation-modes-panel .creation-modes-grid{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  .creation-modes-panel .creation-mode-card{
+    min-height:0!important;
+    padding:14px!important;
+  }
+  .creation-modes-panel .creation-mode-card b{
+    display:block!important;
+    font-size:14px!important;
+    line-height:1.35!important;
+    white-space:normal!important;
+    word-break:normal!important;
+    overflow-wrap:break-word!important;
+  }
+  .creation-modes-panel .creation-mode-card span{
+    display:block!important;
+    font-size:13px!important;
+    line-height:1.5!important;
+    white-space:normal!important;
+    word-break:normal!important;
+    overflow-wrap:break-word!important;
+  }
+  .creation-modes-panel .creation-mode-card button{
+    width:100%!important;
+    min-height:44px!important;
+    white-space:normal!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
