@@ -1226,7 +1226,9 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 <style id="tato-trim-under-visualizer-card">
 /* Visualizador, carga y recorte viven en contenedores independientes */
 .workspace-switch-card{min-width:0!important;box-sizing:border-box!important}
-.workspace-trim-card{grid-column:1/-1!important;display:block!important;width:100%!important;max-width:none!important;padding:12px!important}
+.workspace-trim-card{grid-column:1/-1!important;display:block!important;width:100%!important;max-width:none!important;padding:12px!important;margin-bottom:-8px!important}
+/* Dejar solo un espacio visual entre Recorta este video y CREAR Y EDITAR */
+.workspace-trim-card+.editor-toolbar,.workspace-trim-card~.editor-toolbar{margin-top:0!important}
 .workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;display:block!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:12px!important;box-sizing:border-box!important;border:1px solid light-dark(#E2D9EE,#40364F)!important;border-radius:11px!important;background:light-dark(#F8F6FB,#100E17)!important;z-index:1!important}
 .workspace-trim-card>.trim-panel>*{max-width:100%!important;min-width:0!important;box-sizing:border-box!important}
 .workspace-trim-card>.trim-panel input{width:100%!important;max-width:100%!important}
