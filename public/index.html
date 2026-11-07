@@ -2304,8 +2304,8 @@ renderTimeline();
 
 
 <style id="tato-creation-modes-two-column-layout">
-/* Reacomodo de las tarjetas completas: SOLO VIDEO a la izquierda y SOLO FOTOS a su derecha.
-   El encabezado ocupa el ancho de ambas; HÍBRIDO conserva el flujo debajo. */
+/* SOLO VIDEO a la izquierda, SOLO FOTOS a la derecha e HÍBRIDO de extremo a extremo.
+   El encabezado también ocupa las dos columnas. */
 @media(min-width:721px){
   .creator > .editor-panel > .creation-modes-panel{
     grid-column:1 / -1!important;
@@ -2320,13 +2320,22 @@ renderTimeline();
     margin-left:0!important;
     margin-right:0!important;
   }
-}
-@media(max-width:720px){
-  .creator > .editor-panel > .creation-mode-card:has(#uploadBtn),
-  .creator > .editor-panel > .creation-mode-card:has(#addPhotosBtn){
+  .creator > .editor-panel > .creation-mode-card:has(#addClipsBtn){
     grid-column:1 / -1!important;
     margin-left:0!important;
     margin-right:0!important;
+    width:100%!important;
+    justify-self:stretch!important;
+  }
+}
+@media(max-width:720px){
+  .creator > .editor-panel > .creation-mode-card:has(#uploadBtn),
+  .creator > .editor-panel > .creation-mode-card:has(#addPhotosBtn),
+  .creator > .editor-panel > .creation-mode-card:has(#addClipsBtn){
+    grid-column:1 / -1!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    width:100%!important;
   }
 }
 </style>
