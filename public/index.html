@@ -2306,23 +2306,33 @@ renderTimeline();
 
 
 <style id="tato-creation-modes-two-column-layout">
-/* Rejilla independiente: no altera la distribución del resto del editor. */
-.editor-panel > .creation-modes-layout{
+/* Distribución aislada de los tres modos: dos arriba y HÍBRIDO a todo lo ancho. */
+.creation-modes-layout{
   display:grid!important;
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-flow:row!important;
+  align-items:stretch!important;
   gap:12px!important;
   width:100%!important;
+  max-width:100%!important;
   min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
   grid-column:1 / -1!important;
 }
 .creation-modes-layout > .creation-modes-panel{
   grid-column:1 / -1!important;
   width:100%!important;
+  max-width:100%!important;
   min-width:0!important;
+  margin:0!important;
   box-sizing:border-box!important;
 }
 .creation-modes-layout > .creation-mode-card{
+  grid-column:auto!important;
   width:100%!important;
+  max-width:100%!important;
   min-width:0!important;
   margin:0!important;
   box-sizing:border-box!important;
@@ -2332,7 +2342,7 @@ renderTimeline();
   justify-self:stretch!important;
 }
 @media(max-width:720px){
-  .editor-panel > .creation-modes-layout{
+  .creation-modes-layout{
     grid-template-columns:minmax(0,1fr)!important;
     gap:9px!important;
   }
