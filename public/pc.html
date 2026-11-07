@@ -2028,7 +2028,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   const shortcuts=document.createElement('div');shortcuts.className='editor-shortcuts';shortcuts.setAttribute('aria-label','Accesos directos');
   const labels={saveBtn:['💾','Guardar borrador'],exportSequenceBtn:['⚙️','Compilar proyecto'],exportReelBtn:['🎬','Exportar Reel']};
   Object.entries(labels).forEach(([id,parts])=>{const button=document.getElementById(id);if(button){const icon=document.createElement('span');icon.className='editor-shortcut-icon';icon.textContent=parts[0];const label=document.createElement('span');label.className='editor-shortcut-label';label.textContent=parts[1];button.replaceChildren(icon,label);button.setAttribute('aria-label',parts[1]);button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
-  ['exportBtn','publishBtn'].forEach(id=>{const hiddenControl=document.getElementById(id);if(hiddenControl){hiddenControl.hidden=true;document.body.append(hiddenControl);}});
+  const clipExportControl=document.getElementById('exportBtn');if(clipExportControl){clipExportControl.hidden=true;document.body.append(clipExportControl);} const publishControl=document.getElementById('publishBtn');const publishInfo=panes.publish.querySelector('.publish-info-card');if(publishControl&&publishInfo){publishControl.hidden=false;publishControl.className='primary publish-prepare-button';publishControl.textContent='📣 Preparar publicación';publishInfo.append(publishControl);}
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
  // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
@@ -2491,8 +2491,29 @@ function showDrafts(shouldScroll=true){
  if(shouldScroll)shelf.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;shelf.style.display='none';return;}showDrafts(true);}
-function showPosts(){toast('Aquí aparecerán tus publicaciones preparadas.');}
-function showProfile(){toast('Perfil de creador: '+($('username').value||'@creador'));}
+function showPosts(){
+ const card=$('postCard');
+ if(card?.classList.contains('visible')){card.scrollIntoView({behavior:'smooth',block:'center'});toast('Mostrando tu publicación preparada en este dispositivo.');return;}
+ let shelf=$('postsShelf');
+ if(!shelf){shelf=document.createElement('section');shelf.id='postsShelf';shelf.className='panel local-workspace-panel';card?.before(shelf);}
+ shelf.replaceChildren();
+ const heading=document.createElement('h3');heading.textContent='📣 Mis publicaciones';
+ const message=document.createElement('p');message.className='file-note';message.textContent='Todavía no has preparado una publicación en esta sesión. Cuando pulses “Preparar publicación”, tu vista previa aparecerá aquí. La app no publica ni sincroniza contenido con redes sociales.';
+ const back=document.createElement('button');back.type='button';back.className='secondary';back.textContent='Volver al editor';back.addEventListener('click',()=>{shelf.hidden=true;document.querySelector('.editor-toolbar')?.scrollIntoView({behavior:'smooth',block:'start'});});
+ shelf.append(heading,message,back);shelf.hidden=false;shelf.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function showProfile(){
+ let panel=$('profileShelf');
+ if(!panel){panel=document.createElement('section');panel.id='profileShelf';panel.className='panel local-workspace-panel';$('postCard')?.before(panel);}
+ panel.replaceChildren();
+ const heading=document.createElement('h3');heading.textContent='👤 Mi perfil';
+ const name=document.createElement('p');name.className='file-note';name.textContent='Usuario: '+(($('username')?.value||$('loginUser')?.value||'Tato').trim());
+ const draftsInfo=document.createElement('p');draftsInfo.className='file-note';draftsInfo.textContent='Borradores guardados en este dispositivo: '+drafts.length;
+ const privacy=document.createElement('p');privacy.className='file-note';privacy.textContent='Perfil local de creador. Tus datos y borradores no se sincronizan con una cuenta en la nube.';
+ const edit=document.createElement('button');edit.type='button';edit.className='primary';edit.textContent='Editar nombre';edit.addEventListener('click',()=>{$('username')?.focus();$('username')?.scrollIntoView({behavior:'smooth',block:'center'});});
+ const close=document.createElement('button');close.type='button';close.className='secondary';close.textContent='Cerrar perfil';close.addEventListener('click',()=>{panel.hidden=true;});
+ panel.append(heading,name,draftsInfo,privacy,edit,close);panel.hidden=false;panel.scrollIntoView({behavior:'smooth',block:'center'});
+}
 ['draftNav','draftTab','mobileDraft','topDraftsBtn'].forEach(id=>$(id).addEventListener('click',toggleDrafts));
 ['postsNav','publishedTab','mobilePosts'].forEach(id=>$(id).addEventListener('click',showPosts));
 ['profileNav','mobileProfile'].forEach(id=>$(id).addEventListener('click',showProfile));
