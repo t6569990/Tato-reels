@@ -156,7 +156,7 @@ textarea { min-height:76px; }
 .post-card.visible { display:block; }
 .post-card h3 { margin:0 0 8px; font-size:13px; }
 .post-card p { margin:0; color:light-dark(#777083,#AAA4B7); font-size:11px; }
-.toast { position:fixed; bottom:22px; left:50%; transform:translate(-50%,20px); opacity:0; pointer-events:none; padding:12px 17px; border-radius:12px; background:#211A32; color:white; font-size:12px; box-shadow:0 10px 30px #0005; transition:.25s; z-index:30; }
+.toast { position:fixed; bottom:22px; left:50%; transform:translate(-50%,20px); opacity:0; pointer-events:none; padding:12px 17px; border-radius:12px; background:#211A32; color:white; font-size:12px; box-shadow:0 10px 30px #0005; transition:.25s; z-index:10002; }
 .toast.show { opacity:1; transform:translate(-50%,0); }
 .export-progress { display:none; grid-column:1/-1; padding:13px 15px; border:1px solid light-dark(#E8E3EE,#373144); border-radius:13px; background:light-dark(#FFFFFF,#171521); }
 .export-progress.visible { display:block; }
@@ -1722,7 +1722,7 @@ function showExportOptions(blob,filename){
  const old=document.getElementById('exportDestModal');if(old)old.remove();
  const backdrop=document.createElement('div');backdrop.id='exportDestModal';backdrop.className='export-dest-backdrop';
  const card=document.createElement('section');card.className='export-dest-card';
- card.innerHTML='<h2>🎬 Tu Reel está listo</h2><p class="export-file-name"></p><button class="export-dest-action" id="destSave"><span>📂</span><div>Elegir dónde guardar<small>Abre el selector de guardado; en móviles puede abrir las opciones del sistema</small></div></button><button class="export-dest-action" id="destShare"><span>↗️</span><div>Compartir / publicar<small>Envía el video a WhatsApp, Instagram u otra aplicación compatible</small></div></button><p class="file-note" style="margin:8px 2px 0">En el celular, elige “Guardar en Archivos”, “Guardar en dispositivo” o una carpeta desde el menú del sistema si aparece. Si el navegador no ofrece esa opción, se descargará en Descargas.</p><button class="export-dest-close" id="destClose">Ahora no</button>';
+ card.innerHTML='<h2>🎬 Tu Reel está listo</h2><p class="export-file-name"></p><button class="export-dest-action" id="destSave"><span>📂</span><div>Guardar en el dispositivo<small>En computadora puedes elegir ubicación; en móviles se descarga en Descargas</small></div></button><button class="export-dest-action" id="destShare"><span>↗️</span><div>Compartir / publicar<small>Envía el video a WhatsApp, Instagram u otra aplicación compatible</small></div></button><p class="file-note" style="margin:8px 2px 0">En móviles, la descarga se guarda en la carpeta Descargas del navegador. En navegadores compatibles se abrirá un selector para elegir ubicación.</p><button class="export-dest-close" id="destClose">Ahora no</button>';
  const fileLabel=card.querySelector('.export-file-name');fileLabel.append(document.createTextNode('¿Dónde quieres guardar o enviar '));const safeFilename=document.createElement('b');safeFilename.textContent=filename;fileLabel.append(safeFilename,document.createTextNode('?'));
  backdrop.append(card);document.body.append(backdrop);
  const downloadFile=()=>{
@@ -1740,12 +1740,12 @@ function showExportOptions(blob,filename){
     const writable=await handle.createWritable();await writable.write(blob);await writable.close();
     toast('Video guardado en la ubicación que elegiste.');backdrop.remove();return;
    }
-   const file=new File([blob],filename,{type:blob.type||'application/octet-stream'});
-   if(typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files:[file]})){
-    await navigator.share({files:[file],title:'Guardar '+filename,text:'Elige Guardar en Archivos o una ubicación disponible en tu dispositivo.'});
-    toast('Menú del sistema abierto. Elige dónde guardar el video.');backdrop.remove();return;
-   }
-   downloadFile();toast('Este navegador no permite elegir carpeta. Descarga iniciada; revisa Descargas.');backdrop.remove();
+   // Guardar debe descargar el archivo, no abrir la hoja de compartir del sistema.
+   // En navegadores con showSaveFilePicker se ofrece selección de ubicación arriba;
+   // en móviles sin esa API se utiliza la descarga estándar del navegador.
+   downloadFile();
+   toast('Descarga iniciada. Revisa la carpeta Descargas de tu dispositivo.');
+   backdrop.remove();
   }catch(error){
    if(error.name==='AbortError')return;
    try{downloadFile();toast('El selector no está disponible. Descarga iniciada; revisa Descargas.');backdrop.remove();}
@@ -2254,6 +2254,12 @@ renderTimeline();
 </style>
 <!-- TATO_VISUALIZER_EDITOR_SPACING_V1 -->
 
+
+<style id="tato-export-text-visibility-fix">
+.toast{z-index:10002!important}
+@media(max-width:720px){.editor-tool-pane[data-pane="text"].active{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important}.editor-tool-pane[data-pane="text"].active>.panel{display:block!important;visibility:visible!important;width:100%!important;min-width:0!important}}
+.video-frame .tato-reel-watermark{display:block!important;visibility:visible!important;z-index:11!important;opacity:.9!important}
+</style>
 </body>
 </html>
 
