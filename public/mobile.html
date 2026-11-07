@@ -1466,29 +1466,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   Object.entries(labels).forEach(([id,label])=>{const button=document.getElementById(id);if(button){button.textContent=label;button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
- // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
- const bottomActions=document.createElement('div');
- bottomActions.className='editor-bottom-actions';
- bottomActions.setAttribute('aria-label','Acciones del editor al final de la página');
- const bottomButtons=[
-  {id:'saveBtn',icon:'💾',label:'Guardar borrador',primary:false},
-  {id:'exportBtn',icon:'⬇️',label:'Exportar clip',primary:true},
-  {id:'exportSequenceBtn',icon:'🎬',label:'Exportar Reel',primary:true},
-  {id:'publishBtn',icon:'📣',label:'Preparar publicación',primary:false}
- ];
- bottomButtons.forEach(item=>{
-  const original=document.getElementById(item.id);
-  if(!original)return;
-  const button=document.createElement('button');
-  button.type='button';
-  button.className='editor-bottom-action'+(item.primary?' is-primary':'');
-  const icon=document.createElement('span');icon.className='bottom-action-icon';icon.textContent=item.icon;
-  const label=document.createElement('span');label.className='bottom-action-label';label.textContent=item.label;
-  button.append(icon,label);
-  button.addEventListener('click',()=>original.click());
-  bottomActions.append(button);
- });
- creator.append(bottomActions);
+
  // Segunda barra de herramientas debajo de las acciones principales.
  const bottomToolbar=toolbar.cloneNode(true);
  bottomToolbar.classList.remove('editor-toolbar');
