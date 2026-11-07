@@ -2322,12 +2322,21 @@ renderTimeline();
   grid-column:1 / -1!important;
 }
 .creation-modes-layout > .creation-modes-panel{
+  /* El encabezado ocupa todo el ancho disponible, de margen a margen. */
+  display:block!important;
   grid-column:1 / -1!important;
+  justify-self:stretch!important;
+  align-self:stretch!important;
   width:100%!important;
-  max-width:100%!important;
+  max-width:none!important;
   min-width:0!important;
   margin:0!important;
   box-sizing:border-box!important;
+}
+.creation-modes-layout > .creation-modes-panel h3,
+.creation-modes-layout > .creation-modes-panel .file-note{
+  width:100%!important;
+  max-width:none!important;
 }
 .creation-modes-layout > .creation-mode-card{
   grid-column:auto!important;
