@@ -1252,6 +1252,16 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 </style>
  <style id="tato-trim-independent-under-toolbar">/* Recorte y herramientas permanecen independientes; solo se reubica la tarjeta de recorte */ .editor-toolbar{margin-bottom:8px!important} .workspace-trim-card{display:block!important;width:100%!important;max-width:none!important;margin:8px 0!important;grid-column:1/-1!important} @media(max-width:720px){.editor-toolbar{margin-bottom:8px!important}.workspace-trim-card{margin:8px 0!important}} </style>
+
+<style id="tato-workspace-row-above-trim">
+/* Acciones independientes en una fila: agregar a la izquierda y visualizador a la derecha */
+.workspace-switch{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch!important;gap:12px!important;width:100%!important;margin:8px 0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
+.workspace-switch-card{display:flex!important;width:100%!important;max-width:none!important;min-width:0!important;margin:0!important;box-sizing:border-box!important}
+.workspace-switch-card .workspace-switch-btn{width:100%!important;max-width:none!important;min-width:0!important;flex:1 1 auto!important}
+.workspace-trim-card{margin-top:8px!important}
+@media(max-width:720px){.workspace-switch{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.workspace-switch-card{padding:7px!important}.workspace-switch-card .workspace-switch-btn{font-size:11px!important;padding:8px 5px!important}}
+@media(max-width:380px){.workspace-switch{grid-template-columns:1fr!important}}
+</style>
 </head>
 <body>
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1544,7 +1554,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.after(trimCard);stage.after(switchBar);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(addCard,previewCard);trimCard.append(trim);toolbar.after(switchBar);switchBar.after(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.pane===name));Object.entries(panes).forEach(([k,p])=>p.classList.toggle('active',k===name));}
  function setWorkspace(mode){
