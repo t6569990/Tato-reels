@@ -1193,24 +1193,18 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 </style>
 
 <style id="tato-fixed-action-dock">
-/* Acciones principales siempre visibles en el borde inferior */
-.creator{padding-bottom:105px!important}
-.editor-bottom-actions{
- position:fixed!important;left:50%!important;right:auto!important;bottom:0!important;
- transform:translateX(-50%)!important;width:min(calc(100% - 32px),980px)!important;
- margin:0!important;z-index:20!important;
- box-shadow:0 -8px 28px #0009!important;
- background:#0c0a10!important;border-color:#573044!important;
+/* Acciones duplicadas dentro del flujo de la página, centradas y sin posición fija */
+.creator{padding-bottom:18px!important}
+.creator>.editor-bottom-actions{
+ position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;
+ transform:none!important;width:min(100%,980px)!important;max-width:980px!important;
+ margin:18px auto!important;z-index:2!important;box-shadow:none!important;
+ background:light-dark(#FFFFFF,#171521)!important;
+ border-color:light-dark(#E8E3EE,#302B3D)!important;
 }
 @media(max-width:720px){
- .creator{padding-bottom:165px!important}
- .editor-bottom-actions{
-  bottom:65px!important;width:100%!important;max-width:none!important;
-  border-radius:13px 13px 0 0!important;
-  padding:7px!important;gap:6px!important;
-  box-shadow:0 -8px 24px #000b!important;
- }
- .editor-bottom-action{min-height:44px!important}
+ .creator{padding-bottom:18px!important}
+ .creator>.editor-bottom-actions{width:100%!important;max-width:100%!important;margin:12px auto!important}
 }
 </style>
 
@@ -1275,7 +1269,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .editor-shortcuts{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;width:100%!important;margin:10px 0 12px!important}
 .editor-shortcut{width:100%!important;min-height:44px!important;padding:9px 12px!important;font-size:12px!important;border-radius:12px!important}
 .creator>.editor-bottom-toolbar{order:90!important;width:100%!important;margin:14px 0 5px!important}
-.creator>.editor-bottom-actions{order:91!important;width:100%!important;margin:5px 0 0!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+.creator>.editor-bottom-actions{order:35!important;align-self:center!important;justify-self:center!important;width:min(100%,980px)!important;max-width:980px!important;margin:14px auto!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
 .creator>.editor-bottom-actions .editor-bottom-action{width:100%!important;min-height:44px!important}
 #draftShelf[hidden]{display:none!important}#draftShelf{margin:12px 0!important}
 @media(max-width:720px){.workspace-trim-card{width:100%!important;max-width:560px!important}.editor-shortcuts{gap:7px!important}.editor-shortcut{font-size:10px!important;padding:7px 4px!important}.creator>.editor-bottom-actions{gap:7px!important}}
@@ -1580,7 +1574,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);trimCard.after(bottomActions);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});}
  function setWorkspace(mode){
