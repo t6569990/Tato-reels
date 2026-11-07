@@ -1262,6 +1262,24 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 @media(max-width:720px){.workspace-switch{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.workspace-switch-card{padding:7px!important}.workspace-switch-card .workspace-switch-btn{font-size:11px!important;padding:8px 5px!important}}
 @media(max-width:380px){.workspace-switch{grid-template-columns:1fr!important}}
 </style>
+
+<style id="tato-pc-layout-refine-20261107">
+.workspace-trim-card{grid-column:auto!important;width:min(100%,560px)!important;max-width:560px!important;justify-self:center!important;align-self:start!important;padding:7px!important;margin:8px auto 12px!important}
+.workspace-trim-card>.trim-panel{padding:9px 12px!important;margin:0!important;border-radius:10px!important}
+.workspace-trim-card>.trim-panel h3{font-size:14px!important;margin:0 0 5px!important}
+.workspace-trim-card>.trim-panel .trim-help{font-size:11px!important;line-height:1.35!important;margin:0 0 7px!important}
+.workspace-trim-card>.trim-panel .range-row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin:5px 0!important}
+.workspace-trim-card>.trim-panel .file-note{font-size:10px!important;margin:4px 0!important}
+.workspace-trim-card>.trim-panel .trim-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+.workspace-trim-card>.trim-panel button{min-height:30px!important;padding:5px 8px!important;font-size:11px!important;margin-top:5px!important}
+.editor-shortcuts{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;width:100%!important;margin:10px 0 12px!important}
+.editor-shortcut{width:100%!important;min-height:44px!important;padding:9px 12px!important;font-size:12px!important;border-radius:12px!important}
+.creator>.editor-bottom-toolbar{order:90!important;width:100%!important;margin:14px 0 5px!important}
+.creator>.editor-bottom-actions{order:91!important;width:100%!important;margin:5px 0 0!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+.creator>.editor-bottom-actions .editor-bottom-action{width:100%!important;min-height:44px!important}
+#draftShelf[hidden]{display:none!important}#draftShelf{margin:12px 0!important}
+@media(max-width:720px){.workspace-trim-card{width:100%!important;max-width:560px!important}.editor-shortcuts{gap:7px!important}.editor-shortcut{font-size:10px!important;padding:7px 4px!important}.creator>.editor-bottom-actions{gap:7px!important}}
+</style>
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1554,15 +1572,15 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   const label=button.querySelector('.tool-label')?.textContent||button.textContent.trim();
   button.replaceChildren(document.createTextNode((icon?icon+' ':'')+label));
  });
- const postCard=document.getElementById('postCard');
- if(postCard)postCard.before(bottomToolbar);else creator.append(bottomToolbar);
+ // La barra inferior queda dentro del editor y justo encima de las acciones amarillas.
+ creator.insertBefore(bottomToolbar,bottomActions);
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar,trimCard);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});}
  function setWorkspace(mode){
@@ -1989,15 +2007,17 @@ async function openDraft(item){
 }
 function showDrafts(shouldScroll=true){
  let shelf=$('draftShelf');if(!shelf){shelf=document.createElement('section');shelf.id='draftShelf';shelf.className='panel';shelf.style.margin='18px 0';shelf.hidden=true;$('postCard').after(shelf);}
- shelf.hidden=false;shelf.style.display='block';shelf.innerHTML='<h3>📁 Mis borradores guardados</h3><p class="file-note">Tus videos, fotos y ajustes se guardan en este dispositivo. Abre un borrador para continuar editándolo.</p>';
+ shelf.hidden=false;shelf.style.display='block';shelf.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><h3 style="margin:0">📁 Mis borradores guardados</h3><button type="button" id="closeDraftShelf" class="secondary">✕ Cerrar</button></div><p class="file-note">Tus videos, fotos y ajustes se guardan en este dispositivo. Abre un borrador para continuar editándolo.</p>';
  if(drafts.length){const deleteAll=document.createElement('button');deleteAll.type='button';deleteAll.className='secondary';deleteAll.textContent='Eliminar todos los borradores';deleteAll.style.marginBottom='10px';deleteAll.addEventListener('click',async()=>{if(!confirm('¿Eliminar todos los borradores guardados? Esta acción no se puede deshacer.'))return;for(const item of drafts){try{await deleteDraftMedia(item.mediaId);}catch(_){}}drafts=[];localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts(false);toast('Todos los borradores fueron eliminados.');});shelf.append(deleteAll);}
  if(!drafts.length){const empty=document.createElement('p');empty.className='file-note';empty.textContent='Todavía no hay borradores guardados en este dispositivo.';shelf.append(empty);}
  else{drafts.forEach((item,index)=>{const row=document.createElement('div');row.className='clip-item';row.style.marginTop='8px';const info=document.createElement('strong');const date=item.savedAt?new Date(item.savedAt).toLocaleString('es-MX'):'Fecha no disponible';info.textContent=(item.videoName||'Borrador sin título')+' · '+date+' · '+(item.mediaCount||0)+' archivo(s)';const open=document.createElement('button');open.type='button';open.textContent='Abrir';open.addEventListener('click',()=>openDraft(item));const remove=document.createElement('button');remove.type='button';remove.textContent='Eliminar';remove.setAttribute('aria-label','Eliminar borrador '+(index+1));remove.addEventListener('click',async()=>{if(!confirm('¿Eliminar este borrador?'))return;try{await deleteDraftMedia(item.mediaId);}catch(_){}drafts.splice(index,1);localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts(false);toast('Borrador eliminado.');});row.append(info,open,remove);shelf.append(row);});}
+ const closeButton=$('closeDraftShelf');if(closeButton)closeButton.addEventListener('click',()=>{shelf.hidden=true;shelf.style.display='none';});
  if(shouldScroll)shelf.scrollIntoView({behavior:'smooth',block:'start'});
 }
+function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;shelf.style.display='none';return;}showDrafts(true);}
 function showPosts(){toast('Aquí aparecerán tus publicaciones preparadas.');}
 function showProfile(){toast('Perfil de creador: '+($('username').value||'@creador'));}
-['draftNav','draftTab','mobileDraft','topDraftsBtn'].forEach(id=>$(id).addEventListener('click',showDrafts));
+['draftNav','draftTab','mobileDraft','topDraftsBtn'].forEach(id=>$(id).addEventListener('click',toggleDrafts));
 ['postsNav','publishedTab','mobilePosts'].forEach(id=>$(id).addEventListener('click',showPosts));
 ['profileNav','mobileProfile'].forEach(id=>$(id).addEventListener('click',showProfile));
 $('tipsBtn').addEventListener('click',()=>toast('Tip: usa buena luz, encuadre vertical y una idea clara.'));
