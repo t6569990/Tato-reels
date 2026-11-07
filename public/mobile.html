@@ -1785,7 +1785,7 @@ async function openDraft(item){
   const saved=item.mediaId?await readDraftMedia(item.mediaId):null;
   if(!saved){$('caption').value=item.caption||'';$('hashtags').value=item.hashtags||'';$('username').value=item.username||'@tato.reels';$('trimStart').value=item.trimStart||0;$('trimEnd').value=item.trimEnd||0;updateCaption();$('overlayName').textContent=$('username').value;toast('Este es un borrador antiguo: conserva textos y ajustes, pero no contiene el video.');return;}
   const s=saved.settings||{};
-  if(s.placedStickers)localStorage.setItem('tatoReelsPlacedStickers',s.placedStickers);
+  if(s.placedStickers)localStorage.setItem('tatoReelsPlacedStickers',s.placedStickers);window.refreshTatoPlacedStickers?.();
   ['caption','hashtags','username','trimStart','trimEnd','animatedText','titleAnimation','titleSize','titleColor','titleFont','audioStart','audioEnd','musicVolume'].forEach(key=>{if(s[key]!=null&&$(key))$(key).value=s[key];});
   $('videoFrame').style.aspectRatio=s.ratio||'9/16';updateCaption();$('overlayName').textContent=$('username').value||'@tato.reels';updateAnimatedTitle();
   if(s.titleLeft)$('animatedTitle').style.left=s.titleLeft;if(s.titleTop)$('animatedTitle').style.top=s.titleTop;
@@ -2156,6 +2156,7 @@ renderTimeline();
  window.drawExportReelStickers=function(ctx){
   const list=getPlaced();list.forEach(item=>{const sticker=catalog.find(x=>x.id===item.id);if(!sticker)return;ctx.save();ctx.font='900 '+Math.round(item.size*2.1)+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=10;ctx.fillText(sticker.emoji,item.x/100*720,item.y/100*1280);ctx.restore();});
  };
+ window.refreshTatoPlacedStickers=renderPlaced;
  function open(){const modal=document.getElementById('rewardsWindow');modal.classList.add('open');modal.setAttribute('aria-hidden','false');refreshWallet();renderWheel();renderShop();renderOwned();}
  function openWheelFromCaption(){open();const wheel=document.getElementById('spinWheel');if(wheel){const card=wheel.closest('.rewards-card');if(card)card.scrollIntoView({behavior:'smooth',block:'center'});}}
  document.getElementById('openWheelFromCaption').addEventListener('click',openWheelFromCaption);
