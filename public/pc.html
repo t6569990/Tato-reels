@@ -2028,7 +2028,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   const shortcuts=document.createElement('div');shortcuts.className='editor-shortcuts';shortcuts.setAttribute('aria-label','Accesos directos');
   const labels={saveBtn:['💾','Guardar borrador'],exportSequenceBtn:['⚙️','Compilar proyecto'],exportReelBtn:['🎬','Exportar Reel']};
   Object.entries(labels).forEach(([id,parts])=>{const button=document.getElementById(id);if(button){const icon=document.createElement('span');icon.className='editor-shortcut-icon';icon.textContent=parts[0];const label=document.createElement('span');label.className='editor-shortcut-label';label.textContent=parts[1];button.replaceChildren(icon,label);button.setAttribute('aria-label',parts[1]);button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
-  const clipExportControl=document.getElementById('exportBtn');if(clipExportControl){clipExportControl.hidden=true;document.body.append(clipExportControl);} const publishControl=document.getElementById('publishBtn');const publishInfo=panes.publish.querySelector('.publish-info-card');if(publishControl&&publishInfo){publishControl.hidden=false;publishControl.className='primary publish-prepare-button';publishControl.textContent='📣 Preparar publicación';publishInfo.append(publishControl);}
+  const clipExportControl=document.getElementById('exportBtn');if(clipExportControl){const clipExportCard=document.createElement('section');clipExportCard.className='panel format-export-clip-card';const clipExportTitle=document.createElement('h3');clipExportTitle.textContent='🎞️ Exportar clip individual';const clipExportNote=document.createElement('p');clipExportNote.className='file-note';clipExportNote.textContent='Exporta el video principal con el recorte seleccionado.';clipExportControl.hidden=false;clipExportControl.className='secondary';clipExportControl.textContent='⬇ Exportar clip WebM / MP4';clipExportCard.append(clipExportTitle,clipExportNote,clipExportControl);panes.format.append(clipExportCard);} const publishControl=document.getElementById('publishBtn');const publishInfo=panes.publish.querySelector('.publish-info-card');if(publishControl&&publishInfo){publishControl.hidden=false;publishControl.className='primary publish-prepare-button';publishControl.textContent='📣 Preparar publicación';publishInfo.append(publishControl);}
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
  // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
@@ -2444,8 +2444,9 @@ $('exportBtn').addEventListener('click',async()=>{
 });
 
 $('publishBtn').addEventListener('click',()=>{
- if(!video.src){toast('Sube un video antes de preparar tu Reel.');return;}
- $('postText').textContent=($('caption').value||'Sin descripción')+' '+$('hashtags').value+' · Vista previa local preparada. Para publicarlo en Instagram, Facebook o TikTok hace falta conectar esas cuentas.';
+ if(!video.src&&!timelineItems.length){toast('Agrega un video o una secuencia de fotos antes de preparar tu Reel.');return;}
+ const mediaCount=timelineItems.length||1;
+ $('postText').textContent=($('caption').value||'Sin descripción')+' '+$('hashtags').value+' · '+mediaCount+' elemento(s) preparado(s) localmente. Para publicarlo en Instagram, Facebook o TikTok hace falta conectar esas cuentas.';
  $('postCard').classList.add('visible'); $('postCard').scrollIntoView({behavior:'smooth',block:'nearest'}); toast('Tu Reel quedó preparado. Aún no se publicó en redes.');
 });
 async function openDraft(item){
