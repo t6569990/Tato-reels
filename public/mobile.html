@@ -1916,7 +1916,7 @@ $('publishBtn').addEventListener('click',()=>{
 function showDrafts(shouldScroll=true){
  let shelf=$('draftShelf');
  if(!shelf){shelf=document.createElement('section');shelf.id='draftShelf';shelf.className='panel';shelf.style.margin='18px 0';shelf.hidden=true;$('postCard').after(shelf);}
- shelf.hidden=false;
+ shelf.hidden=false;shelf.style.display='block';
  shelf.innerHTML='<h3>📁 Mis borradores guardados</h3><p class="file-note">Tus videos, fotos y ajustes se guardan en este dispositivo. Abre un borrador para continuar editándolo.</p>';
  if(drafts.length){
   const deleteAll=document.createElement('button');deleteAll.type='button';deleteAll.className='secondary';deleteAll.textContent='Eliminar todos los borradores';deleteAll.style.marginBottom='10px';
@@ -1932,7 +1932,7 @@ function showDrafts(shouldScroll=true){
  });}
  if(shouldScroll)shelf.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;return;}showDrafts(true);}
+function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;shelf.style.display='none';return;}showDrafts(true);}
 function showPosts(){toast('Aquí aparecerán tus publicaciones preparadas.');}
 function showProfile(){toast('Perfil de creador: '+($('username').value||'@creador'));}
 ['draftNav','draftTab','mobileDraft','topDraftsBtn'].forEach(id=>$(id).addEventListener('click',toggleDrafts));
