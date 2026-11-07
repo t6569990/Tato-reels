@@ -43,3 +43,11 @@ Rama de trabajo: `work/device-separation`
 ## Criterio de finalización de esta fase
 
 La preparación estará lista cuando PC y celular tengan capas de estilos independientes y comprobables, sin cambios involuntarios en la versión móvil, y PC esté lista para recibir las instrucciones de diseño del usuario. La existencia de dos HTML y dos archivos CSS, por sí sola, no significa que la separación visual esté terminada.
+
+## Primera extracción completada
+
+- Se trasladó el bloque `tato-mobile-tool-size-fix` (2,261 caracteres) desde ambos HTML a `public/device-mobile.css`.
+- El bloque conserva su posición de cascada: la hoja móvil se carga en el encabezado después del CSS base y antes de los bloques de estilos posteriores.
+- Se comprobó que el bloque ya no aparece inline en PC ni en celular, sí aparece en la hoja móvil y no aparece en la hoja PC.
+- Ambas páginas conservan tres bloques de JavaScript, 18 bloques de estilo inline y no tienen estilos fuera de `</html>`.
+- La estructura HTML de ambas páginas continúa equivalente salvo la clase del body y la hoja CSS específica del dispositivo.
