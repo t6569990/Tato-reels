@@ -2303,22 +2303,23 @@ renderTimeline();
 </style>
 
 
-<style id="tato-solo-video-left-align-v2">
-/* Mover físicamente SOLO VIDEO hacia el margen izquierdo, usando el mismo desplazamiento del encabezado superior. */
+<style id="tato-solo-video-left-align-v3">
+/* Selector correcto: la tarjeta SOLO VIDEO es hija directa de .editor-panel.
+   Desplazar el recuadro completo (título, descripción y botón) hacia el margen izquierdo. */
 @media(min-width:901px){
-  .editor-tool-pane[data-pane="video"] .creation-mode-card:has(#uploadBtn){
+  .creator > .editor-panel > .creation-mode-card:has(#uploadBtn){
     margin-left:-294px!important;
     margin-right:0!important;
   }
 }
 @media(min-width:721px) and (max-width:900px){
-  .editor-tool-pane[data-pane="video"] .creation-mode-card:has(#uploadBtn){
+  .creator > .editor-panel > .creation-mode-card:has(#uploadBtn){
     margin-left:-251px!important;
     margin-right:0!important;
   }
 }
 @media(max-width:720px){
-  .editor-tool-pane[data-pane="video"] .creation-mode-card:has(#uploadBtn){
+  .creator > .editor-panel > .creation-mode-card:has(#uploadBtn){
     margin-left:0!important;
     margin-right:0!important;
   }
