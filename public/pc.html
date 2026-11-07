@@ -1323,6 +1323,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         <div class="file-note" id="durationNote">Primero selecciona un video para comenzar a recortarlo.</div>
         <div class="trim-actions"><button class="secondary" id="markTrimStart">Marcar inicio aquí</button><button class="secondary" id="markTrimEnd">Marcar final aquí</button></div>
         <button class="primary" id="previewTrim" style="margin-top:9px">▶ Ver mi recorte</button>
+         <button class="secondary" id="applyTrim" type="button" style="margin-top:7px;width:100%">✓ Aplicar recorte para exportar</button>
       </section>
       <section class="editor-panel">
         <div class="creation-modes-layout">
@@ -1829,6 +1830,7 @@ showDrafts(false);
 function loadDrafts(){ if(!drafts.length){toast('Todavía no tienes borradores guardados.');return;} const item=drafts[0]; $('caption').value=item.caption||''; $('hashtags').value=item.hashtags||''; $('username').value=item.username||'@tato.reels'; $('trimStart').value=item.trimStart||0; $('trimEnd').value=item.trimEnd||0; updateCaption(); $('overlayName').textContent=$('username').value; toast('Se cargó el borrador más reciente. Vuelve a seleccionar su video para editarlo.'); }
 function showTrim(){ if(!video.src){toast('Primero selecciona un video.');return;} const start=Math.max(0,Number($('trimStart').value)||0); const end=Number($('trimEnd').value)||video.duration; if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;} video.currentTime=start; video.play(); const stop=()=>{if(video.currentTime>=end){video.pause();video.removeEventListener('timeupdate',stop);}}; video.addEventListener('timeupdate',stop); toast('Reproduciendo el fragmento seleccionado.'); }
 $('previewTrim').addEventListener('click',showTrim);
+ $('applyTrim').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const start=Math.max(0,Number($('trimStart').value)||0);const end=Number($('trimEnd').value)||video.duration;if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;}video.pause();video.currentTime=start;video.dataset.appliedTrimStart=String(start);video.dataset.appliedTrimEnd=String(end);saveDraft();toast('Recorte aplicado. Se conservará al exportar el clip o el Reel.');});
 $('markTrimStart').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const point=Math.min(video.duration,Math.max(0,video.currentTime));$('trimStart').value=point.toFixed(1);if(Number($('trimEnd').value)<=point)$('trimEnd').value=video.duration.toFixed(1);toast('Inicio marcado en '+point.toFixed(1)+' segundos.');});
 $('markTrimEnd').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const point=Math.min(video.duration,Math.max(0,video.currentTime));if(point<=Number($('trimStart').value)){toast('Avanza el video hasta después del punto de inicio.');return;}$('trimEnd').value=point.toFixed(1);toast('Final marcado en '+point.toFixed(1)+' segundos.');});
 
@@ -2264,6 +2266,26 @@ renderTimeline();
 @media(max-width:720px){.editor-tool-pane[data-pane="text"].active{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important}.editor-tool-pane[data-pane="text"].active>.panel{display:block!important;visibility:visible!important;width:100%!important;min-width:0!important}}
 /* La marca de agua de Tato Reels permanece visible sobre la vista previa. */
 .video-frame .tato-reel-watermark{display:block!important;visibility:visible!important;z-index:11!important;opacity:.9!important}
+</style>
+
+<style id="tato-workspace-layout-cleanup-20261107">
+/* Limpieza del espacio de trabajo: una sola barra de acciones y recorte junto al visualizador. */
+.editor-bottom-actions{display:none!important}
+.editor-bottom-toolbar{display:none!important}
+.creator{padding-bottom:24px!important}
+.floating-stage{min-height:0!important;height:auto!important;overflow:visible!important;contain:none!important;padding:42px 12px 12px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:10px!important}
+.floating-stage .preview-shell{position:relative!important;top:auto!important;left:auto!important;transform:none!important;width:min(100%,230px)!important;max-height:none!important;margin:0 auto!important}
+.floating-stage .preview-shell .video-frame{max-height:410px!important}
+.workspace-trim-card{position:relative!important;inset:auto!important;width:min(100%,600px)!important;max-width:600px!important;margin:8px auto!important;padding:10px!important}
+.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important}
+@media(max-width:720px){
+ .floating-stage{padding:38px 8px 10px!important;gap:8px!important}
+ .floating-stage .preview-shell{width:min(100%,190px)!important;display:block!important}
+ .floating-stage .preview-shell .video-frame{width:100%!important;height:auto!important;max-height:340px!important;aspect-ratio:9/16!important}
+ .floating-stage .preview-shell .player-controls{display:flex!important;flex-direction:row!important;justify-content:space-between!important;padding:8px 4px 2px!important}
+ .workspace-trim-card{width:100%!important;max-width:100%!important;margin:7px 0!important;padding:8px!important}
+ .creator{padding-bottom:20px!important}
+}
 </style>
 </body>
 </html>
