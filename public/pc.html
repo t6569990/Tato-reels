@@ -3309,5 +3309,22 @@ renderTimeline();
  .editor-tool-pane[data-pane="publish"]>.tool-pane-heading{writing-mode:horizontal-tb!important}
 }
 </style>
+
+<script id="tato-editor-navigation-recovery-20261107">
+(()=> {
+ const activate = name => {
+  const panes=[...document.querySelectorAll('.editor-tool-pane[data-pane]')];
+  if(!panes.some(p=>p.dataset.pane===name)) return false;
+  panes.forEach(p=>{const active=p.dataset.pane===name;p.hidden=!active;p.classList.toggle('active',active);p.setAttribute('aria-hidden',String(!active));});
+  document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]').forEach(button=>{const active=button.dataset.pane===name;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+  const creator=document.querySelector('.creator');
+  if(creator){creator.classList.toggle('workspace-mode-add',name==='video');creator.classList.toggle('workspace-mode-preview',name!=='video');}
+  return true;
+ };
+ document.addEventListener('click',event=>{const button=event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]');if(!button)return;if(activate(button.dataset.pane))event.preventDefault();},true);
+ const current=document.querySelector('.editor-toolbar [data-pane].active')?.dataset.pane||'video';activate(current);
+})();
+</script>
+<style id="tato-editor-navigation-recovery-style-20261107">.editor-toolbar{position:relative!important;z-index:1000!important;pointer-events:auto!important}.editor-toolbar *{pointer-events:auto!important}</style>
 </body>
 </html>
