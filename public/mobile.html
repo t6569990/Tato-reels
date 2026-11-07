@@ -469,9 +469,9 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 
 /* Jerarquía visual de herramientas */
 .editor-toolbar{grid-template-columns:repeat(5,minmax(0,1fr))}
-.toolbar-group-label{grid-column:1/-1;padding:3px 5px 0;color:light-dark(#81768e,#b8a9c6);font-size:9px;font-weight:900;letter-spacing:.12em;text-align:left}
-.secondary-tools-label{margin-top:4px;padding-top:8px;border-top:1px solid light-dark(#e9e3ef,#383044)}
-@media(max-width:720px){.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))}.toolbar-group-label{font-size:9px}.secondary-tools-label{margin-top:2px}}
+.toolbar-group-label{display:none!important}
+.secondary-tools-label{display:none!important}
+@media(max-width:720px){.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))}}
 
 /* Carga de video y fotografías en tarjetas paralelas */
 .upload-options-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
@@ -1366,7 +1366,11 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 </style>
 
-\n<style id="tato-clear-reel-text-20261107">\n.caption-field-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.caption-field-head .field-label{margin:0}.caption-field-head button{min-height:32px;padding:5px 14px;font-size:12px;border-radius:9px}@media(max-width:720px){.caption-field-head button{min-width:76px;min-height:36px}}\n</style>\n</head>
+
+<style id="tato-clear-reel-text-20261107">
+.caption-field-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.caption-field-head .field-label{margin:0}.caption-field-head button{min-height:32px;padding:5px 14px;font-size:12px;border-radius:9px}@media(max-width:720px){.caption-field-head button{min-width:76px;min-height:36px}}
+</style>
+</head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
 <div id="app">
@@ -1648,26 +1652,14 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   bottomActions.append(button);
  });
  creator.append(bottomActions);
- // Segunda barra de herramientas debajo de las acciones principales.
- const bottomToolbar=toolbar.cloneNode(true);
- bottomToolbar.classList.remove('editor-toolbar');
- bottomToolbar.classList.add('editor-bottom-toolbar');
- bottomToolbar.setAttribute('aria-label','Herramientas rápidas al final del editor');
- bottomToolbar.querySelectorAll('.editor-tool').forEach(button=>{
-  button.classList.remove('active');
-  const icon=button.querySelector('.tool-icon')?.textContent||'';
-  const label=button.querySelector('.tool-label')?.textContent||button.textContent.trim();
-  button.replaceChildren(document.createTextNode((icon?icon+' ':'')+label));
- });
  const postCard=document.getElementById('postCard');
- if(postCard)postCard.before(bottomToolbar);else creator.append(bottomToolbar);
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
   previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);toolbar.before(switchBar);
- const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
+ const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});}
  function setWorkspace(mode){
   const adding=mode==='add';
@@ -2285,7 +2277,8 @@ renderTimeline();
  };
  window.refreshTatoPlacedStickers=renderPlaced;
  function open(){const modal=document.getElementById('rewardsWindow');modal.classList.add('open');modal.setAttribute('aria-hidden','false');refreshWallet();renderWheel();renderShop();renderOwned();}
- const clearReelText=document.getElementById('clearReelText');if(clearReelText)clearReelText.addEventListener('click',()=>{const caption=document.getElementById('caption');if(caption){caption.value='';caption.dispatchEvent(new Event('input',{bubbles:true}));}const placed=getPlaced();if(placed.length){savePlaced([]);renderPlaced();}const prize=document.getElementById('wheelPrize');if(prize)prize.textContent='🎁';const status=document.getElementById('wheelStatus');if(status)status.textContent='';});\n function openWheelFromCaption(){open();const wheel=document.getElementById('spinWheel');if(wheel){const card=wheel.closest('.rewards-card');if(card)card.scrollIntoView({behavior:'smooth',block:'center'});}}
+ const clearReelText=document.getElementById('clearReelText');if(clearReelText)clearReelText.addEventListener('click',()=>{const caption=document.getElementById('caption');if(caption){caption.value='';caption.dispatchEvent(new Event('input',{bubbles:true}));}const placed=getPlaced();if(placed.length){savePlaced([]);renderPlaced();}const prize=document.getElementById('wheelPrize');if(prize)prize.textContent='🎁';const status=document.getElementById('wheelStatus');if(status)status.textContent='';});
+  function openWheelFromCaption(){open();const wheel=document.getElementById('spinWheel');if(wheel){const card=wheel.closest('.rewards-card');if(card)card.scrollIntoView({behavior:'smooth',block:'center'});}}
  document.getElementById('openWheelFromCaption').addEventListener('click',openWheelFromCaption);
  function close(){const modal=document.getElementById('rewardsWindow');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
  document.getElementById('openRewards').addEventListener('click',open);document.getElementById('closeRewards').addEventListener('click',close);document.getElementById('rewardsWindow').addEventListener('click',e=>{if(e.target.id==='rewardsWindow')close();});
