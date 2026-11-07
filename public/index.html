@@ -2303,23 +2303,28 @@ renderTimeline();
 </style>
 
 
-<style id="tato-solo-video-left-align-v3">
-/* Selector correcto: la tarjeta SOLO VIDEO es hija directa de .editor-panel.
-   Desplazar el recuadro completo (título, descripción y botón) hacia el margen izquierdo. */
-@media(min-width:901px){
+<style id="tato-creation-modes-two-column-layout">
+/* Reacomodo de las tarjetas completas: SOLO VIDEO a la izquierda y SOLO FOTOS a su derecha.
+   El encabezado ocupa el ancho de ambas; HÍBRIDO conserva el flujo debajo. */
+@media(min-width:721px){
+  .creator > .editor-panel > .creation-modes-panel{
+    grid-column:1 / -1!important;
+  }
   .creator > .editor-panel > .creation-mode-card:has(#uploadBtn){
-    margin-left:-294px!important;
+    grid-column:1!important;
+    margin-left:0!important;
     margin-right:0!important;
   }
-}
-@media(min-width:721px) and (max-width:900px){
-  .creator > .editor-panel > .creation-mode-card:has(#uploadBtn){
-    margin-left:-251px!important;
+  .creator > .editor-panel > .creation-mode-card:has(#addPhotosBtn){
+    grid-column:2!important;
+    margin-left:0!important;
     margin-right:0!important;
   }
 }
 @media(max-width:720px){
-  .creator > .editor-panel > .creation-mode-card:has(#uploadBtn){
+  .creator > .editor-panel > .creation-mode-card:has(#uploadBtn),
+  .creator > .editor-panel > .creation-mode-card:has(#addPhotosBtn){
+    grid-column:1 / -1!important;
     margin-left:0!important;
     margin-right:0!important;
   }
