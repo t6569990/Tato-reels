@@ -1304,13 +1304,11 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <nav class="editor-toolbar editor-toolbar-one-line" aria-label="Herramientas del editor">
-      <span class="toolbar-group-label">CREAR Y EDITAR</span>
       <button class="editor-tool active" data-pane="video"><span class="tool-icon">🎬</span><span class="tool-label">Video</span></button>
       <button class="editor-tool" data-pane="image"><span class="tool-icon">🖼️</span><span class="tool-label">Imagen</span></button>
       <button class="editor-tool" data-pane="text"><span class="tool-icon">✍️</span><span class="tool-label">Texto</span></button>
       <button class="editor-tool" data-pane="music"><span class="tool-icon">🎵</span><span class="tool-label">Música</span></button>
       <button class="editor-tool" data-pane="format"><span class="tool-icon">📐</span><span class="tool-label">Formato</span></button>
-      <span class="toolbar-group-label secondary-tools-label">COMPARTIR Y DESCUBRIR</span>
       <button class="editor-tool" data-pane="explore"><span class="tool-icon">🌐</span><span class="tool-label">Explorar</span></button>
       <button class="editor-tool" data-pane="share"><span class="tool-icon">🔗</span><span class="tool-label">Compartir</span></button>
       <button class="editor-tool" data-pane="publish"><span class="tool-icon">📣</span><span class="tool-label">Publicar</span></button>
@@ -1338,7 +1336,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         <div class="creation-modes-layout">
           <div class="panel creation-modes-panel">
             <h3>🎞️ ELIGE CÓMO CREAR TU REEL</h3>
-            <div class="file-note">Elige uno de los tres modos. Puedes volver a agregar elementos para ampliar tu secuencia.</div>
+            <div class="file-note">Elige uno de los tres modos. Puedes volver a agregar elementos para ampliar tu secuencia.</div><button class="primary" id="applyCreationModeBtn" type="button" style="width:100%;margin-top:10px">✓ Aplicar cambios</button>
           </div>
           <div class="panel upload-zone creation-mode-card">
             <b>🎬 SOLO VIDEO</b>
@@ -1463,13 +1461,13 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         </div>
         <div class="panel">
           <h3>🚀 Salida a redes sociales</h3>
-          <div class="file-note">Prepara tu contenido y abre el centro de creación de cada plataforma. La publicación final se confirma dentro de tu cuenta.</div>
+          <div class="file-note">Antes de compartir, inicia sesión en Instagram, Facebook y TikTok en este mismo navegador. Al abrir cada red se aprovechará la sesión que ya tengas abierta. Tato Reels no solicita tus contraseñas ni publica sin tu confirmación.</div>
           <button class="secondary" id="openInstagram" style="width:100%;margin-top:8px">Abrir Instagram</button>
           <button class="secondary" id="openFacebook" style="width:100%;margin-top:7px">Abrir Facebook</button>
           <button class="secondary" id="openTikTok" style="width:100%;margin-top:7px">Abrir TikTok</button>
-          <div class="file-note" id="socialStatus">No hay cuentas conectadas. Estos accesos no suben el video automáticamente.</div>
+          <div class="file-note" id="socialStatus">Inicia sesión previamente en tus redes desde este navegador. Después podrás abrir cada cuenta y elegir el Reel exportado para publicarlo.</div>
         </div>
-        <div style="grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap"><button class="secondary" id="saveBtn" style="flex:1">Guardar borrador</button><button class="primary" id="exportBtn" style="flex:1">Exportar clip WebM ↓</button><button class="primary" id="exportSequenceBtn" style="flex:1">Exportar Reel completo ↓</button><button class="secondary" id="publishBtn" style="flex:1">Preparar publicación ↗</button></div>
+        <div style="grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap"><button class="secondary" id="saveBtn" style="flex:1">💾 Guardar borrador</button><button class="primary" id="exportSequenceBtn" style="flex:1">⚙️ Compilar proyecto</button><button class="primary" id="exportReelBtn" style="flex:1" disabled>🎬 Exportar Reel</button><button class="secondary" id="exportBtn" type="button" hidden>Exportar clip</button><button class="secondary" id="publishBtn" type="button" hidden>Preparar publicación</button></div>
         <div class="export-progress" id="exportProgress" role="status" aria-live="polite"><div class="export-progress-head"><span id="exportProgressLabel">Preparando Reel completo…</span><strong id="exportProgressPercent">0%</strong></div><div class="export-progress-track"><div class="export-progress-fill" id="exportProgressFill"></div></div></div>
       </section>
     </div>
@@ -1517,7 +1515,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
  if(actionRow){
   const shortcuts=document.createElement('div');shortcuts.className='editor-shortcuts';shortcuts.setAttribute('aria-label','Accesos directos');
-  const labels={saveBtn:'💾 Guardar borrador',exportBtn:'⬇ Exportar clip',exportSequenceBtn:'🎬 Exportar Reel',publishBtn:'📣 Preparar publicación'};
+  const labels={saveBtn:'💾 Guardar borrador',exportSequenceBtn:'⚙️ Compilar proyecto',exportReelBtn:'🎬 Exportar Reel'};
   Object.entries(labels).forEach(([id,label])=>{const button=document.getElementById(id);if(button){button.textContent=label;button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
@@ -1527,9 +1525,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  bottomActions.setAttribute('aria-label','Acciones del editor al final de la página');
  const bottomButtons=[
   {id:'saveBtn',icon:'💾',label:'Guardar borrador',primary:false},
-  {id:'exportBtn',icon:'⬇️',label:'Exportar clip',primary:true},
-  {id:'exportSequenceBtn',icon:'🎬',label:'Exportar Reel',primary:true},
-  {id:'publishBtn',icon:'📣',label:'Preparar publicación',primary:false}
+  {id:'exportSequenceBtn',icon:'⚙️',label:'Compilar proyecto',primary:true},
+  {id:'exportReelBtn',icon:'🎬',label:'Exportar Reel',primary:true}
  ];
  bottomButtons.forEach(item=>{
   const original=document.getElementById(item.id);
@@ -1654,6 +1651,7 @@ form?.addEventListener('submit',event=>{
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
 $('exportFormat').addEventListener('change',refreshExportFormats);
+window.tatoCompiledReelBlob=null;
 function showExportOptions(blob,filename){
  const old=document.getElementById('exportDestModal');if(old)old.remove();
  const backdrop=document.createElement('div');backdrop.id='exportDestModal';backdrop.className='export-dest-backdrop';
@@ -1972,6 +1970,7 @@ $('clipsInput').addEventListener('change',event=>{
 $('timelineTrack').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const index=timelineItems.findIndex(item=>item.id===b.dataset.id);if(index<0)return;const item=timelineItems[index],action=b.dataset.action;if(action==='up'&&index>0){timelineItems.splice(index,1);timelineItems.splice(index-1,0,item);}else if(action==='down'&&index<timelineItems.length-1){timelineItems.splice(index,1);timelineItems.splice(index+1,0,item);}else if(action==='duplicate'){const copy={...item,id:'copy-'+Date.now(),name:item.name+' (copia)',start:item.start,end:item.end,isMain:false};timelineItems.splice(index+1,0,copy);}else if(action==='remove'){const removedUrl=item.url;timelineItems.splice(index,1);if(item.isMain){objectUrl=null;video.pause();video.removeAttribute('src');video.load();$('fileInput').value='';}else extraClips=extraClips.filter(clip=>clip.url!==removedUrl);if(removedUrl&&removedUrl!==objectUrl&&!timelineItems.some(clip=>clip.url===removedUrl)&&!extraClips.some(clip=>clip.url===removedUrl)&&!editSequence.some(clip=>clip.url===removedUrl))URL.revokeObjectURL(removedUrl);}selectedTimelineId=timelineItems[Math.min(index,timelineItems.length-1)]?.id||null;renderTimeline();syncExtraClipsFromTimeline();});
 $('timelineTrack').addEventListener('change',e=>{const input=e.target.closest('input[data-trim]');if(!input)return;const item=timelineItems.find(x=>x.id===input.dataset.id);if(!item)return;const value=Math.max(0,Number(input.value)||0);if(input.dataset.trim==='start')item.start=Math.min(value,(item.end??item.duration)-0.1);else item.end=Math.min(item.duration||value,Math.max(value,(item.start||0)+0.1));if(item.end!=null&&item.end<=(item.start||0)){toast('El final debe ser posterior al inicio.');return;}renderTimeline();});
 $('applyTimelineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Agrega al menos un video o una foto a la línea de tiempo.');return;}for(const item of timelineItems){const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);if(duration>0&&(end<=start||end>duration)){toast('Revisa el inicio y el final de '+(item.name||'un elemento')+'.');return;}}editSequence=timelineItems.map(item=>({...item}));syncExtraClipsFromTimeline();renderTimeline();$('timelineStatus').textContent='✓ Cambios aplicados a '+timelineItems.length+' elemento(s). La vista previa y la exportación usarán estos tiempos.';toast('Cambios de la línea de tiempo aplicados.');});
+$('applyCreationModeBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Primero agrega videos o fotos con el modo que elegiste.');return;}for(const item of timelineItems){const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);if(duration>0&&(end<=start||end>duration)){toast('Revisa el inicio y el final de '+(item.name||'un elemento')+'.');return;}}editSequence=timelineItems.map(item=>({...item}));syncExtraClipsFromTimeline();renderTimeline();$('sequenceNote').textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para compilar.';$('timelineStatus').textContent='✓ Cambios aplicados a '+timelineItems.length+' elemento(s).';toast('Cambios del modo de creación aplicados.');});
 $('resetTimelineBtn').addEventListener('click',()=>{timelineItems.forEach(item=>{item.start=0;item.end=item.duration||null;});renderTimeline();toast('Recortes de la línea de tiempo restablecidos.');});
 function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}return sequencePhoto;}
 function stopSequenceTimer(){if(sequenceTimer){clearTimeout(sequenceTimer);sequenceTimer=null;}}
@@ -2015,7 +2014,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  const items=timelineItems.length?timelineItems.map(item=>({...item})):video.src?[{name:'Video principal',url:objectUrl,start:Number($('trimStart').value)||0,end:Number($('trimEnd').value)||video.duration,duration:video.duration}]:[];
  if(!items.length){toast('Carga un video y agrega los clips que quieras incluir.');return;}
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast('Tu navegador no permite exportar el Reel completo. Prueba Chrome actualizado.');return;}
- const btn=$('exportSequenceBtn');btn.disabled=true;btn.textContent='Preparando Reel…';const progress=$('exportProgress'),progressFill=$('exportProgressFill'),progressPercent=$('exportProgressPercent'),progressLabel=$('exportProgressLabel');const totalDuration=items.reduce((sum,item)=>sum+Math.max(0,(Number(item.end)||item.duration)-(Number(item.start)||0)),0);let completedDuration=0;const updateProgress=value=>{const percent=Math.max(0,Math.min(100,Math.round(value)));progress.classList.add('visible');progressFill.style.width=percent+'%';progressPercent.textContent=percent+'%';};progressLabel.textContent='Preparando Reel completo…';updateProgress(0);let audioContext=null,music=null,musicSource=null,recorder=null,raf=0,stream=null,recorderStream=null,activeClip=null;
+ const btn=$('exportSequenceBtn');window.tatoCompiledReelBlob=null;$('exportReelBtn').disabled=true;btn.disabled=true;btn.textContent='Compilando proyecto…';const progress=$('exportProgress'),progressFill=$('exportProgressFill'),progressPercent=$('exportProgressPercent'),progressLabel=$('exportProgressLabel');const totalDuration=items.reduce((sum,item)=>sum+Math.max(0,(Number(item.end)||item.duration)-(Number(item.start)||0)),0);let completedDuration=0;const updateProgress=value=>{const percent=Math.max(0,Math.min(100,Math.round(value)));progress.classList.add('visible');progressFill.style.width=percent+'%';progressPercent.textContent=percent+'%';};progressLabel.textContent='Compilando proyecto…';updateProgress(0);let audioContext=null,music=null,musicSource=null,recorder=null,raf=0,stream=null,recorderStream=null,activeClip=null;
  try{
   const canvas=document.createElement('canvas');canvas.width=720;canvas.height=1280;const ctx=canvas.getContext('2d');stream=canvas.captureStream(30);audioContext=new AudioContext();const audioOut=audioContext.createMediaStreamDestination();
   if(musicIntegrated&&musicUrl){const trim=getAudioTrim();if(!trim)throw new Error('Revisa el recorte de la música.');music=new Audio(musicUrl);music.preload='auto';music.loop=false;await new Promise((resolve,reject)=>{if(music.readyState>=1){resolve();return;}music.addEventListener('loadedmetadata',resolve,{once:true});music.addEventListener('error',()=>reject(new Error('No se pudo cargar la pista de música.')),{once:true});music.load();});const start=Math.min(trim.start,Math.max(0,music.duration-.05)),end=Math.min(trim.end,music.duration);if(end<=start)throw new Error('El recorte de música no es válido.');music.currentTime=start;music.volume=Number($('musicVolume').value);musicSource=audioContext.createMediaElementSource(music);musicSource.connect(audioOut);music.addEventListener('timeupdate',()=>{if(music.currentTime>=end)music.pause();});}
@@ -2034,10 +2033,11 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
     activeClip.pause();activeClip.removeAttribute('src');activeClip.load();activeClip=null;
    }
    cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);
-  }  await playExportOutro(ctx);recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});showExportOptions(blob,'tato-reel-completo.webm');awardTatoCoin('Reel completo exportado');updateProgress(100);progressLabel.textContent='¡Reel completo listo!';toast('Reel completo exportado.');$('videoStatus').textContent='Exportación completa';
+  }  await playExportOutro(ctx);recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});window.tatoCompiledReelBlob=blob;$('exportReelBtn').disabled=false;awardTatoCoin('proyecto compilado');updateProgress(100);progressLabel.textContent='¡Proyecto compilado! Ya puedes exportar tu Reel.';toast('Proyecto compilado. Pulsa Exportar Reel para guardarlo en tu dispositivo.');$('videoStatus').textContent='Proyecto compilado';
  }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();toast(error.message||'No se pudo exportar el Reel completo.');}
- finally{cancelAnimationFrame(raf);if(music)music.pause();if(activeClip){activeClip.pause();activeClip.removeAttribute('src');activeClip.load();}if(recorderStream)recorderStream.getTracks().forEach(track=>track.stop());if(stream)stream.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='Exportar Reel completo ↓';}
+ finally{cancelAnimationFrame(raf);if(music)music.pause();if(activeClip){activeClip.pause();activeClip.removeAttribute('src');activeClip.load();}if(recorderStream)recorderStream.getTracks().forEach(track=>track.stop());if(stream)stream.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='⚙️ Compilar proyecto';}
 });
+$('exportReelBtn').addEventListener('click',()=>{if(!window.tatoCompiledReelBlob){toast('Primero pulsa Compilar proyecto y espera a que termine.');return;}showExportOptions(window.tatoCompiledReelBlob,'tato-reel-completo.webm');});
 // Biblioteca de inspiración: referencias y archivos locales persistidos en IndexedDB.
 const inspirationDBName='tatoReelsInspirationDB';
 function openInspirationDB(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(new Error('Este navegador no ofrece almacenamiento local de archivos.'));return;}const request=indexedDB.open(inspirationDBName,1);request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains('videos'))db.createObjectStore('videos',{keyPath:'id'});};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error||new Error('No se pudo abrir la biblioteca.'));});}
