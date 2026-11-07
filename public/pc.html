@@ -1343,6 +1343,69 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .editor-tool-pane[data-pane="explore"].active .explore-tool-card .file-note{margin:0 0 8px!important}
 @media(max-width:720px){.editor-tool-pane[data-pane="explore"].active>.panel{grid-template-columns:minmax(0,1fr)!important}.editor-tool-pane[data-pane="explore"].active .explore-tool-card:first-of-type{grid-column:auto!important}}
 </style>
+
+<style id="tato-pc-independent-image-explore-publish-20261107">
+/* Herramientas PC: tarjetas hermanas, proporciones equilibradas y sin marcos gruesos. */
+@media(min-width:721px){
+ .editor-tool-pane[data-pane="image"].active,
+ .editor-tool-pane[data-pane="explore"].active,
+ .editor-tool-pane[data-pane="publish"].active{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:stretch!important;gap:12px!important;
+ }
+ .editor-tool-pane[data-pane="image"].active>.tool-pane-heading,
+ .editor-tool-pane[data-pane="explore"].active>.tool-pane-heading,
+ .editor-tool-pane[data-pane="publish"].active>.tool-pane-heading{grid-column:1/-1!important}
+ .editor-tool-pane[data-pane="image"].active>.panel,
+ .editor-tool-pane[data-pane="explore"].active>.panel,
+ .editor-tool-pane[data-pane="publish"].active>.panel{
+  box-sizing:border-box!important;min-width:0!important;width:100%!important;
+  margin:0!important;padding:14px!important;border:0!important;
+  border-radius:12px!important;box-shadow:none!important;
+  background:light-dark(#fff,#171521)!important;
+ }
+ .editor-tool-pane[data-pane="image"].active>.image-filter-card,
+ .editor-tool-pane[data-pane="image"].active>.image-scale-card{display:flex!important;flex-direction:column!important;justify-content:center!important;gap:10px!important}
+ .editor-tool-pane[data-pane="image"].active>.image-scale-card{grid-column:span 1!important}
+ .editor-tool-pane[data-pane="explore"].active>.explore-tool-card:first-of-type{grid-column:auto!important}
+ .editor-tool-pane[data-pane="explore"].active>.explore-tool-card .explore-social-grid,
+ .editor-tool-pane[data-pane="publish"].active>.publish-networks-card .publish-network-grid{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;align-items:stretch!important
+ }
+ .editor-tool-pane[data-pane="publish"].active>.publish-info-card,
+ .editor-tool-pane[data-pane="publish"].active>.publish-status-card{grid-column:1/-1!important}
+ .editor-tool-pane[data-pane="image"].active button,
+ .editor-tool-pane[data-pane="explore"].active button,
+ .editor-tool-pane[data-pane="publish"].active button{
+  box-sizing:border-box!important;width:100%!important;min-width:0!important;
+  min-height:42px!important;height:auto!important;padding:9px 12px!important;
+  border-width:1px!important;border-radius:9px!important;box-shadow:none!important;
+  font-size:12px!important;line-height:1.25!important;text-align:center!important
+ }
+ .editor-toolbar.editor-toolbar-one-line{
+  display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;
+  width:100%!important;max-width:none!important;gap:8px!important;
+  margin:0 0 14px!important;padding:8px!important;box-sizing:border-box!important
+ }
+ .editor-toolbar-one-line .editor-tool{
+  width:100%!important;min-width:0!important;max-width:none!important;
+  flex:initial!important;height:54px!important;min-height:54px!important;
+  padding:6px 3px!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:4px!important
+ }
+ .editor-toolbar-one-line .tool-icon{font-size:19px!important;line-height:1!important}
+ .editor-toolbar-one-line .tool-label{font-size:10px!important;line-height:1.1!important;white-space:nowrap!important}
+}
+@media(max-width:720px){
+ .editor-tool-pane[data-pane="image"].active,
+ .editor-tool-pane[data-pane="explore"].active,
+ .editor-tool-pane[data-pane="publish"].active{grid-template-columns:minmax(0,1fr)!important}
+ .editor-tool-pane[data-pane="image"].active>.panel,
+ .editor-tool-pane[data-pane="explore"].active>.panel,
+ .editor-tool-pane[data-pane="publish"].active>.panel{border:0!important;box-shadow:none!important}
+}
+</style>
+
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1613,14 +1676,28 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   if(edit)editCard.append(...Array.from(edit.childNodes));
   musicPanel.replaceWith(sourceCard,editCard);
  }
- // Explorar: separar accesos sociales, referencias e importación en tarjetas independientes.
- const explorePanel=panes.explore.querySelector('.panel');
+ // IMAGEN: convertir el panel general en tarjetas hermanas, sin marco exterior.
+ const imagePanel=[...panes.image.children].find(node=>node.classList?.contains('panel'));
+ if(imagePanel){
+  const filter=imagePanel.querySelector('.filter-row');
+  const scale=imagePanel.querySelector('.photo-scale-field');
+  const apply=imagePanel.querySelector('#applyImageChanges');
+  const status=imagePanel.querySelector('#imageApplyStatus');
+  const makeCard=cls=>{const card=document.createElement('section');card.className='panel image-tool-card '+cls;return card;};
+  const filterCard=makeCard('image-filter-card'),scaleCard=makeCard('image-scale-card');
+  if(filter)filterCard.append(filter);
+  if(scale)scaleCard.append(scale);
+  if(apply)scaleCard.append(apply);
+  if(status)scaleCard.append(status);
+  imagePanel.replaceWith(...[filterCard,scaleCard].filter(card=>card.children.length));
+ }
+ // Explorar: tarjetas independientes como hermanas directas del panel de herramientas.
+ const explorePanel=panes.explore.querySelector(':scope > .panel');
  if(explorePanel){
-  const heading=explorePanel.querySelector('h3');
   const children=[...explorePanel.children];
   const notes=children.filter(node=>node.classList?.contains('file-note'));
   const grids=children.filter(node=>node.classList?.contains('explore-social-grid'));
-  const makeCard=()=>{const card=document.createElement('section');card.className='explore-tool-card';return card;};
+  const makeCard=()=>{const card=document.createElement('section');card.className='panel explore-tool-card';return card;};
   const socialCard=makeCard(),referenceCard=makeCard(),libraryCard=makeCard();
   if(notes[0])socialCard.append(notes[0]);if(grids[0])socialCard.append(grids[0]);
   if(notes[1])referenceCard.append(notes[1]);
@@ -1630,7 +1707,22 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   if(urlInput)referenceCard.append(urlInput);
   if(grids[1])referenceCard.append(grids[1]);
   ['importInspirationFiles','inspirationFiles','inspirationStatus','inspirationLibrary'].forEach(id=>{const node=document.getElementById(id);if(node)libraryCard.append(node);});
-  explorePanel.replaceChildren(...[heading,socialCard,referenceCard,libraryCard].filter(Boolean));
+  explorePanel.replaceWith(...[socialCard,referenceCard,libraryCard].filter(card=>card.children.length));
+ }
+ // PUBLICAR: separar indicaciones, accesos a redes y estado en tarjetas independientes.
+ const publishPanel=[...panes.publish.children].find(node=>node.classList?.contains('panel'));
+ if(publishPanel){
+  const nodes=[...publishPanel.children];
+  const intro=nodes.find(node=>node.classList?.contains('file-note')&&node.id!=='socialStatus');
+  const status=document.getElementById('socialStatus');
+  const makeCard=cls=>{const card=document.createElement('section');card.className='panel publish-tool-card '+cls;return card;};
+  const infoCard=makeCard('publish-info-card'),networksCard=makeCard('publish-networks-card'),statusCard=makeCard('publish-status-card');
+  if(intro)infoCard.append(intro);
+  const networkGrid=document.createElement('div');networkGrid.className='publish-network-grid';
+  ['openInstagram','openFacebook','openTikTok'].forEach(id=>{const button=document.getElementById(id);if(button)networkGrid.append(button);});
+  networksCard.append(networkGrid);
+  if(status)statusCard.append(status);
+  publishPanel.replaceWith(...[infoCard,networksCard,statusCard].filter(card=>card.children.length));
  }
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline)editor.append(timeline);
