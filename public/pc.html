@@ -1334,6 +1334,15 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  .editor-tool-pane.active .music-layout{grid-template-columns:minmax(0,1fr)!important}
 }
 </style>
+
+<style id="tato-explore-independent-cards">
+.editor-tool-pane[data-pane="explore"].active>.panel{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:start!important}
+.editor-tool-pane[data-pane="explore"].active>.panel>h3{grid-column:1/-1!important}
+.editor-tool-pane[data-pane="explore"].active .explore-tool-card{min-width:0!important;padding:12px!important;border:0!important;border-radius:11px!important;background:#100e17!important;box-shadow:none!important}
+.editor-tool-pane[data-pane="explore"].active .explore-tool-card:first-of-type{grid-column:1/-1!important}
+.editor-tool-pane[data-pane="explore"].active .explore-tool-card .file-note{margin:0 0 8px!important}
+@media(max-width:720px){.editor-tool-pane[data-pane="explore"].active>.panel{grid-template-columns:minmax(0,1fr)!important}.editor-tool-pane[data-pane="explore"].active .explore-tool-card:first-of-type{grid-column:auto!important}}
+</style>
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1585,6 +1594,25 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   else if(/Salida a redes/i.test(h))key='publish';
   panes[key].append(card);
  });
+ // Explorar: separar accesos sociales, referencias e importación en tarjetas independientes.
+ const explorePanel=panes.explore.querySelector('.panel');
+ if(explorePanel){
+  const heading=explorePanel.querySelector('h3');
+  const children=[...explorePanel.children];
+  const notes=children.filter(node=>node.classList?.contains('file-note'));
+  const grids=children.filter(node=>node.classList?.contains('explore-social-grid'));
+  const makeCard=()=>{const card=document.createElement('section');card.className='explore-tool-card';return card;};
+  const socialCard=makeCard(),referenceCard=makeCard(),libraryCard=makeCard();
+  if(notes[0])socialCard.append(notes[0]);if(grids[0])socialCard.append(grids[0]);
+  if(notes[1])referenceCard.append(notes[1]);
+  const urlInput=document.getElementById('inspirationUrl');
+  const urlLabel=urlInput?.previousElementSibling;
+  if(urlLabel?.tagName==='LABEL')referenceCard.append(urlLabel);
+  if(urlInput)referenceCard.append(urlInput);
+  if(grids[1])referenceCard.append(grids[1]);
+  ['importInspirationFiles','inspirationFiles','inspirationStatus','inspirationLibrary'].forEach(id=>{const node=document.getElementById(id);if(node)libraryCard.append(node);});
+  explorePanel.replaceChildren(...[heading,socialCard,referenceCard,libraryCard].filter(Boolean));
+ }
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline)editor.append(timeline);
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
