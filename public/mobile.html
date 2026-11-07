@@ -1493,9 +1493,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const creator=document.querySelector('.creator'), preview=creator?.querySelector('.preview-shell'), trim=creator?.querySelector('.trim-panel'), editor=creator?.querySelector('.editor-panel'), toolbar=document.querySelector('.editor-toolbar');
  if(!creator||!preview||!trim||!editor||!toolbar)return;
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
- creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';trimCard.append(trim);creator.insertBefore(trimCard,stage);const applyButton=creator.querySelector('#applyTrim'),creationPanel=creator.querySelector('.creation-modes-panel');if(applyButton&&creationPanel){applyButton.style.marginTop='10px';applyButton.style.width='100%';applyButton.classList.remove('secondary');applyButton.classList.add('primary');creationPanel.append(applyButton);}
- const dragHandle=document.createElement('button');dragHandle.type='button';dragHandle.className='preview-drag-handle';dragHandle.textContent='⠿ MOVER VISUALIZADOR';dragHandle.setAttribute('aria-label','Arrastrar visualizador a otra posición');preview.insertBefore(dragHandle,preview.firstChild);
- const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
+ creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';trimCard.append(trim);creator.insertBefore(trimCard,stage.nextSibling);const applyButton=creator.querySelector('#applyTrim'),creationPanel=creator.querySelector('.creation-modes-panel');if(applyButton&&creationPanel){applyButton.style.marginTop='10px';applyButton.style.width='100%';applyButton.classList.remove('secondary');applyButton.classList.add('primary');creationPanel.append(applyButton);}
  const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
  const paneWrap=document.createElement('div');paneWrap.className='editor-tool-panes';
  paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;p.setAttribute('aria-label',name);const meta={"video":["🎬","VIDEO","Carga, organiza y recorta tus clips."],"image":["🖼️","IMAGEN","Ajustes visuales y recursos gráficos."],"text":["✍️","TEXTO","Contenido, títulos y texto sobre el Reel."],"music":["🎵","MÚSICA","Biblioteca, selección y mezcla de audio."],"format":["📐","FORMATO","Proporción y formato de exportación."],"explore":["🌐","EXPLORAR","Inspiración y biblioteca de referencias."],"share":["🔗","COMPARTIR","Comparte Tato Reels."],"publish":["📣","PUBLICAR","Prepara tu salida a redes sociales."]}[name];const heading=document.createElement('header');heading.className='tool-pane-heading';const icon=document.createElement('span');icon.className='tool-pane-icon';icon.textContent=meta[0];const copy=document.createElement('div');const title=document.createElement('h2');title.textContent=meta[1];const description=document.createElement('p');description.textContent=meta[2];copy.append(title,description);heading.append(icon,copy);p.append(heading);panes[name]=p;paneWrap.append(p);});
@@ -1578,85 +1576,11 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  addSwitch.addEventListener('click',()=>{activate('video');setWorkspace('add');panes.video.scrollIntoView({behavior:'smooth',block:'start'});});
  tabs.forEach(b=>b.addEventListener('click',()=>{const name=b.dataset.pane;activate(name);setWorkspace(name==='video'?'add':'preview');}));
  activate('video');setWorkspace('preview');
- let floating=false,moving=false,resizing=false,dragMoved=false,suppressToggle=false,startX=0,startY=0,startLeft=0,startTop=0,startW=0,startH=0;
- const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
- function setFloating(enabled){
-  floating=enabled;
-  if(floating){
-   // Se mueve el contenedor completo; el visualizador y sus controles viajan juntos.
-   const r=stage.getBoundingClientRect();
-   stage.style.setProperty('position','fixed','important');
-   stage.style.setProperty('left',clamp(r.left,0,Math.max(0,window.innerWidth-r.width))+'px','important');
-   stage.style.setProperty('top',clamp(r.top,0,Math.max(0,window.innerHeight-r.height))+'px','important');
-   stage.style.setProperty('right','auto','important');
-   stage.style.setProperty('bottom','auto','important');
-   stage.style.setProperty('width',r.width+'px','important');
-   stage.style.setProperty('height',r.height+'px','important');
-   stage.style.setProperty('min-height',r.height+'px','important');
-   stage.style.setProperty('margin','0','important');
-   stage.style.setProperty('transform','none','important');
-   stage.style.setProperty('contain','none','important');
-   stage.style.setProperty('overflow','visible','important');
-   stage.style.setProperty('z-index','99999','important');
-   dragHandle.textContent='⠿ VISUALIZADOR FLOTANTE · ARRASTRA';
-   dragHandle.setAttribute('aria-pressed','true');
-   dragHandle.title='Modo flotante activo. Pulsa para fijar de nuevo.';
-  }else{
-   ['position','left','top','right','bottom','width','height','min-height','margin','transform','contain','overflow','z-index'].forEach(p=>stage.style.removeProperty(p));
-   dragHandle.textContent='⠿ MOVER VISUALIZADOR';
-   dragHandle.setAttribute('aria-pressed','false');
-   dragHandle.title='Pulsa para activar el modo flotante y arrastrar por la página.';
-  }
- }
- dragHandle.setAttribute('aria-pressed','false');
- dragHandle.title='Pulsa para activar el modo flotante y arrastrar por la página.';
- dragHandle.addEventListener('click',e=>{
-  if(suppressToggle){suppressToggle=false;e.preventDefault();return;}
-  setFloating(!floating);
- });
- function begin(e,mode){
-  if(mode==='move'&&!floating)return;
-  e.preventDefault();e.stopPropagation();
-  const r=mode==='move'?stage.getBoundingClientRect():preview.getBoundingClientRect(),b=stage.getBoundingClientRect();
-  moving=mode==='move';resizing=mode==='resize';dragMoved=false;
-  startX=e.clientX;startY=e.clientY;
-  startLeft=floating?r.left:r.left-b.left;startTop=floating?r.top:r.top-b.top;
-  startW=r.width;startH=r.height;
-  (mode==='resize'?handle:dragHandle).setPointerCapture?.(e.pointerId);
-  preview.classList.toggle('dragging',moving);
- }
- dragHandle.addEventListener('pointerdown',e=>{if(floating)begin(e,'move');});
- handle.addEventListener('pointerdown',e=>begin(e,'resize'));
- function move(e){
-  if(!moving&&!resizing)return;
-  if(Math.abs(e.clientX-startX)>2||Math.abs(e.clientY-startY)>2)dragMoved=true;
-  if(moving){
-   const w=stage.offsetWidth,h=stage.offsetHeight;
-   const maxX=floating?window.innerWidth-w:stage.clientWidth-w;
-   const maxY=floating?window.innerHeight-h:stage.clientHeight-h-8;
-   const x=clamp(startLeft+e.clientX-startX,0,Math.max(0,maxX));
-   const y=clamp(startTop+e.clientY-startY,floating?0:34,Math.max(floating?0:34,maxY));
-   if(floating){
-    stage.style.setProperty('left',x+'px','important');
-    stage.style.setProperty('top',y+'px','important');
-   }else{
-    preview.style.setProperty('left',x+'px','important');
-    preview.style.setProperty('top',y+'px','important');
-    preview.style.setProperty('transform','none','important');
-   }
-  }else{
-   const maxWidth=floating?window.innerWidth-12:stage.clientWidth-12;
-   preview.style.width=clamp(startW+e.clientX-startX,190,Math.min(520,maxWidth))+'px';
-   preview.style.maxHeight='none';
-  }
- }
- function stop(){
-  if(moving&&dragMoved)suppressToggle=true;
-  moving=false;resizing=false;preview.classList.remove('dragging');
- }
- window.addEventListener('pointermove',move);
- window.addEventListener('pointerup',stop);
- window.addEventListener('pointercancel',stop);
+ // El visualizador y todos los paneles quedan anclados al flujo normal: sin arrastre ni redimensionado.
+ stage.classList.add('tato-layout-locked');
+ preview.classList.add('tato-layout-locked');
+ creator.querySelectorAll('.workspace-switch-card,.editor-panel,.editor-tool-pane,.panel').forEach(el=>el.classList.add('tato-layout-locked'));
+
 })();
 
 // Ajustes generales: navegación independiente del editor y sin alterar la línea de tiempo.
@@ -2359,6 +2283,34 @@ renderTimeline();
 .editor-toolbar-one-line .editor-tool .tool-label{display:block!important;flex:0 0 12px!important;width:100%!important;height:12px!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:9px!important;font-weight:800!important;line-height:12px!important}
 .editor-toolbar-one-line .editor-tool.active{border-color:light-dark(#8f78ad,#a98aef)!important;background:light-dark(#f2edff,#302441)!important;box-shadow:inset 0 0 0 1px light-dark(#8f78ad,#a98aef)!important;color:inherit!important}
 @media(max-width:720px){.editor-toolbar.editor-toolbar-one-line{gap:6px!important;margin:7px 0 12px!important;padding-bottom:3px!important}.editor-toolbar-one-line .editor-tool{flex-basis:54px!important;width:54px!important;min-width:54px!important;max-width:54px!important;height:49px!important;min-height:49px!important;max-height:49px!important}.editor-toolbar-one-line .editor-tool .tool-icon{font-size:17px!important}.editor-toolbar-one-line .editor-tool .tool-label{font-size:8px!important}.editor-toolbar-one-line .toolbar-group-label{font-size:8px!important}}
+</style>
+
+<style id="tato-stable-containers-lock-20261107">
+/* BLOQUEO DE ESTABILIDAD: los contenedores no flotan, arrastran ni cambian de tamaño por gestos */
+.creator,.creator>* , .creator .panel,.creator .workspace-switch-card,.creator .editor-panel,.creator .editor-tool-pane,.creator .trim-panel,.creator .preview-shell,.creator .floating-stage{
+ box-sizing:border-box!important;min-width:0!important;max-width:100%!important;overflow-anchor:none!important;
+}
+.creator>.floating-stage,.creator>.workspace-trim-card,.creator>.editor-panel,.creator .workspace-switch-card,.creator .editor-tool-pane,.creator .panel,.creator .trim-panel,.creator .preview-shell{
+ position:relative!important;inset:auto!important;float:none!important;clear:both!important;transform:none!important;
+ animation:none!important;transition:none!important;resize:none!important;touch-action:pan-y!important;
+}
+.creator .preview-drag-handle,.creator .preview-resize-handle{display:none!important;visibility:hidden!important;pointer-events:none!important}
+.creator .floating-stage.tato-preview-container-locked{display:flex!important;flex-direction:column!important;align-items:center!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0 0 8px!important;padding:8px!important;overflow:visible!important;contain:layout!important;z-index:auto!important}
+.creator .floating-stage.tato-preview-container-locked:before{position:static!important;display:block!important;align-self:flex-start!important;margin:0 0 8px 4px!important}
+.creator .floating-stage.tato-preview-container-locked>.preview-shell{position:relative!important;inset:auto!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;transform:none!important;width:min(100%,190px)!important;max-width:190px!important;height:auto!important;margin:0 auto!important}
+.creator .floating-stage .preview-shell .video-frame{width:100%!important;aspect-ratio:9/16!important;height:auto!important;max-height:330px!important}
+.creator>.workspace-trim-card{display:block!important;position:relative!important;inset:auto!important;grid-column:1/-1!important;width:100%!important;max-width:100%!important;margin:6px 0 10px!important;padding:5px!important;overflow:visible!important}
+.creator>.workspace-trim-card>.trim-panel{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;width:100%!important;max-width:100%!important;margin:0!important;padding:8px!important;border-radius:10px!important;overflow:visible!important}
+.creator>.workspace-trim-card>.trim-panel h3{grid-column:1/-1!important;margin:0!important;font-size:12px!important;line-height:1.2!important}
+.creator>.workspace-trim-card>.trim-panel .trim-help{grid-column:1/-1!important;margin:0!important;font-size:9px!important;line-height:1.25!important}
+.creator>.workspace-trim-card>.trim-panel .range-row{grid-column:1/-1!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;margin:0!important}
+.creator>.workspace-trim-card>.trim-panel .range-row label{min-width:0!important;font-size:9px!important}
+.creator>.workspace-trim-card>.trim-panel .range-row input{width:100%!important;min-width:0!important;height:32px!important;padding:5px!important;font-size:11px!important}
+.creator>.workspace-trim-card>.trim-panel #durationNote{grid-column:1/-1!important;margin:0!important;padding:3px 0!important;font-size:9px!important}
+.creator>.workspace-trim-card>.trim-panel .trim-actions{grid-column:1/-1!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;margin:0!important}
+.creator>.workspace-trim-card>.trim-panel button{min-width:0!important;min-height:32px!important;margin:0!important;padding:6px 5px!important;font-size:9px!important;line-height:1.15!important;white-space:normal!important}
+.creator>.workspace-trim-card>.trim-panel #previewTrim,.creator>.workspace-trim-card>.trim-panel #applyTrim{grid-column:1/-1!important;width:100%!important}
+@media(max-width:380px){.creator>.workspace-trim-card>.trim-panel{gap:5px!important;padding:7px!important}.creator>.workspace-trim-card>.trim-panel button{font-size:8px!important}}
 </style>
 </body>
 </html>
