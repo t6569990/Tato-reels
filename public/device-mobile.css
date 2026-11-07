@@ -1,0 +1,12 @@
+/* Tato Reels — capa de estilos exclusiva para celular.
+   Los estilos actuales de la aplicación permanecen como base compartida.
+   Los ajustes visuales propios de celular se agregarán aquí, sin tocar el motor.
+*/
+body.device-mobile {
+  --tato-device: mobile;
+  --tato-page-gutter: 12px;
+  --tato-content-max: 100%;
+  --tato-preview-max: 100%;
+  --tato-workspace-gap: 12px;
+  --tato-tool-columns: 1;
+}
