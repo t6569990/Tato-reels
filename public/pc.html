@@ -1447,6 +1447,69 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  .editor-tool-pane[data-pane="explore"].active>.explore-tool-card{min-height:0!important}
 }
 </style>
+
+<style id="tato-share-explore-bottom-polish-20261107">
+/* Compartir: contenido visible y acciones en una sola fila clara. */
+.editor-tool-pane[data-pane="share"].active{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ align-items:stretch!important;gap:12px!important;
+}
+.editor-tool-pane[data-pane="share"].active>.tool-pane-heading{grid-column:1/-1!important}
+.editor-tool-pane[data-pane="share"].active>.share-tool-card{
+ box-sizing:border-box!important;display:flex!important;flex-direction:column!important;
+ justify-content:center!important;min-width:0!important;width:100%!important;min-height:132px!important;
+ margin:0!important;padding:16px!important;border:1px solid #342735!important;
+ border-radius:12px!important;background:light-dark(#fff,#171521)!important;box-shadow:none!important;gap:12px!important;
+}
+.editor-tool-pane[data-pane="share"].active .share-info-card h3{margin:0!important}
+.editor-tool-pane[data-pane="share"].active .share-info-card .file-note{margin:0!important;line-height:1.5!important}
+.editor-tool-pane[data-pane="share"].active .share-actions-grid{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ gap:9px!important;width:100%!important;align-items:stretch!important;
+}
+.editor-tool-pane[data-pane="share"].active .share-actions-grid button{
+ width:100%!important;min-width:0!important;min-height:48px!important;height:auto!important;
+ padding:10px 8px!important;border:1px solid #493442!important;border-radius:10px!important;
+ font-size:12px!important;line-height:1.25!important;white-space:normal!important;
+}
+@media(max-width:720px){
+ .editor-tool-pane[data-pane="share"].active{grid-template-columns:minmax(0,1fr)!important}
+ .editor-tool-pane[data-pane="share"].active .share-actions-grid{grid-template-columns:1fr!important}
+}
+/* Explorar: dos tarjetas parejas; redes en una fila y referencia con controles alineados. */
+.editor-tool-pane[data-pane="explore"].active>.explore-tool-card:first-of-type{grid-column:auto!important}
+.editor-tool-pane[data-pane="explore"].active>.explore-tool-card{
+ min-height:100%!important;align-self:stretch!important;justify-content:flex-start!important;
+}
+.editor-tool-pane[data-pane="explore"].active>.explore-tool-card:first-of-type .explore-social-grid{
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+.editor-tool-pane[data-pane="explore"].active>.explore-tool-card:nth-of-type(2) .explore-social-grid{
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+}
+.editor-tool-pane[data-pane="explore"].active>.explore-tool-card .explore-social-grid button,
+.editor-tool-pane[data-pane="explore"].active>.explore-tool-card .explore-social-grid select{
+ width:100%!important;min-width:0!important;height:44px!important;padding:8px 6px!important;
+ font-size:11px!important;white-space:normal!important;text-align:center!important;
+}
+.editor-tool-pane[data-pane="explore"].active>.explore-tool-card #importInspirationFiles{
+ width:100%!important;min-height:42px!important;margin-top:0!important;
+}
+.editor-tool-pane[data-pane="explore"].active>.explore-tool-card .file-note{
+ white-space:normal!important;writing-mode:horizontal-tb!important;overflow-wrap:anywhere!important;
+}
+/* Un solo botón pequeño para regresar al inicio, sin barra ni acciones duplicadas. */
+.editor-go-top{
+ display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ gap:2px!important;width:58px!important;height:58px!important;margin:18px auto 8px!important;
+ padding:5px!important;border:1px solid #493442!important;border-radius:13px!important;
+ background:linear-gradient(145deg,#211b2a,#120f18)!important;color:#f7eaf0!important;
+ box-shadow:0 5px 14px #0004!important;cursor:pointer!important;
+}
+.editor-go-top span{font-size:25px!important;line-height:25px!important;font-weight:500!important}
+.editor-go-top small{font-size:8px!important;letter-spacing:.7px!important;font-weight:800!important}
+.editor-go-top:hover{transform:translateY(-2px);border-color:#e50920!important}
+</style>
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1748,7 +1811,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   if(urlInput)referenceCard.append(urlInput);
   if(grids[1])referenceCard.append(grids[1]);
   ['importInspirationFiles','inspirationFiles','inspirationStatus','inspirationLibrary'].forEach(id=>{const node=document.getElementById(id);if(node)referenceCard.append(node);});
-  explorePanel.replaceWith(...[socialCard,referenceCard].filter(card=>card.children.length));
+  explorePanel.replaceWith(socialCard,referenceCard);
  }
  // PUBLICAR: separar indicaciones, accesos a redes y estado en tarjetas independientes.
  const publishPanel=[...panes.publish.children].find(node=>node.classList?.contains('panel'));
@@ -1769,21 +1832,24 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  // COMPARTIR: convertir el texto y cada acción en tarjetas independientes, como Explorar.
  const sharePanel=[...panes.share.children].find(node=>node.classList?.contains('panel'));
  if(sharePanel){
+  const infoCard=document.createElement('section');
+  infoCard.className='panel share-tool-card share-info-card';
   const intro=[...sharePanel.children].find(node=>node.classList?.contains('file-note'));
-  const makeShareCard=cls=>{const card=document.createElement('section');card.className='panel share-tool-card '+cls;return card;};
-  const infoCard=makeShareCard('share-info-card');
-  const actions=[
-   ['shareWhatsApp','WhatsApp'],
-   ['shareFacebook','Facebook'],
-   ['copyAppLink','Copiar enlace']
-  ].map(([id,label])=>({node:document.getElementById(id),label}));
-  if(intro)infoCard.append(intro);
-  const actionCards=actions.filter(x=>x.node).map(item=>{
-   const card=makeShareCard('share-action-card');
-   item.node.textContent=item.node.id==='copyAppLink'?'Copiar enlace de Tato Reels':'Compartir por '+item.label;
-   card.append(item.node);return card;
+  const heading=document.createElement('h3');heading.textContent='🔗 Comparte Tato Reels';
+  const description=document.createElement('p');
+  description.className='file-note';
+  description.textContent='Comparte el enlace de la aplicación para que otras personas puedan entrar.';
+  infoCard.append(heading,description);
+  const actionsCard=document.createElement('section');
+  actionsCard.className='panel share-tool-card share-actions-card';
+  const actionGrid=document.createElement('div');actionGrid.className='share-actions-grid';
+  const actions=[['shareWhatsApp','WhatsApp','Compartir por WhatsApp'],['shareFacebook','Facebook','Compartir en Facebook'],['copyAppLink','Copiar enlace','Copiar enlace de Tato Reels']];
+  actions.forEach(([id,label,text])=>{
+   const button=document.getElementById(id);
+   if(button){button.textContent=text;button.type='button';actionGrid.append(button);}
   });
-  sharePanel.replaceWith(...[infoCard,...actionCards].filter(card=>card.children.length));
+  actionsCard.append(actionGrid);
+  sharePanel.replaceWith(infoCard,actionsCard);
  }
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline)editor.append(timeline);
@@ -1796,40 +1862,13 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
  // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
- const bottomActions=document.createElement('div');
- bottomActions.className='editor-bottom-actions';
- bottomActions.setAttribute('aria-label','Acciones del editor al final de la página');
- const bottomButtons=[
-  {id:'saveBtn',icon:'💾',label:'Guardar borrador',primary:false},
-  {id:'exportSequenceBtn',icon:'⚙️',label:'Compilar proyecto',primary:true},
-  {id:'exportReelBtn',icon:'🎬',label:'Exportar Reel',primary:true}
- ];
- bottomButtons.forEach(item=>{
-  const original=document.getElementById(item.id);
-  if(!original)return;
-  const button=document.createElement('button');
-  button.type='button';
-  button.className='editor-bottom-action'+(item.primary?' is-primary':'');
-  const icon=document.createElement('span');icon.className='bottom-action-icon';icon.textContent=item.icon;
-  const label=document.createElement('span');label.className='bottom-action-label';label.textContent=item.label;
-  button.append(icon,label);
-  button.addEventListener('click',()=>original.click());
-  bottomActions.append(button);
- });
- creator.append(bottomActions);
- // Segunda barra de herramientas debajo de las acciones principales.
- const bottomToolbar=toolbar.cloneNode(true);
- bottomToolbar.classList.remove('editor-toolbar');
- bottomToolbar.classList.add('editor-bottom-toolbar');
- bottomToolbar.setAttribute('aria-label','Herramientas rápidas al final del editor');
- bottomToolbar.querySelectorAll('.editor-tool').forEach(button=>{
-  button.classList.remove('active');
-  const icon=button.querySelector('.tool-icon')?.textContent||'';
-  const label=button.querySelector('.tool-label')?.textContent||button.textContent.trim();
-  button.replaceChildren(document.createTextNode((icon?icon+' ':'')+label));
- });
- // La barra inferior queda dentro del editor y justo encima de las acciones amarillas.
- creator.insertBefore(bottomToolbar,bottomActions);
+ // Sustituir las acciones y la barra duplicada inferior por un único acceso discreto.
+ const goTop=document.createElement('button');
+ goTop.type='button';goTop.className='editor-go-top';
+ goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';
+ goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';
+ goTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+ creator.append(goTop);
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
