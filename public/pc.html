@@ -1735,7 +1735,7 @@ eye?.addEventListener('click',()=>{
  eye.setAttribute('aria-label',visible?'Ocultar contraseña':'Mostrar contraseña');
  eye.title=visible?'Ocultar contraseña':'Mostrar contraseña';
 });
-modeButton?.addEventListener('click',()=>setMode(mode==='login'?'register':'login'));
+modeButton?.addEventListener('click',()=>{if(mode==='reset')history.replaceState({},'',location.pathname);setMode(mode==='login'?'register':'login');});
 forgotButton?.addEventListener('click',()=>setMode('forgot'));
 if(emailInput) emailInput.value=(()=>{try{return localStorage.getItem('tatoEmail')||'';}catch{return '';}})();
 if(resetToken) setMode('reset');
