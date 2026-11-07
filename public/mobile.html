@@ -1494,8 +1494,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
           <button class="secondary" id="openTikTok" style="width:100%;margin-top:7px">Abrir TikTok</button>
           <div class="file-note" id="socialStatus">No hay cuentas conectadas. Estos accesos no suben el video automáticamente.</div>
         </div>
-        <div style="grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap"><button class="secondary" id="saveBtn" style="flex:1">Guardar borrador</button><button class="primary" id="exportBtn" style="flex:1">Exportar clip WebM ↓</button><button class="primary" id="exportSequenceBtn" style="flex:1">Exportar Reel completo ↓</button><button class="secondary" id="publishBtn" style="flex:1">Preparar publicación ↗</button></div>
         <div class="export-progress" id="exportProgress" role="status" aria-live="polite"><div class="export-progress-head"><span id="exportProgressLabel">Preparando Reel completo…</span><strong id="exportProgressPercent">0%</strong></div><div class="export-progress-track"><div class="export-progress-fill" id="exportProgressFill"></div></div></div>
+        <div style="grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap"><button class="secondary" id="saveBtn" style="flex:1">Guardar borrador</button><button class="primary" id="exportBtn" style="flex:1">Exportar clip WebM ↓</button><button class="primary" id="exportSequenceBtn" style="flex:1">Exportar Reel completo ↓</button><button class="secondary" id="publishBtn" style="flex:1">Preparar publicación ↗</button></div>
       </section>
     </div>
     <div class="post-card" id="postCard"><h3>✓ Publicación preparada</h3><p id="postText">Tu Reel está listo en esta vista previa. La publicación real en redes sociales requiere conectar una cuenta o servicio.</p></div>
@@ -1914,7 +1914,7 @@ $('exportBtn').addEventListener('click',async()=>{
   const finished=new Promise(resolve=>{recorder.onstop=resolve;});
   recorder.start(250);await video.play();
   await new Promise((resolve,reject)=>{
-   const tick=()=>{if(video.error){reject(new Error('Ocurrió un error durante la reproducción del video.'));return;}watermarkCtx.fillStyle='#000';watermarkCtx.fillRect(0,0,720,1280);drawCover(watermarkCtx,video,720,1280);drawExportBrandWatermark(watermarkCtx);drawExportTitle(watermarkCtx,video.currentTime-start);window.drawExportReelStickers?.(watermarkCtx);if(video.currentTime>=end||video.ended){video.pause();resolve();return;}if(video.paused){reject(new Error('La reproducción del video se detuvo antes de terminar.'));return;}raf=requestAnimationFrame(tick);};
+   const tick=()=>{if(video.error){reject(new Error('Ocurrió un error durante la reproducción del video.'));return;}watermarkCtx.fillStyle='#000';watermarkCtx.fillRect(0,0,720,1280);drawCover(watermarkCtx,video,720,1280);drawExportBrandWatermark(watermarkCtx);drawExportCaption(watermarkCtx);drawExportTitle(watermarkCtx,video.currentTime-start);window.drawExportReelStickers?.(watermarkCtx);if(video.currentTime>=end||video.ended){video.pause();resolve();return;}if(video.paused){reject(new Error('La reproducción del video se detuvo antes de terminar.'));return;}raf=requestAnimationFrame(tick);};
    tick();
   });
   cancelAnimationFrame(raf);await playExportOutro(watermarkCtx);recorder.stop();if(exportMusic)exportMusic.pause();await finished;
@@ -1933,9 +1933,14 @@ $('exportBtn').addEventListener('click',async()=>{
  }
 });
 
+function formatHashtags(value){
+ return [...new Set(String(value||'').split(/[\s,]+/).map(tag=>tag.replace(/^#+/,'').replace(/[^\p{L}\p{N}_]/gu,'')).filter(Boolean))].map(tag=>'#'+tag).join(' ');
+}
 $('publishBtn').addEventListener('click',()=>{
  if(!video.src){toast('Sube un video antes de preparar tu Reel.');return;}
- $('postText').textContent=($('caption').value||'Sin descripción')+' '+$('hashtags').value+' · Vista previa local preparada. Para publicarlo en Instagram, Facebook o TikTok hace falta conectar esas cuentas.';
+ const caption=String($('caption').value||'').trim()||'Sin descripción';
+ const hashtags=formatHashtags($('hashtags').value);
+ $('postText').textContent=[caption,hashtags].filter(Boolean).join('\n\n')+'\n\nVista previa local preparada. Para publicar en Instagram, Facebook o TikTok hace falta conectar esas cuentas.';
  $('postCard').classList.add('visible'); $('postCard').scrollIntoView({behavior:'smooth',block:'nearest'}); toast('Tu Reel quedó preparado. Aún no se publicó en redes.');
 });
 function showDrafts(shouldScroll=true){
@@ -2012,6 +2017,24 @@ function waitForMedia(target,event){return new Promise((resolve,reject)=>{const 
 function drawCover(ctx,source,width,height){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const scale=Math.max(width/sw,height/sh),dw=sw*scale,dh=sh*scale;ctx.save();ctx.filter=currentImageFilter();ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);ctx.restore();}
 function drawExportBrandWatermark(ctx){ctx.save();ctx.globalAlpha=.78;ctx.font='800 22px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';const label='TATO REELS CREATOR',x=360,y=48,w=ctx.measureText(label).width+30,h=38;ctx.fillStyle='rgba(8,7,12,.34)';ctx.fillRect(x-w/2,y-h/2,w,h);ctx.strokeStyle='rgba(255,255,255,.24)';ctx.lineWidth=1;ctx.strokeRect(x-w/2,y-h/2,w,h);ctx.fillStyle='rgba(255,255,255,.88)';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=5;ctx.fillText(label,x,y);ctx.restore();}
 
+function drawExportCaption(ctx){
+ const username=String($('username').value||'@creador').trim();
+ const caption=String($('caption').value||'').trim();
+ if(!username&&!caption)return;
+ const x=28,maxWidth=500,lines=[];
+ ctx.save();
+ ctx.font='700 24px Arial,sans-serif';
+ const words=caption.split(/\s+/);let line='';
+ for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else line=test;}
+ if(line)lines.push(line);
+ if(lines.length>3){lines.length=3;let last=lines[2];while(last&&ctx.measureText(last+'…').width>maxWidth)last=last.slice(0,-1);lines[2]=last+'…';}
+ ctx.fillStyle='rgba(0,0,0,.42)';ctx.fillRect(18,1115,540,145);
+ ctx.textAlign='left';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=7;
+ ctx.font='800 24px Arial,sans-serif';ctx.fillStyle='#fff';ctx.fillText(username.slice(0,48),x,1145,500);
+ ctx.font='500 22px Arial,sans-serif';ctx.fillStyle='#fff';
+ lines.forEach((text,index)=>ctx.fillText(text,x,1180+index*25,maxWidth));
+ ctx.restore();
+}
 function drawExportTitle(ctx,time){const value=$('animatedText').value.trim();if(!value)return;const duration=Math.max(1,Number($('titleDuration').value)||5);if(time>duration)return;const animation=$('titleAnimation').value;let alpha=1,offset=0,scale=1;if(animation==='fade')alpha=Math.min(1,time/0.8);if(animation==='pop'){const p=Math.min(1,time/0.8);scale=.55+.45*p;alpha=p;}if(animation==='slide'){const p=Math.min(1,time/.8);offset=(1-p)*-90;alpha=p;}if(animation==='bounce')offset=-Math.abs(Math.sin(time*5))*18;const size=Number($('titleSize').value)||28;const lines=value.split('\n');const lineHeight=size*1.15;const left=parseFloat($('animatedTitle').style.left)||50;const top=parseFloat($('animatedTitle').style.top)||50;const x=left/100*720;const y=top/100*1280;ctx.save();ctx.globalAlpha=alpha;ctx.translate(x+offset,y);ctx.scale(scale,scale);ctx.font='900 '+size*2+'px '+($('titleFont').value||'Arial,sans-serif');ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=14;ctx.fillStyle=getAnimatedTitleColor();lines.forEach((line,index)=>ctx.fillText(line,0,(index-(lines.length-1)/2)*lineHeight*2,600));ctx.restore();}
 const EXPORT_OUTRO_DURATION_MS=2500;
 let exportOutroLogoPromise=null;
@@ -2051,11 +2074,11 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
    if(item.isImage){
     const photo=new Image();photo.src=item.url;await new Promise((resolve,reject)=>{if(photo.complete&&photo.naturalWidth){resolve();return;}photo.onload=resolve;photo.onerror=()=>reject(new Error('No se pudo cargar la fotografía '+(item.name||'')));});
     end=Math.max(start+.1,Number(item.end)||Number(item.duration)||3);const duration=end-start;if(duration<=0)throw new Error('La duración de una fotografía no es válida.');const began=performance.now();
-    await new Promise(resolve=>{const frame=now=>{const elapsedPhoto=Math.min(duration,(now-began)/1000);ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,photo,720,1280);window.drawExportReelStickers?.(ctx);drawExportTitle(ctx,completedDuration+elapsedPhoto);updateProgress(totalDuration?((completedDuration+elapsedPhoto)/totalDuration)*100:0);if(elapsedPhoto>=duration){resolve();return;}raf=requestAnimationFrame(frame);};raf=requestAnimationFrame(frame);});
+    await new Promise(resolve=>{const frame=now=>{const elapsedPhoto=Math.min(duration,(now-began)/1000);ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,photo,720,1280);drawExportCaption(ctx);window.drawExportReelStickers?.(ctx);drawExportTitle(ctx,completedDuration+elapsedPhoto);updateProgress(totalDuration?((completedDuration+elapsedPhoto)/totalDuration)*100:0);if(elapsedPhoto>=duration){resolve();return;}raf=requestAnimationFrame(frame);};raf=requestAnimationFrame(frame);});
    }else{
     activeClip=document.createElement('video');activeClip.src=item.url;activeClip.muted=false;activeClip.playsInline=true;activeClip.preload='auto';await waitForMedia(activeClip,'loadedmetadata');end=Math.min(activeClip.duration,Number(item.end)||activeClip.duration);if(!(end>start))throw new Error('Hay un recorte inválido en '+(item.name||'un clip'));
     const source=audioContext.createMediaElementSource(activeClip);source.connect(audioOut);activeClip.currentTime=start;await waitForMedia(activeClip,'seeked');await activeClip.play();
-    await new Promise((resolve,reject)=>{const frame=()=>{if(activeClip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,activeClip,720,1280);drawExportBrandWatermark(ctx);window.drawExportReelStickers?.(ctx);const elapsed=completedDuration+(activeClip.currentTime-start);drawExportTitle(ctx,elapsed);updateProgress(totalDuration?((elapsed/totalDuration)*100):0);if(activeClip.currentTime>=end||activeClip.ended){activeClip.pause();resolve();return;}raf=requestAnimationFrame(frame);};frame();});
+    await new Promise((resolve,reject)=>{const frame=()=>{if(activeClip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,activeClip,720,1280);drawExportBrandWatermark(ctx);drawExportCaption(ctx);window.drawExportReelStickers?.(ctx);const elapsed=completedDuration+(activeClip.currentTime-start);drawExportTitle(ctx,elapsed);updateProgress(totalDuration?((elapsed/totalDuration)*100):0);if(activeClip.currentTime>=end||activeClip.ended){activeClip.pause();resolve();return;}raf=requestAnimationFrame(frame);};frame();});
     activeClip.pause();activeClip.removeAttribute('src');activeClip.load();activeClip=null;
    }
    cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);
