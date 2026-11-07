@@ -2258,14 +2258,15 @@ renderTimeline();
 </html>
 
 <style id="tato-creation-heading-match-trim-width">
-/* El encabezado de modos ocupa el mismo ancho completo que la tarjeta independiente de recorte */
-.editor-tool-pane[data-pane="video"] .creation-modes-panel{
+/* El encabezado de modos iguala el ancho completo del contenedor de recorte superior */
+.creator>.editor-panel>.creation-modes-panel{
   display:block!important;
   grid-column:1 / -1!important;
   grid-row:auto!important;
   justify-self:stretch!important;
+  align-self:stretch!important;
   width:100%!important;
-  max-width:none!important;
+  max-width:100%!important;
   min-width:0!important;
   box-sizing:border-box!important;
   margin-left:0!important;
