@@ -1755,11 +1755,59 @@ const imageFilterStyles={none:'none',nitido:'contrast(1.14) saturate(1.08)',warm
 document.querySelectorAll('[data-ratio]').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('[data-ratio]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); $('videoFrame').style.aspectRatio=btn.dataset.ratio; toast('Formato de vista actualizado.');
 }));
-function saveDraft(){ const item={caption:$('caption').value,hashtags:$('hashtags').value,username:$('username').value,trimStart:$('trimStart').value,trimEnd:$('trimEnd').value,videoName:$('fileInput').files[0]?.name||'',savedAt:new Date().toISOString()}; drafts.unshift(item); drafts=drafts.slice(0,30); localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts)); refreshDraftCount(); toast('Borrador guardado en este dispositivo.'); }
+// Borradores completos: configuración + archivos multimedia en IndexedDB.
+const draftDbName='tatoReelsDraftMediaDB';
+function openDraftDB(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(new Error('Este navegador no permite guardar archivos localmente.'));return;}const req=indexedDB.open(draftDbName,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('drafts'))db.createObjectStore('drafts',{keyPath:'id'});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('No se pudo abrir el almacenamiento de borradores.'));});}
+async function writeDraftMedia(record){const db=await openDraftDB();await new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').put(record);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('No se pudieron guardar los archivos.'));tx.onabort=()=>reject(tx.error||new Error('Guardado cancelado.'));});db.close();}
+async function readDraftMedia(id){const db=await openDraftDB();const value=await new Promise((resolve,reject)=>{const req=db.transaction('drafts','readonly').objectStore('drafts').get(id);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);});db.close();return value;}
+async function deleteDraftMedia(id){if(!id)return;const db=await openDraftDB();await new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();}
+function draftSettings(){return {caption:$('caption').value,hashtags:$('hashtags').value,username:$('username').value,trimStart:$('trimStart').value,trimEnd:$('trimEnd').value,animatedText:$('animatedText').value,titleAnimation:$('titleAnimation').value,titleSize:$('titleSize').value,titleColor:$('titleColor').value,titleFont:$('titleFont').value,ratio:$('videoFrame').style.aspectRatio||'9/16',filter:typeof filter!=='undefined'?filter:'none',audioStart:$('audioStart').value,audioEnd:$('audioEnd').value,musicVolume:$('musicVolume').value,musicIntegrated:!!musicIntegrated,titleLeft:$('animatedTitle').style.left||'',titleTop:$('animatedTitle').style.top||''};}
+async function saveDraft(){
+ const media=timelineItems.filter(item=>item.file instanceof Blob);
+ if(!media.length){toast('Primero agrega un video o fotos. El borrador guardará también esos archivos.');return;}
+ const id='draft-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
+ const record={id,savedAt:new Date().toISOString(),settings:draftSettings(),media:media.map(item=>({id:item.id,name:item.name||item.file.name,type:item.file.type||'',isMain:!!item.isMain,isImage:!!item.isImage,start:Number(item.start)||0,end:item.end==null?null:Number(item.end),duration:Number(item.duration)||0,blob:item.file})),music:musicFile instanceof Blob?{name:musicFile.name,type:musicFile.type,blob:musicFile}:null};
+ try{
+  await writeDraftMedia(record);
+  const main=media.find(item=>item.isMain)||media.find(item=>item.file.type.startsWith('video/'));
+  const item={id,mediaId:id,caption:record.settings.caption,hashtags:record.settings.hashtags,username:record.settings.username,trimStart:record.settings.trimStart,trimEnd:record.settings.trimEnd,videoName:main?.name||media[0].name,savedAt:record.savedAt,mediaCount:media.length};
+  drafts.unshift(item);drafts=drafts.slice(0,30);
+  const retained=new Set(drafts.map(d=>d.mediaId).filter(Boolean));
+  localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));
+  refreshDraftCount();
+  toast('Borrador completo guardado: '+media.length+' archivo(s) multimedia.');
+  if($('draftShelf')&&!$('draftShelf').hidden)showDrafts(false);
+ }catch(error){toast(error.message||'No se pudo guardar el borrador. Revisa el espacio disponible.');}
+}
 $('saveBtn').addEventListener('click',saveDraft);
-// Mantener el panel de borradores visible desde que se abre el editor.
-showDrafts(false);
-function loadDrafts(){ if(!drafts.length){toast('Todavía no tienes borradores guardados.');return;} const item=drafts[0]; $('caption').value=item.caption||''; $('hashtags').value=item.hashtags||''; $('username').value=item.username||'@tato.reels'; $('trimStart').value=item.trimStart||0; $('trimEnd').value=item.trimEnd||0; updateCaption(); $('overlayName').textContent=$('username').value; toast('Se cargó el borrador más reciente. Vuelve a seleccionar su video para editarlo.'); }
+async function openDraft(item){
+ try{
+  const saved=item.mediaId?await readDraftMedia(item.mediaId):null;
+  if(!saved){$('caption').value=item.caption||'';$('hashtags').value=item.hashtags||'';$('username').value=item.username||'@tato.reels';$('trimStart').value=item.trimStart||0;$('trimEnd').value=item.trimEnd||0;updateCaption();$('overlayName').textContent=$('username').value;toast('Este es un borrador antiguo: conserva textos y ajustes, pero no contiene el video.');return;}
+  const s=saved.settings||{};
+  ['caption','hashtags','username','trimStart','trimEnd','animatedText','titleAnimation','titleSize','titleColor','titleFont','audioStart','audioEnd','musicVolume'].forEach(key=>{if(s[key]!=null&&$(key))$(key).value=s[key];});
+  $('videoFrame').style.aspectRatio=s.ratio||'9/16';updateCaption();$('overlayName').textContent=$('username').value||'@tato.reels';updateAnimatedTitle();
+  if(s.titleLeft)$('animatedTitle').style.left=s.titleLeft;if(s.titleTop)$('animatedTitle').style.top=s.titleTop;
+  if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}
+  timelineItems=[];extraClips=[];selectedTimelineId=null;
+  for(const entry of saved.media||[]){
+   const file=new File([entry.blob],entry.name||'archivo', {type:entry.type||entry.blob?.type||'application/octet-stream',lastModified:Date.now()});
+   const url=URL.createObjectURL(file);
+   const clip={id:entry.id||'draft-'+Date.now()+'-'+timelineItems.length,name:file.name,file,url,isMain:!!entry.isMain,isImage:!!entry.isImage,start:Number(entry.start)||0,end:entry.end==null?null:Number(entry.end),duration:Number(entry.duration)||0};
+   timelineItems.push(clip);if(!clip.isMain)extraClips.push(clip);
+   if(clip.isMain){objectUrl=url;video.pause();video.src=url;video.style.display='';video.classList.add('show');$('sampleArt').style.display='none';$('videoStatus').textContent=file.name;video.load();}
+   inspectTimelineClip(clip);
+  }
+  const mainVideo=timelineItems.find(item=>item.isMain)||timelineItems.find(item=>item.file.type.startsWith('video/'));
+  if(mainVideo&&!objectUrl){objectUrl=mainVideo.url;video.src=mainVideo.url;video.style.display='';video.classList.add('show');$('sampleArt').style.display='none';$('videoStatus').textContent=mainVideo.name;video.load();}
+  selectedTimelineId=mainVideo?.id||timelineItems[0]?.id||null;
+  renderClips();renderTimeline();syncExtraClipsFromTimeline();
+  if(saved.music?.blob){const audio=new File([saved.music.blob],saved.music.name||'musica', {type:saved.music.type||saved.music.blob.type||'audio/mpeg'});activateMusicFile(audio);musicIntegrated=!!s.musicIntegrated;if(musicIntegrated)$('integrateMusicToReel').textContent='✓ MÚSICA INTEGRADA';}
+  $('trimStart').value=s.trimStart||0;$('trimEnd').value=s.trimEnd||mainVideo?.end||0;
+  toast('Borrador completo abierto: video, fotos y configuración recuperados.');
+  $('videoFrame').scrollIntoView({behavior:'smooth',block:'center'});
+ }catch(error){toast(error.message||'No se pudo abrir el borrador.');}
+}
 function showTrim(){ if(!video.src){toast('Primero selecciona un video.');return;} const start=Math.max(0,Number($('trimStart').value)||0); const end=Number($('trimEnd').value)||video.duration; if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;} video.currentTime=start; video.play(); const stop=()=>{if(video.currentTime>=end){video.pause();video.removeEventListener('timeupdate',stop);}}; video.addEventListener('timeupdate',stop); toast('Reproduciendo el fragmento seleccionado.'); }
 $('previewTrim').addEventListener('click',showTrim);
  $('applyTrim').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const start=Math.max(0,Number($('trimStart').value)||0);const end=Number($('trimEnd').value)||video.duration;if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;}video.pause();video.currentTime=start;video.dataset.appliedTrimStart=String(start);video.dataset.appliedTrimEnd=String(end);const mainItem=timelineItems.find(item=>item.isMain||item.url===objectUrl);if(mainItem){mainItem.start=start;mainItem.end=end;mainItem.duration=video.duration;selectedTimelineId=mainItem.id;renderTimeline();syncExtraClipsFromTimeline();}toast('Recorte aplicado al video principal. Se incluirá en la exportación.');});
@@ -1864,10 +1912,29 @@ $('publishBtn').addEventListener('click',()=>{
  $('postText').textContent=($('caption').value||'Sin descripción')+' '+$('hashtags').value+' · Vista previa local preparada. Para publicarlo en Instagram, Facebook o TikTok hace falta conectar esas cuentas.';
  $('postCard').classList.add('visible'); $('postCard').scrollIntoView({behavior:'smooth',block:'nearest'}); toast('Tu Reel quedó preparado. Aún no se publicó en redes.');
 });
-function showDrafts(shouldScroll=true){let shelf=$('draftShelf');if(!shelf){shelf=document.createElement('section');shelf.id='draftShelf';shelf.className='panel';shelf.style.margin='18px 0';$('postCard').after(shelf);}shelf.innerHTML='<h3>📁 Mis borradores guardados</h3><p class="file-note">Tus borradores están guardados en este navegador. Selecciona uno para continuar editándolo.</p>';if(drafts.length){const deleteAll=document.createElement('button');deleteAll.type='button';deleteAll.className='secondary';deleteAll.textContent='Eliminar todos los borradores';deleteAll.style.marginBottom='10px';deleteAll.addEventListener('click',()=>{if(!confirm('¿Eliminar todos los borradores guardados? Esta acción no se puede deshacer.'))return;drafts=[];localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts();toast('Todos los borradores fueron eliminados.');});shelf.append(deleteAll);}if(!drafts.length){const empty=document.createElement('p');empty.className='file-note';empty.textContent='Todavía no hay borradores guardados en este dispositivo.';shelf.append(empty);}else{drafts.forEach((item,index)=>{const row=document.createElement('div');row.className='clip-item';row.style.marginTop='8px';const info=document.createElement('strong');const date=item.savedAt?new Date(item.savedAt).toLocaleString('es-MX'):'Fecha no disponible';info.textContent=(item.videoName||'Borrador sin video')+' · '+date;const open=document.createElement('button');open.type='button';open.textContent='Abrir';open.addEventListener('click',()=>{$('caption').value=item.caption||'';$('hashtags').value=item.hashtags||'';$('username').value=item.username||'@tato.reels';$('trimStart').value=item.trimStart||0;$('trimEnd').value=item.trimEnd||0;updateCaption();$('overlayName').textContent=$('username').value;toast('Borrador cargado. Selecciona nuevamente el video para editarlo.');$('caption').scrollIntoView({behavior:'smooth',block:'center'});});const remove=document.createElement('button');remove.type='button';remove.textContent='Eliminar';remove.setAttribute('aria-label','Eliminar borrador '+(index+1));remove.addEventListener('click',()=>{if(!confirm('¿Eliminar este borrador?'))return;drafts.splice(index,1);localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts();toast('Borrador eliminado.');});row.append(info,open,remove);shelf.append(row);});}if(shouldScroll)shelf.scrollIntoView({behavior:'smooth',block:'start'});}
+function showDrafts(shouldScroll=true){
+ let shelf=$('draftShelf');
+ if(!shelf){shelf=document.createElement('section');shelf.id='draftShelf';shelf.className='panel';shelf.style.margin='18px 0';shelf.hidden=true;$('postCard').after(shelf);}
+ shelf.hidden=false;
+ shelf.innerHTML='<h3>📁 Mis borradores guardados</h3><p class="file-note">Tus videos, fotos y ajustes se guardan en este dispositivo. Abre un borrador para continuar editándolo.</p>';
+ if(drafts.length){
+  const deleteAll=document.createElement('button');deleteAll.type='button';deleteAll.className='secondary';deleteAll.textContent='Eliminar todos los borradores';deleteAll.style.marginBottom='10px';
+  deleteAll.addEventListener('click',async()=>{if(!confirm('¿Eliminar todos los borradores guardados? Esta acción no se puede deshacer.'))return;for(const item of drafts){try{await deleteDraftMedia(item.mediaId);}catch(_){}}drafts=[];localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts(false);toast('Todos los borradores fueron eliminados.');});shelf.append(deleteAll);
+ }
+ if(!drafts.length){const empty=document.createElement('p');empty.className='file-note';empty.textContent='Todavía no hay borradores guardados en este dispositivo.';shelf.append(empty);}
+ else{drafts.forEach((item,index)=>{
+  const row=document.createElement('div');row.className='clip-item';row.style.marginTop='8px';
+  const info=document.createElement('strong');const date=item.savedAt?new Date(item.savedAt).toLocaleString('es-MX'):'Fecha no disponible';info.textContent=(item.videoName||'Borrador sin título')+' · '+date+' · '+(item.mediaCount||0)+' archivo(s)';
+  const open=document.createElement('button');open.type='button';open.textContent='Abrir';open.addEventListener('click',()=>openDraft(item));
+  const remove=document.createElement('button');remove.type='button';remove.textContent='Eliminar';remove.setAttribute('aria-label','Eliminar borrador '+(index+1));remove.addEventListener('click',async()=>{if(!confirm('¿Eliminar este borrador?'))return;try{await deleteDraftMedia(item.mediaId);}catch(_){}drafts.splice(index,1);localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts(false);toast('Borrador eliminado.');});
+  row.append(info,open,remove);shelf.append(row);
+ });}
+ if(shouldScroll)shelf.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;return;}showDrafts(true);}
 function showPosts(){toast('Aquí aparecerán tus publicaciones preparadas.');}
 function showProfile(){toast('Perfil de creador: '+($('username').value||'@creador'));}
-['draftNav','draftTab','mobileDraft','topDraftsBtn'].forEach(id=>$(id).addEventListener('click',showDrafts));
+['draftNav','draftTab','mobileDraft','topDraftsBtn'].forEach(id=>$(id).addEventListener('click',toggleDrafts));
 ['postsNav','publishedTab','mobilePosts'].forEach(id=>$(id).addEventListener('click',showPosts));
 ['profileNav','mobileProfile'].forEach(id=>$(id).addEventListener('click',showProfile));
 $('tipsBtn').addEventListener('click',()=>toast('Tip: usa buena luz, encuadre vertical y una idea clara.'));
