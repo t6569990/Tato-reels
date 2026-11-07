@@ -1510,6 +1510,61 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .editor-go-top small{font-size:8px!important;letter-spacing:.7px!important;font-weight:800!important}
 .editor-go-top:hover{transform:translateY(-2px);border-color:#e50920!important}
 </style>
+
+<style id="tato-pc-audit-layout-fix-20261107">
+/* Correcciones finales tras auditar el DOM real: dos tarjetas en Explorar y Compartir,
+   y una tarjeta independiente por red en Publicar. */
+@media(min-width:721px){
+ .editor-tool-pane[data-pane="explore"].active{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+ .editor-tool-pane[data-pane="explore"].active>.explore-tool-card{
+  grid-column:auto!important;min-width:0!important;width:100%!important;
+ }
+ .editor-tool-pane[data-pane="share"].active{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ }
+ .editor-tool-pane[data-pane="share"].active>.share-info-card,
+ .editor-tool-pane[data-pane="share"].active>.share-actions-card{
+  grid-column:auto!important;min-width:0!important;width:100%!important;
+ }
+ .editor-tool-pane[data-pane="share"].active .share-actions-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ }
+ .editor-tool-pane[data-pane="publish"].active{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ }
+ .editor-tool-pane[data-pane="publish"].active>.publish-info-card,
+ .editor-tool-pane[data-pane="publish"].active>.publish-status-card{
+  grid-column:1/-1!important;
+ }
+ .editor-tool-pane[data-pane="publish"].active>.publish-network-card{
+  grid-column:auto!important;min-width:0!important;width:100%!important;
+ }
+ .editor-tool-pane[data-pane="publish"].active>.publish-network-card button{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;min-width:0!important;min-height:46px!important;height:auto!important;
+  padding:9px 8px!important;white-space:normal!important;overflow-wrap:anywhere!important;
+ }
+}
+@media(max-width:720px){
+ .editor-tool-pane[data-pane="explore"].active,
+ .editor-tool-pane[data-pane="share"].active,
+ .editor-tool-pane[data-pane="publish"].active{
+  grid-template-columns:minmax(0,1fr)!important;
+ }
+ .editor-tool-pane[data-pane="share"].active>.share-info-card,
+ .editor-tool-pane[data-pane="share"].active>.share-actions-card,
+ .editor-tool-pane[data-pane="publish"].active>.publish-info-card,
+ .editor-tool-pane[data-pane="publish"].active>.publish-network-card,
+ .editor-tool-pane[data-pane="publish"].active>.publish-status-card{
+  grid-column:1!important;
+ }
+ .editor-tool-pane[data-pane="publish"].active>.publish-network-card button{
+  width:100%!important;min-height:44px!important;
+ }
+}
+</style>
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1820,13 +1875,12 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   const intro=nodes.find(node=>node.classList?.contains('file-note')&&node.id!=='socialStatus');
   const status=document.getElementById('socialStatus');
   const makeCard=cls=>{const card=document.createElement('section');card.className='panel publish-tool-card '+cls;return card;};
-  const infoCard=makeCard('publish-info-card'),networksCard=makeCard('publish-networks-card'),statusCard=makeCard('publish-status-card');
+  const infoCard=makeCard('publish-info-card'),statusCard=makeCard('publish-status-card');
   if(intro)infoCard.append(intro);
-  const networkGrid=document.createElement('div');networkGrid.className='publish-network-grid';
-  ['openInstagram','openFacebook','openTikTok'].forEach(id=>{const button=document.getElementById(id);if(button)networkGrid.append(button);});
-  networksCard.append(networkGrid);
+  const networkCards=[];
+  ['openInstagram','openFacebook','openTikTok'].forEach(id=>{const button=document.getElementById(id);if(button){const networkCard=makeCard('publish-network-card');networkCard.append(button);networkCards.push(networkCard);}});
   if(status)statusCard.append(status);
-  publishPanel.replaceWith(...[infoCard,networksCard,statusCard].filter(card=>card.children.length));
+  publishPanel.replaceWith(...[infoCard,...networkCards,statusCard].filter(card=>card.children.length));
  }
 
  // COMPARTIR: convertir el texto y cada acción en tarjetas independientes, como Explorar.
@@ -1875,7 +1929,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);trimCard.after(bottomActions);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});}
  function setWorkspace(mode){
@@ -2885,8 +2939,6 @@ renderTimeline();
 }
 </style>
 
-</body>
-</html>
 
 <style id="tato-creation-heading-match-trim-width">
 /* El encabezado ocupa las dos columnas de la herramienta Video, dentro de su contenedor */
@@ -3118,3 +3170,5 @@ renderTimeline();
  .editor-tool-pane[data-pane="publish"]>.tool-pane-heading{writing-mode:horizontal-tb!important}
 }
 </style>
+</body>
+</html>
