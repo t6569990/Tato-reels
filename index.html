@@ -1327,27 +1327,25 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
       <section class="editor-panel">
         <div class="panel creation-modes-panel">
           <h3>🎞️ ELIGE CÓMO CREAR TU REEL</h3>
-          <div class="creation-modes-grid">
-            <div class="upload-zone creation-mode-card">
-              <b>🎬 SOLO VIDEO</b>
-              <span>Agrega un video desde tu dispositivo. Ideal para editar un solo clip.</span>
-              <button class="primary" id="uploadBtn" type="button">Elegir video</button>
-              <input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden>
-            </div>
-            <div class="upload-zone creation-mode-card">
-              <b>📸 SOLO FOTOS</b>
-              <span>Selecciona varias fotos JPG, PNG o WebP y crea un Reel fotográfico.</span>
-              <button class="secondary" id="addPhotosBtn" type="button">Elegir fotos</button>
-              <input id="photosInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
-            </div>
-            <div class="upload-zone creation-mode-card">
-              <b>🎬＋📸 HÍBRIDO</b>
-              <span>Mezcla videos y fotografías en una sola secuencia y ordénalos.</span>
-              <button class="secondary" id="addClipsBtn" type="button">Elegir videos y fotos</button>
-              <input id="clipsInput" type="file" accept="video/*,image/jpeg,image/png,image/webp" multiple hidden>
-            </div>
-          </div>
-          <div class="file-note" style="margin-top:10px">Elige uno de los tres modos. Puedes volver a agregar elementos para ampliar tu secuencia.</div>
+          <div class="file-note">Elige uno de los tres modos. Puedes volver a agregar elementos para ampliar tu secuencia.</div>
+        </div>
+        <div class="panel upload-zone creation-mode-card">
+          <b>🎬 SOLO VIDEO</b>
+          <span>Agrega un video desde tu dispositivo. Ideal para editar un solo clip.</span>
+          <button class="primary" id="uploadBtn" type="button">Elegir video</button>
+          <input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden>
+        </div>
+        <div class="panel upload-zone creation-mode-card">
+          <b>📸 SOLO FOTOS</b>
+          <span>Selecciona varias fotos JPG, PNG o WebP y crea un Reel fotográfico.</span>
+          <button class="secondary" id="addPhotosBtn" type="button">Elegir fotos</button>
+          <input id="photosInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+        </div>
+        <div class="panel upload-zone creation-mode-card">
+          <b>🎬＋📸 HÍBRIDO</b>
+          <span>Mezcla videos y fotografías en una sola secuencia y ordénalos.</span>
+          <button class="secondary" id="addClipsBtn" type="button">Elegir videos y fotos</button>
+          <input id="clipsInput" type="file" accept="video/*,image/jpeg,image/png,image/webp" multiple hidden>
         </div>
         <div class="panel sequence-items-panel">
           <h3>📚 ELEMENTOS AGREGADOS A TU REEL</h3>
