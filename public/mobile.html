@@ -1366,7 +1366,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 </style>
 
-</head>
+\n<style id="tato-clear-reel-text-20261107">\n.caption-field-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.caption-field-head .field-label{margin:0}.caption-field-head button{min-height:32px;padding:5px 14px;font-size:12px;border-radius:9px}@media(max-width:720px){.caption-field-head button{min-width:76px;min-height:36px}}\n</style>\n</head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
 <div id="app">
@@ -1478,7 +1478,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         </div>
         <div class="panel">
           <h3>✍️ Detalles del Reel</h3>
-          <div class="field"><label class="field-label" for="caption">Texto / descripción</label><textarea id="caption" maxlength="2200" placeholder="Escribe algo que acompañe tu video...">Tu idea merece ser vista. ✨</textarea><div class="counter"><span id="count">28</span>/2200</div></div>
+          <div class="field"><div class="caption-field-head"><label class="field-label" for="caption">Texto / descripción</label><button class="secondary" id="clearReelText" type="button">Borrar</button></div><textarea id="caption" maxlength="2200" placeholder="Escribe algo que acompañe tu video...">Tu idea merece ser vista. ✨</textarea><div class="counter"><span id="count">28</span>/2200</div></div>
           <div class="caption-rewards" aria-label="Stickers ganados y ruleta de monedas">
             <div class="caption-rewards-head"><strong>🎁 Tus recompensas</strong><span>Usa tus stickers en el Reel</span></div>
             <div id="captionStickerInventory" class="caption-sticker-inventory"><span class="caption-sticker-empty">Aún no tienes stickers. ¡Gana monedas y desbloquéalos!</span></div>
@@ -2285,7 +2285,7 @@ renderTimeline();
  };
  window.refreshTatoPlacedStickers=renderPlaced;
  function open(){const modal=document.getElementById('rewardsWindow');modal.classList.add('open');modal.setAttribute('aria-hidden','false');refreshWallet();renderWheel();renderShop();renderOwned();}
- function openWheelFromCaption(){open();const wheel=document.getElementById('spinWheel');if(wheel){const card=wheel.closest('.rewards-card');if(card)card.scrollIntoView({behavior:'smooth',block:'center'});}}
+ const clearReelText=document.getElementById('clearReelText');if(clearReelText)clearReelText.addEventListener('click',()=>{const caption=document.getElementById('caption');if(caption){caption.value='';caption.dispatchEvent(new Event('input',{bubbles:true}));}const placed=getPlaced();if(placed.length){savePlaced([]);renderPlaced();}const prize=document.getElementById('wheelPrize');if(prize)prize.textContent='🎁';const status=document.getElementById('wheelStatus');if(status)status.textContent='';});\n function openWheelFromCaption(){open();const wheel=document.getElementById('spinWheel');if(wheel){const card=wheel.closest('.rewards-card');if(card)card.scrollIntoView({behavior:'smooth',block:'center'});}}
  document.getElementById('openWheelFromCaption').addEventListener('click',openWheelFromCaption);
  function close(){const modal=document.getElementById('rewardsWindow');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
  document.getElementById('openRewards').addEventListener('click',open);document.getElementById('closeRewards').addEventListener('click',close);document.getElementById('rewardsWindow').addEventListener('click',e=>{if(e.target.id==='rewardsWindow')close();});
