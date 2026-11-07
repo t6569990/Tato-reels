@@ -2273,3 +2273,31 @@ renderTimeline();
   margin-right:0!important;
 }
 </style>
+
+
+<style id="tato-creation-heading-match-trim-width-v2">
+/* Igualar el ancho de ELIGE CÓMO CREAR TU REEL al contenedor de Recorta este video.
+   En escritorio se extiende sobre la columna izquierda y el espacio entre columnas;
+   en móvil conserva el ancho completo disponible, sin alterar las tarjetas ni su orden. */
+@media(min-width:901px){
+  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
+    width:calc(100% + 294px)!important;
+    max-width:none!important;
+    margin-left:-294px!important;
+  }
+}
+@media(min-width:721px) and (max-width:900px){
+  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
+    width:calc(100% + 251px)!important;
+    max-width:none!important;
+    margin-left:-251px!important;
+  }
+}
+@media(max-width:720px){
+  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:0!important;
+  }
+}
+</style>
