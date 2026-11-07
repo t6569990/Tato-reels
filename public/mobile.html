@@ -1264,7 +1264,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 </style>
 </head>
 <body class="device-mobile">
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm" novalidate><label for="loginEmail">CORREO ELECTRÓNICO</label><input id="loginEmail" type="email" autocomplete="email" maxlength="254" placeholder="tucorreo@ejemplo.com" required><div id="passwordFields"><label for="loginPassword">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">◉</button></div></div><button class="login-main" id="loginSubmit" type="submit">ENTRAR</button></form><button class="login-switch" id="toggleAuthMode" type="button">Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">Olvidé mi contraseña</button><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note" id="loginNote">Entra con el correo y la contraseña de tu cuenta.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><img src="assets/tato-reels-icon.svg" alt="Icono de Tato Reels Creator" style="width:42px;height:42px;border-radius:12px;object-fit:cover">Tato <span style="color:#A98AEF">Reels</span> Creator</div>
@@ -1691,12 +1691,28 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 <script>
 (()=>{
 const $ = id => document.getElementById(id);
-const safeGet=key=>{try{return window.localStorage.getItem(key)||'';}catch(error){return '';}};
-const safeSet=(key,value)=>{try{window.localStorage.setItem(key,value);return true;}catch(error){return false;}};
-function showAuthError(message){const error=$('authError');if(error)error.textContent=message||'';}
+const showError = message => { const node=$('authError'); if(node) node.textContent=message||''; };
+const emailInput=$('loginEmail'), passwordInput=$('loginPassword'), form=$('loginForm');
+const submit=$('loginSubmit'), modeButton=$('toggleAuthMode'), forgotButton=$('forgotPassword');
+const passwordFields=$('passwordFields'), note=$('loginNote'), eye=$('togglePassword');
+let mode='login';
+const resetToken=new URLSearchParams(location.search).get('reset');
+function setMode(next){
+ mode=next;
+ const reset=mode==='reset',forgot=mode==='forgot',register=mode==='register';
+ passwordFields.style.display=forgot?'none':'block';
+ passwordInput.required=!forgot;
+ passwordInput.autocomplete=reset?'new-password':register?'new-password':'current-password';
+ submit.textContent=reset?'GUARDAR CONTRASEÑA':forgot?'ENVIAR ENLACE':register?'CREAR CUENTA':'ENTRAR';
+ modeButton.style.display=(forgot||reset)?'none':'block';
+ forgotButton.style.display=(forgot||reset||register)?'none':'block';
+ modeButton.textContent=register?'Ya tengo cuenta':'Crear cuenta';
+ note.textContent=reset?'Crea una contraseña nueva de al menos 8 caracteres.':forgot?'Te enviaremos un enlace para recuperar tu contraseña.':register?'Registra tu correo y crea una contraseña.':'Entra con el correo y la contraseña de tu cuenta.';
+ showError('');
+}
 function enterApp(user){
  const screen=$('loginScreen'),app=$('app');
- if(!screen||!app){showAuthError('No se pudo abrir el editor. Tu usuario se conserva; recarga e inténtalo otra vez.');return false;}
+ if(!screen||!app){showError('No se pudo abrir el editor. Recarga e inténtalo otra vez.');return false;}
  app.dataset.username=user||'';
  app.classList.add('authenticated');
  app.style.display='block';
@@ -1704,19 +1720,60 @@ function enterApp(user){
  screen.setAttribute('aria-hidden','true');
  return true;
 }
-const input=$('loginUser'),form=$('loginForm');
-if(input)input.value=safeGet('tatoUsername')||'Tato';
-const savedUser=safeGet('tatoUsername');
-if(savedUser)enterApp(savedUser);
-form?.addEventListener('submit',event=>{
- event.preventDefault();
- const username=(input?.value||'').trim();
- if(!username){showAuthError('Escribe tu usuario para continuar.');input?.focus();return;}
- safeSet('tatoUsername',username);
- showAuthError('');
- enterApp(username);
+async function api(path,data){
+ const response=await fetch(path,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(data||{})});
+ const result=await response.json().catch(()=>({error:'El servidor respondió con un formato inesperado.'}));
+ if(!response.ok) throw new Error(result.error||'No se pudo completar la solicitud.');
+ return result;
+}
+eye?.addEventListener('click',()=>{
+ const visible=passwordInput.type==='password';
+ passwordInput.type=visible?'text':'password';
+ eye.textContent=visible?'◎':'◉';
+ eye.setAttribute('aria-label',visible?'Ocultar contraseña':'Mostrar contraseña');
+ eye.title=visible?'Ocultar contraseña':'Mostrar contraseña';
 });
-
+modeButton?.addEventListener('click',()=>setMode(mode==='register'?'login':'register'));
+forgotButton?.addEventListener('click',()=>setMode('forgot'));
+if(emailInput) emailInput.value=(()=>{try{return localStorage.getItem('tatoEmail')||'';}catch{return '';}})();
+if(resetToken) setMode('reset');
+else {
+ fetch('/api/me',{credentials:'same-origin',cache:'no-store'}).then(async response=>{
+  if(!response.ok)return null;
+  const result=await response.json();
+  return result.authenticated?result.user:null;
+ }).then(user=>{if(user?.email)enterApp(user.email);}).catch(()=>{});
+}
+form?.addEventListener('submit',async event=>{
+ event.preventDefault();
+ showError('');
+ const email=(emailInput?.value||'').trim().toLowerCase();
+ const password=passwordInput?.value||'';
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showError('Escribe un correo electrónico válido.');emailInput?.focus();return;}
+ if(mode!=='forgot'&&password.length<8){showError('La contraseña debe tener al menos 8 caracteres.');passwordInput?.focus();return;}
+ submit.disabled=true;
+ const original=submit.textContent;submit.textContent='UN MOMENTO…';
+ try{
+  if(mode==='forgot'){
+   const result=await api('/api/forgot-password',{email});
+   showError(result.message||'Si el correo está registrado, recibirás un enlace.');
+   return;
+  }
+  if(mode==='reset'){
+   const result=await api('/api/reset-password',{token:resetToken,password});
+   history.replaceState({},'',location.pathname);
+   passwordInput.value='';
+   setMode('login');
+   showError(result.message||'Contraseña actualizada. Ya puedes entrar.');
+   return;
+  }
+  const result=await api(mode==='register'?'/api/register':'/api/login',{email,password});
+  try{localStorage.setItem('tatoEmail',email);}catch{}
+  enterApp(result.user?.email||email);
+ }catch(error){showError(error.message||'No se pudo conectar con Tato Reels. Inténtalo otra vez.');}
+ finally{submit.disabled=false;submit.textContent=original;}
+});
+})();
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
 $('exportFormat').addEventListener('change',refreshExportFormats);
