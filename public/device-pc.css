@@ -1,0 +1,12 @@
+/* Tato Reels — capa de estilos exclusiva para PC.
+   Los estilos actuales de la aplicación permanecen como base compartida.
+   Los ajustes visuales propios de PC se agregarán aquí, sin tocar el motor.
+*/
+body.device-desktop {
+  --tato-device: desktop;
+  --tato-page-gutter: clamp(24px, 3vw, 48px);
+  --tato-content-max: 1440px;
+  --tato-preview-max: 420px;
+  --tato-workspace-gap: 20px;
+  --tato-tool-columns: 2;
+}
