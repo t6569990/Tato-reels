@@ -1287,6 +1287,85 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 </style>
 
+
+<style id="tato-mobile-full-width-visualizer-20261107">
+/* Corrección móvil: herramientas a ancho completo y visualizador sin miniatura lateral. */
+@media(max-width:720px){
+  .editor-tool-pane.active,.tool-pane.active{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    width:100%!important;
+  }
+  .editor-tool-pane>*,
+  .editor-tool-pane .panel,
+  .tool-pane>*,
+  .tool-pane .panel{
+    grid-column:1/-1!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  .floating-stage{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:10px!important;
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+  }
+  .floating-stage .preview-shell{
+    position:relative!important;
+    inset:auto!important;
+    transform:none!important;
+    display:block!important;
+    width:min(calc(100% - 18px),430px)!important;
+    max-width:430px!important;
+    max-height:none!important;
+    margin:0 auto!important;
+    padding:10px!important;
+    box-sizing:border-box!important;
+  }
+  .floating-stage .preview-shell .video-frame{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    aspect-ratio:9/16!important;
+    max-height:min(72vh,720px)!important;
+    margin:0 auto!important;
+  }
+  .floating-stage .preview-shell .video-frame video,
+  .floating-stage .preview-shell .video-frame .sequence-photo{
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+    background:#000!important;
+  }
+  .floating-stage .preview-shell .player-controls{
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:8px!important;
+    padding:9px 4px 2px!important;
+  }
+  .floating-stage .trim-panel{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+}
+@media(max-width:390px){
+  .floating-stage .preview-shell{width:calc(100% - 12px)!important}
+}
+</style>
+
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
