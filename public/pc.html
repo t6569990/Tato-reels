@@ -1724,6 +1724,26 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   if(status)statusCard.append(status);
   publishPanel.replaceWith(...[infoCard,networksCard,statusCard].filter(card=>card.children.length));
  }
+
+ // COMPARTIR: convertir el texto y cada acción en tarjetas independientes, como Explorar.
+ const sharePanel=[...panes.share.children].find(node=>node.classList?.contains('panel'));
+ if(sharePanel){
+  const intro=[...sharePanel.children].find(node=>node.classList?.contains('file-note'));
+  const makeShareCard=cls=>{const card=document.createElement('section');card.className='panel share-tool-card '+cls;return card;};
+  const infoCard=makeShareCard('share-info-card');
+  const actions=[
+   ['shareWhatsApp','WhatsApp'],
+   ['shareFacebook','Facebook'],
+   ['copyAppLink','Copiar enlace']
+  ].map(([id,label])=>({node:document.getElementById(id),label}));
+  if(intro)infoCard.append(intro);
+  const actionCards=actions.filter(x=>x.node).map(item=>{
+   const card=makeShareCard('share-action-card');
+   item.node.textContent=item.node.id==='copyAppLink'?'Copiar enlace de Tato Reels':'Compartir por '+item.label;
+   card.append(item.node);return card;
+  });
+  sharePanel.replaceWith(...[infoCard,...actionCards].filter(card=>card.children.length));
+ }
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline)editor.append(timeline);
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
@@ -2924,4 +2944,97 @@ renderTimeline();
 #spinWheel{min-height:44px!important}
 #spinWheel:disabled{opacity:.55!important;cursor:not-allowed!important}
 .sticker-item{border-width:1px!important}
+</style>
+
+<style id="tato-image-explore-share-publish-horizontal-cards-20261107">
+@media(min-width:721px){
+ /* Evita que títulos y descripciones de Imagen se apilen letra por letra. */
+ .editor-tool-pane[data-pane="image"]>.tool-pane-heading,
+ .editor-tool-pane[data-pane="explore"]>.tool-pane-heading,
+ .editor-tool-pane[data-pane="share"]>.tool-pane-heading,
+ .editor-tool-pane[data-pane="publish"]>.tool-pane-heading{
+  display:flex!important;flex-direction:row!important;align-items:center!important;
+  grid-column:1/-1!important;width:100%!important;min-width:0!important;
+  writing-mode:horizontal-tb!important;word-break:normal!important;overflow-wrap:normal!important;
+ }
+ .editor-tool-pane[data-pane="image"]>.tool-pane-heading>div,
+ .editor-tool-pane[data-pane="explore"]>.tool-pane-heading>div,
+ .editor-tool-pane[data-pane="share"]>.tool-pane-heading>div,
+ .editor-tool-pane[data-pane="publish"]>.tool-pane-heading>div{
+  flex:1 1 auto!important;min-width:0!important;width:auto!important;
+  writing-mode:horizontal-tb!important;word-break:normal!important;overflow-wrap:normal!important;
+ }
+ .editor-tool-pane[data-pane="image"]>.tool-pane-heading h2,
+ .editor-tool-pane[data-pane="image"]>.tool-pane-heading p,
+ .editor-tool-pane[data-pane="explore"]>.tool-pane-heading h2,
+ .editor-tool-pane[data-pane="explore"]>.tool-pane-heading p,
+ .editor-tool-pane[data-pane="share"]>.tool-pane-heading h2,
+ .editor-tool-pane[data-pane="share"]>.tool-pane-heading p,
+ .editor-tool-pane[data-pane="publish"]>.tool-pane-heading h2,
+ .editor-tool-pane[data-pane="publish"]>.tool-pane-heading p{
+  display:block!important;width:auto!important;max-width:100%!important;
+  writing-mode:horizontal-tb!important;white-space:normal!important;
+  word-break:normal!important;overflow-wrap:break-word!important;
+ }
+ /* Explorar: tres tarjetas independientes con texto horizontal. */
+ .editor-tool-pane[data-pane="explore"].active{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;
+ }
+ .editor-tool-pane[data-pane="explore"].active>.explore-tool-card{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  min-width:0!important;width:100%!important;box-sizing:border-box!important;
+  padding:13px!important;border:1px solid light-dark(#e8e3ee,#302a36)!important;
+  border-radius:11px!important;background:light-dark(#fff,#171521)!important;
+  box-shadow:none!important;writing-mode:horizontal-tb!important;
+ }
+ .editor-tool-pane[data-pane="explore"].active>.explore-tool-card *{
+  writing-mode:horizontal-tb!important;word-break:normal!important;overflow-wrap:anywhere!important;
+ }
+ .editor-tool-pane[data-pane="explore"].active .explore-social-grid{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;
+ }
+ .editor-tool-pane[data-pane="explore"].active #inspirationUrl{width:100%!important;min-width:0!important;box-sizing:border-box!important}
+ .editor-tool-pane[data-pane="explore"].active #inspirationPlatform,
+ .editor-tool-pane[data-pane="explore"].active #saveInspiration{min-width:0!important;width:100%!important}
+ /* Compartir: descripción + tres acciones simétricas en tarjetas separadas. */
+ .editor-tool-pane[data-pane="share"].active{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important
+ }
+ .editor-tool-pane[data-pane="share"].active>.share-tool-card{
+  display:flex!important;align-items:stretch!important;justify-content:center!important;
+  min-width:0!important;width:100%!important;box-sizing:border-box!important;
+  padding:12px!important;border:1px solid light-dark(#e8e3ee,#302a36)!important;
+  border-radius:11px!important;background:light-dark(#fff,#171521)!important;box-shadow:none!important
+ }
+ .editor-tool-pane[data-pane="share"].active>.share-info-card{grid-column:1/-1!important}
+ .editor-tool-pane[data-pane="share"].active .share-action-card button{
+  width:100%!important;min-height:46px!important;height:auto!important;padding:9px 10px!important;
+  white-space:normal!important;overflow-wrap:anywhere!important;border-width:1px!important;box-shadow:none!important
+ }
+ /* Publicar: mensaje y estado independientes; cada acceso social en su propia tarjeta. */
+ .editor-tool-pane[data-pane="publish"].active{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important
+ }
+ .editor-tool-pane[data-pane="publish"].active>.publish-tool-card{
+  min-width:0!important;width:100%!important;box-sizing:border-box!important;
+  padding:12px!important;border:1px solid light-dark(#e8e3ee,#302a36)!important;
+  border-radius:11px!important;background:light-dark(#fff,#171521)!important;box-shadow:none!important
+ }
+ .editor-tool-pane[data-pane="publish"].active>.publish-info-card,
+ .editor-tool-pane[data-pane="publish"].active>.publish-status-card{grid-column:1/-1!important}
+ .editor-tool-pane[data-pane="publish"].active .publish-network-grid{
+  display:contents!important
+ }
+ .editor-tool-pane[data-pane="publish"].active .publish-network-grid button{
+  min-width:0!important;width:100%!important;min-height:46px!important;white-space:normal!important
+ }
+}
+@media(max-width:720px){
+ .editor-tool-pane[data-pane="explore"].active,
+ .editor-tool-pane[data-pane="share"].active,
+ .editor-tool-pane[data-pane="publish"].active{grid-template-columns:minmax(0,1fr)!important}
+ .editor-tool-pane[data-pane="explore"]>.tool-pane-heading,
+ .editor-tool-pane[data-pane="share"]>.tool-pane-heading,
+ .editor-tool-pane[data-pane="publish"]>.tool-pane-heading{writing-mode:horizontal-tb!important}
+}
 </style>
