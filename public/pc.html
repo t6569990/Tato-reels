@@ -2575,6 +2575,17 @@ renderTimeline();
 }
 </style>
 
+
+<style id="tato-hide-explore-share-redundant-titles">
+/* Los botones de la barra ya identifican estas secciones; quitar encabezados duplicados. */
+.editor-tool-pane[data-pane="explore"]>.tool-pane-heading,
+.editor-tool-pane[data-pane="share"]>.tool-pane-heading,
+.editor-tool-pane[data-pane="explore"]>.panel>h3,
+.editor-tool-pane[data-pane="share"]>.panel>h3{
+ display:none!important;
+}
+</style>
+
 </body>
 </html>
 
