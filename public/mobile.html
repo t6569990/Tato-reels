@@ -1706,9 +1706,9 @@ function setMode(next){
  passwordInput.required=!forgot;
  passwordInput.autocomplete=reset?'new-password':register?'new-password':'current-password';
  submit.textContent=reset?'GUARDAR CONTRASEÑA':forgot?'ENVIAR ENLACE':register?'CREAR CUENTA':'ENTRAR';
- modeButton.style.display=(forgot||reset)?'none':'block';
+ modeButton.style.display='block';
  forgotButton.style.display=(forgot||reset||register)?'none':'block';
- modeButton.textContent=register?'Ya tengo cuenta':'Crear cuenta';
+ modeButton.textContent=register?'Ya tengo cuenta':(forgot||reset)?'Volver a entrar':'Crear cuenta';
  note.textContent=reset?'Crea una contraseña nueva de al menos 8 caracteres.':forgot?'Te enviaremos un enlace para recuperar tu contraseña.':register?'Registra tu correo y crea una contraseña.':'Entra con el correo y la contraseña de tu cuenta.';
  showError('');
 }
@@ -1735,7 +1735,7 @@ eye?.addEventListener('click',()=>{
  eye.setAttribute('aria-label',visible?'Ocultar contraseña':'Mostrar contraseña');
  eye.title=visible?'Ocultar contraseña':'Mostrar contraseña';
 });
-modeButton?.addEventListener('click',()=>setMode(mode==='register'?'login':'register'));
+modeButton?.addEventListener('click',()=>setMode(mode==='login'?'register':'login'));
 forgotButton?.addEventListener('click',()=>setMode('forgot'));
 if(emailInput) emailInput.value=(()=>{try{return localStorage.getItem('tatoEmail')||'';}catch{return '';}})();
 if(resetToken) setMode('reset');
