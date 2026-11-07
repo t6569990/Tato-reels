@@ -1276,7 +1276,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         <div class="range-row"><label>Inicio (segundos)<input id="trimStart" type="number" min="0" step="0.1" value="0"></label><label>Final (segundos)<input id="trimEnd" type="number" min="0" step="0.1" value="0"></label></div>
         <div class="file-note" id="durationNote">Primero selecciona un video para comenzar a recortarlo.</div>
         <div class="trim-actions"><button class="secondary" id="markTrimStart">Marcar inicio aquí</button><button class="secondary" id="markTrimEnd">Marcar final aquí</button></div>
-        <div class="trim-actions trim-integrate-actions"><button class="secondary" id="previewTrim" type="button">▶ Ver mi recorte</button><button class="primary" id="applyTrimToReel" type="button">＋ Integrar recorte al Reel</button></div>
+        <button class="primary" id="previewTrim" style="margin-top:9px">▶ Ver mi recorte</button>
       </section>
       <section class="editor-panel">
         <div class="creation-modes-layout">
@@ -1339,13 +1339,13 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         <div class="panel music-panel">
           <h3>🎵 Música de fondo</h3>
           <div class="music-layout">
-            <div class="music-source music-source-card">
+            <div class="music-source">
               <button class="secondary" id="musicBtn" style="width:100%">＋ Añadir música</button>
               <input id="musicInput" type="file" accept="audio/mpeg,audio/mp3,audio/*,.mp3" hidden>
               <div class="file-note compact-note">Biblioteca local de este dispositivo.</div>
               <div id="musicLibrary"></div>
             </div>
-            <div class="music-edit music-edit-card">
+            <div class="music-edit">
               <div class="music-track-window"><strong>♫ Pista seleccionada</strong><audio id="musicTrackPlayer" controls preload="metadata"></audio><div class="file-note compact-note" id="musicNote">Aún no hay música seleccionada.</div></div>
               <div class="music-trim-grid">
                 <label class="field-label" for="audioStart">Desde (s)<input id="audioStart" type="number" min="0" step="0.1" value="0"></label>
@@ -1782,7 +1782,7 @@ $('saveBtn').addEventListener('click',saveDraft);
 showDrafts(false);
 function loadDrafts(){ if(!drafts.length){toast('Todavía no tienes borradores guardados.');return;} const item=drafts[0]; $('caption').value=item.caption||''; $('hashtags').value=item.hashtags||''; $('username').value=item.username||'@tato.reels'; $('trimStart').value=item.trimStart||0; $('trimEnd').value=item.trimEnd||0; updateCaption(); $('overlayName').textContent=$('username').value; toast('Se cargó el borrador más reciente. Vuelve a seleccionar su video para editarlo.'); }
 function showTrim(){ if(!video.src){toast('Primero selecciona un video.');return;} const start=Math.max(0,Number($('trimStart').value)||0); const end=Number($('trimEnd').value)||video.duration; if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;} video.currentTime=start; video.play(); const stop=()=>{if(video.currentTime>=end){video.pause();video.removeEventListener('timeupdate',stop);}}; video.addEventListener('timeupdate',stop); toast('Reproduciendo el fragmento seleccionado.'); }
-$('previewTrim').addEventListener('click',showTrim); $('applyTrimToReel').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const start=Math.max(0,Number($('trimStart').value)||0),end=Math.min(video.duration,Number($('trimEnd').value)||video.duration);if(!(end>start)){toast('Revisa el inicio y el final del recorte.');return;}const item=timelineItems.find(x=>x.id===selectedTimelineId)||timelineItems.find(x=>x.isMain);if(!item){toast('Primero agrega el video a la línea de tiempo.');return;}item.start=start;item.end=end;item.duration=video.duration;selectedTimelineId=item.id;renderTimeline();syncExtraClipsFromTimeline();$('durationNote').textContent='Recorte integrado a la línea de tiempo: '+start.toFixed(1)+'–'+end.toFixed(1)+' s.';toast('¡Recorte integrado al Reel!');});
+$('previewTrim').addEventListener('click',showTrim);
 $('markTrimStart').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const point=Math.min(video.duration,Math.max(0,video.currentTime));$('trimStart').value=point.toFixed(1);if(Number($('trimEnd').value)<=point)$('trimEnd').value=video.duration.toFixed(1);toast('Inicio marcado en '+point.toFixed(1)+' segundos.');});
 $('markTrimEnd').addEventListener('click',()=>{if(!video.src||!Number.isFinite(video.duration)){toast('Primero selecciona un video.');return;}const point=Math.min(video.duration,Math.max(0,video.currentTime));if(point<=Number($('trimStart').value)){toast('Avanza el video hasta después del punto de inicio.');return;}$('trimEnd').value=point.toFixed(1);toast('Final marcado en '+point.toFixed(1)+' segundos.');});
 
@@ -2322,38 +2322,3 @@ renderTimeline();
 </style>
 </body>
 </html>
-
-<style id="tato-pc-requested-layout-20261107">
-/* Ajustes solicitados para PC: botones claros, recorte integrado y música en tarjetas independientes. */
-@media(min-width:721px){
-  body.device-desktop .creation-modes-layout{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:14px!important;
-    align-items:stretch!important;
-  }
-  body.device-desktop .creation-modes-layout>.creation-modes-panel{grid-column:1/-1!important}
-  body.device-desktop .creation-modes-layout>.creation-mode-card{
-    display:flex!important;flex-direction:column!important;align-items:stretch!important;
-    min-width:0!important;min-height:190px!important;padding:16px!important;
-  }
-  body.device-desktop .creation-modes-layout>.creation-mode-card b{font-size:14px!important}
-  body.device-desktop .creation-modes-layout>.creation-mode-card span{flex:1 1 auto!important}
-  body.device-desktop .creation-modes-layout>.creation-mode-card button{
-    width:100%!important;min-height:44px!important;margin-top:auto!important;
-    white-space:normal!important;line-height:1.25!important;
-  }
-  body.device-desktop .workspace-trim-card>.trim-panel{width:100%!important;max-width:none!important}
-  body.device-desktop .trim-integrate-actions{display:grid!important;grid-template-columns:1fr 1.35fr!important;gap:10px!important}
-  body.device-desktop .trim-integrate-actions button{min-height:44px!important;margin:0!important}
-  body.device-desktop .editor-tool-pane[data-pane="music"] .music-panel{grid-column:1/-1!important}
-  body.device-desktop .editor-tool-pane[data-pane="music"] .music-layout{
-    display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;
-  }
-  body.device-desktop .editor-tool-pane[data-pane="music"] .music-source-card,
-  body.device-desktop .editor-tool-pane[data-pane="music"] .music-edit-card{
-    min-width:0!important;padding:15px!important;border:1px solid light-dark(#E2D9EE,#40364F)!important;
-    border-radius:13px!important;background:light-dark(#F8F6FB,#100E17)!important;
-  }
-  body.device-desktop .editor-tool-pane[data-pane="music"] .music-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-}
-</style>
