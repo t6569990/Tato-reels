@@ -2301,3 +2301,13 @@ renderTimeline();
   }
 }
 </style>
+
+
+<style id="tato-solo-video-left-align">
+/* Único ajuste: SOLO VIDEO queda anclado al margen izquierdo y conserva su ancho. */
+.editor-tool-pane[data-pane="video"] .creation-mode-card:has(#uploadBtn){
+  justify-self:start!important;
+  margin-left:0!important;
+  margin-right:auto!important;
+}
+</style>
