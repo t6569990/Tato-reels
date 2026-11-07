@@ -1594,6 +1594,25 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   else if(/Salida a redes/i.test(h))key='publish';
   panes[key].append(card);
  });
+ // Música: eliminar el contenedor general y convertir Biblioteca y Edición en tarjetas hermanas independientes.
+ const musicPanel=panes.music.querySelector(':scope > .music-panel');
+ if(musicPanel){
+  const source=musicPanel.querySelector('.music-source');
+  const edit=musicPanel.querySelector('.music-edit');
+  const makeMusicCard=(className,title)=>{
+   const card=document.createElement('section');
+   card.className='panel music-panel '+className;
+   const heading=document.createElement('h3');
+   heading.textContent=title;
+   card.append(heading);
+   return card;
+  };
+  const sourceCard=makeMusicCard('music-source-card','🎧 Biblioteca de música');
+  const editCard=makeMusicCard('music-edit-card','🎚️ Edición e integración al Reel');
+  if(source)sourceCard.append(...Array.from(source.childNodes));
+  if(edit)editCard.append(...Array.from(edit.childNodes));
+  musicPanel.replaceWith(sourceCard,editCard);
+ }
  // Explorar: separar accesos sociales, referencias e importación en tarjetas independientes.
  const explorePanel=panes.explore.querySelector('.panel');
  if(explorePanel){
@@ -2584,6 +2603,29 @@ renderTimeline();
 .editor-tool-pane[data-pane="share"]>.panel>h3{
  display:none!important;
 }
+</style>
+
+
+<style id="tato-music-two-independent-cards-20261107">
+/* Música en dos tarjetas hermanas: sin tarjeta madre ni layout envolvente. */
+.editor-tool-pane[data-pane="music"].active{display:grid!important;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr)!important;align-items:start!important;gap:12px!important}
+.editor-tool-pane[data-pane="music"].active>.tool-pane-heading{grid-column:1/-1!important}
+.editor-tool-pane[data-pane="music"].active>.music-panel{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;padding:13px!important;box-sizing:border-box!important;border:0!important;border-radius:12px!important;background:light-dark(#fff,#100e17)!important;box-shadow:none!important}
+.editor-tool-pane[data-pane="music"].active>.music-source-card,
+.editor-tool-pane[data-pane="music"].active>.music-edit-card{align-self:stretch!important}
+.editor-tool-pane[data-pane="music"].active>.music-source-card #musicBtn,
+.editor-tool-pane[data-pane="music"].active>.music-edit-card #integrateMusicToReel{width:100%!important;min-height:42px!important;height:42px!important}
+.editor-tool-pane[data-pane="music"].active>.music-edit-card .music-track-window,
+.editor-tool-pane[data-pane="music"].active>.music-edit-card .music-trim-grid,
+.editor-tool-pane[data-pane="music"].active>.music-edit-card #audioDuration,
+.editor-tool-pane[data-pane="music"].active>.music-edit-card #musicVolume,
+.editor-tool-pane[data-pane="music"].active>.music-edit-card .music-actions,
+.editor-tool-pane[data-pane="music"].active>.music-edit-card #integrateMusicToReel,
+.editor-tool-pane[data-pane="music"].active>.music-edit-card #extractAudioNote{width:100%!important;min-width:0!important;box-sizing:border-box!important}
+.editor-tool-pane[data-pane="music"].active>.music-edit-card .music-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.editor-tool-pane[data-pane="music"].active>.music-edit-card .music-actions button{height:42px!important;min-height:42px!important;max-height:42px!important;padding:7px!important}
+.editor-tool-pane[data-pane="music"].active>.music-edit-card #integrateMusicToReel{margin-top:10px!important}
+@media(max-width:900px){.editor-tool-pane[data-pane="music"].active{grid-template-columns:minmax(0,1fr)!important}.editor-tool-pane[data-pane="music"].active>.tool-pane-heading{grid-column:1!important}}
 </style>
 
 </body>
