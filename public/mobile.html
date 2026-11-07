@@ -1383,26 +1383,27 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
           <div class="filter-row"><button class="filter active" data-ratio="9/16">9:16</button><button class="filter" data-ratio="4/5">4:5</button><button class="filter" data-ratio="1/1">1:1</button></div>
           <div style="font-size:10px;color:light-dark(#898294,#A29BAD);margin-top:9px">El formato cambia el encuadre de la vista previa.</div>
         </div>
-        <div class="panel music-panel">
-          <h3>🎵 Música de fondo</h3>
-          <div class="music-layout">
-            <div class="music-source">
-              <button class="secondary" id="musicBtn" style="width:100%">＋ Añadir música</button>
-              <input id="musicInput" type="file" accept="audio/mpeg,audio/mp3,audio/*,.mp3" hidden>
-              <div class="file-note compact-note">Biblioteca local de este dispositivo.</div>
-              <div id="musicLibrary"></div>
+        <div class="panel music-source-panel">
+          <h3>🎵 BIBLIOTECA DE MÚSICA</h3>
+          <div class="music-source">
+            <button class="secondary" id="musicBtn" style="width:100%">＋ Añadir música</button>
+            <input id="musicInput" type="file" accept="audio/mpeg,audio/mp3,audio/*,.mp3" hidden>
+            <div class="file-note compact-note">Biblioteca local de este dispositivo.</div>
+            <div id="musicLibrary"></div>
+          </div>
+        </div>
+        <div class="panel music-edit-panel">
+          <h3>🎚️ EDITAR E INTEGRAR MÚSICA</h3>
+          <div class="music-edit">
+            <div class="music-track-window"><strong>♫ Pista seleccionada</strong><audio id="musicTrackPlayer" controls preload="metadata"></audio><div class="file-note compact-note" id="musicNote">Aún no hay música seleccionada.</div></div>
+            <div class="music-trim-grid">
+              <label class="field-label" for="audioStart">Desde (s)<input id="audioStart" type="number" min="0" step="0.1" value="0"></label>
+              <label class="field-label" for="audioEnd">Hasta (s)<input id="audioEnd" type="number" min="0" step="0.1" value="30"></label>
             </div>
-            <div class="music-edit">
-              <div class="music-track-window"><strong>♫ Pista seleccionada</strong><audio id="musicTrackPlayer" controls preload="metadata"></audio><div class="file-note compact-note" id="musicNote">Aún no hay música seleccionada.</div></div>
-              <div class="music-trim-grid">
-                <label class="field-label" for="audioStart">Desde (s)<input id="audioStart" type="number" min="0" step="0.1" value="0"></label>
-                <label class="field-label" for="audioEnd">Hasta (s)<input id="audioEnd" type="number" min="0" step="0.1" value="30"></label>
-              </div>
-              <div class="file-note compact-note" id="audioDuration">Carga una canción para conocer su duración.</div>
-              <label class="field-label" for="musicVolume">Volumen <input id="musicVolume" type="range" min="0" max="1" step="0.05" value="0.35" style="width:100%;accent-color:var(--site-primary)"></label>
-              <div class="music-actions"><button class="secondary" id="previewMusic">▶ Escuchar recorte</button><button class="primary" id="exportTrimmedAudio">⬇ Exportar audio</button><button class="secondary" id="extractAudioBtn">♫ Extraer audio del video</button><button class="secondary" id="clearMusic">Quitar música</button></div>
-              <button class="primary" id="integrateMusicToReel" type="button" style="width:100%;min-height:46px;margin-top:10px">＋ INTEGRAR A MI REEL</button><div class="file-note compact-note" id="extractAudioNote" aria-live="polite">Selecciona una pista, ajusta el recorte y pulsa Integrar a mi Reel.</div>
-            </div>
+            <div class="file-note compact-note" id="audioDuration">Carga una canción para conocer su duración.</div>
+            <label class="field-label" for="musicVolume">Volumen <input id="musicVolume" type="range" min="0" max="1" step="0.05" value="0.35" style="width:100%;accent-color:var(--site-primary)"></label>
+            <div class="music-actions"><button class="secondary" id="previewMusic">▶ Escuchar recorte</button><button class="primary" id="exportTrimmedAudio">⬇ Exportar audio</button><button class="secondary" id="extractAudioBtn">♫ Extraer audio del video</button><button class="secondary" id="clearMusic">Quitar música</button></div>
+            <button class="primary" id="integrateMusicToReel" type="button" style="width:100%;min-height:46px;margin-top:10px">＋ INTEGRAR A MI REEL</button><div class="file-note compact-note" id="extractAudioNote" aria-live="polite">Selecciona una pista, ajusta el recorte y pulsa Integrar a mi Reel.</div>
           </div>
         </div>
         <div class="panel">
@@ -1483,7 +1484,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const creator=document.querySelector('.creator'), preview=creator?.querySelector('.preview-shell'), trim=creator?.querySelector('.trim-panel'), editor=creator?.querySelector('.editor-panel'), toolbar=document.querySelector('.editor-toolbar');
  if(!creator||!preview||!trim||!editor||!toolbar)return;
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
- creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');creator.insertBefore(trim,stage);stage.append(preview);const applyButton=creator.querySelector('#applyTrim'),creationPanel=creator.querySelector('.creation-modes-panel');if(applyButton&&creationPanel){applyButton.style.marginTop='10px';applyButton.style.width='100%';applyButton.classList.remove('secondary');applyButton.classList.add('primary');creationPanel.append(applyButton);}
+ creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';trimCard.append(trim);creator.insertBefore(trimCard,stage);const applyButton=creator.querySelector('#applyTrim'),creationPanel=creator.querySelector('.creation-modes-panel');if(applyButton&&creationPanel){applyButton.style.marginTop='10px';applyButton.style.width='100%';applyButton.classList.remove('secondary');applyButton.classList.add('primary');creationPanel.append(applyButton);}
  const dragHandle=document.createElement('button');dragHandle.type='button';dragHandle.className='preview-drag-handle';dragHandle.textContent='⠿ MOVER VISUALIZADOR';dragHandle.setAttribute('aria-label','Arrastrar visualizador a otra posición');preview.insertBefore(dragHandle,preview.firstChild);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
  const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
@@ -1554,8 +1555,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
- const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar,trimCard);
+  previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);toolbar.before(switchBar);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});}
  function setWorkspace(mode){
@@ -2311,6 +2311,17 @@ renderTimeline();
 .editor-tool-pane[data-pane="image"] .filter-row.image-effects .filter{min-height:34px!important;border-radius:999px!important;padding:7px 5px!important;font-size:10px!important}
 #applyTrim{border-radius:999px!important;max-width:100%!important}#applyTimelineBtn{border-radius:999px!important;min-height:36px!important;padding:8px 15px!important}
 @media(max-width:720px){.editor-toolbar{gap:6px!important;padding:8px!important}.editor-toolbar .editor-tool{flex:1 1 calc(50% - 6px)!important;min-height:33px!important;padding:7px 9px!important;font-size:10px!important}.editor-tool-pane[data-pane="image"] .filter-row.image-effects{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}.editor-tool-pane[data-pane="image"] .filter-row.image-effects .filter{min-height:36px!important;font-size:10px!important}}
+</style>
+
+<style id="tato-mobile-independent-music-containers">
+.editor-tool-pane[data-pane="music"] .music-source-panel,.editor-tool-pane[data-pane="music"] .music-edit-panel{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important}
+.editor-tool-pane[data-pane="music"] .music-source-panel .music-source,.editor-tool-pane[data-pane="music"] .music-edit-panel .music-edit{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;width:100%!important}
+.editor-tool-pane[data-pane="music"] .music-source-panel #musicLibrary{width:100%!important;min-width:0!important}
+.editor-tool-pane[data-pane="music"] .music-edit-panel .music-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+.editor-tool-pane[data-pane="music"] .music-edit-panel .music-actions button{min-width:0!important;min-height:36px!important;padding:8px!important;border-radius:999px!important;font-size:10px!important}
+.workspace-trim-card{width:100%!important;max-width:100%!important;box-sizing:border-box!important;margin:0 0 12px!important}
+.workspace-trim-card .trim-panel{width:100%!important;max-width:100%!important}
+@media(max-width:520px){.editor-tool-pane[data-pane="music"] .music-edit-panel .music-actions{grid-template-columns:minmax(0,1fr)!important}}
 </style>
 </body>
 </html>
