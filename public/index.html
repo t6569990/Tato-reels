@@ -1554,7 +1554,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(addCard,previewCard);trimCard.append(trim);toolbar.after(switchBar);switchBar.after(trimCard);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(addCard,previewCard);trimCard.append(trim);toolbar.before(switchBar);toolbar.after(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  function activate(name){tabs.forEach(b=>b.classList.toggle('active',b.dataset.pane===name));Object.entries(panes).forEach(([k,p])=>p.classList.toggle('active',k===name));}
  function setWorkspace(mode){
