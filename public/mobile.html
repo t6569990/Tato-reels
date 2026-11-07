@@ -1262,6 +1262,31 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 @media(max-width:720px){.workspace-switch{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}.workspace-switch-card{padding:7px!important}.workspace-switch-card .workspace-switch-btn{font-size:11px!important;padding:8px 5px!important}}
 @media(max-width:380px){.workspace-switch{grid-template-columns:1fr!important}}
 </style>
+
+<style id="tato-mobile-readable-type-20261107">
+/* Legibilidad móvil: aumentar textos y cifras sin cambiar la distribución ni el tamaño de los botones. */
+@media (max-width:720px){
+  #app :where(p,span,label,small,strong,b,em,a,li,button,input,textarea,select,output,figcaption,td,th){
+    font-size:max(0.8125em,13px)!important;
+  }
+  #app :where(input,textarea,select){
+    font-size:15px!important;
+  }
+  #app :where(.counter,.file-note,.trim-help,.compact-note,.sequence-marker-caption,.sequence-marker-empty,.range-row label,.timeline-trim label){
+    font-size:13px!important;
+    line-height:1.4!important;
+  }
+  #app :where(.editor-toolbar-one-line .editor-tool .tool-label,.mobile-nav button){
+    font-size:11px!important;
+  }
+  #app :where(.editor-toolbar-one-line .editor-tool){
+    height:54px!important;
+    min-height:54px!important;
+    max-height:54px!important;
+  }
+}
+</style>
+
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
