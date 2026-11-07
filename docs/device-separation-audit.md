@@ -51,3 +51,16 @@ La preparación estará lista cuando PC y celular tengan capas de estilos indepe
 - Se comprobó que el bloque ya no aparece inline en PC ni en celular, sí aparece en la hoja móvil y no aparece en la hoja PC.
 - Ambas páginas conservan tres bloques de JavaScript, 18 bloques de estilo inline y no tienen estilos fuera de `</html>`.
 - La estructura HTML de ambas páginas continúa equivalente salvo la clase del body y la hoja CSS específica del dispositivo.
+
+
+## Segunda revisión: reglas mixtas y orden de cascada
+
+Se inspeccionaron los bloques de estilos posteriores al CSS base para identificar una segunda extracción móvil segura.
+
+- Los bloques `tato-fixed-action-dock`, `tato-brand-and-bottom-buttons`, `tato-workspace-switch-two-cards`, `tato-trim-under-visualizer-card`, `tato-trim-independent-under-toolbar` y `tato-workspace-row-above-trim` contienen selectores globales junto con ajustes móviles. No se deben mover completos a `device-mobile.css`.
+- `tato-fixed-action-dock` define el anclaje inferior de las acciones tanto fuera como dentro del breakpoint móvil; extraerlo entero cambiaría el comportamiento de PC.
+- Los bloques de distribución de recorte y acciones modifican estructura, márgenes y dimensiones globales. Aunque incluyan media queries móviles, su base no es exclusiva de celular.
+- Los bloques de visualizador y de ancho de encabezados también mezclan reglas globales y breakpoints; deben permanecer en la hoja compartida hasta que se diseñe y valide una separación por selector.
+- No se realizó una extracción adicional porque no se encontró otro bloque completo inequívocamente exclusivo de móvil que pudiera trasladarse sin alterar la cascada ni el aspecto existente.
+
+**Decisión de seguridad:** conservar intactos esos bloques compartidos y continuar la preparación mediante capas de overrides específicas por dispositivo cuando el usuario dicte el acomodo de PC. No se modificaron HTML, JavaScript, Worker, autenticación, audio ni guardado.
