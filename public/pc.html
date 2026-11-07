@@ -1622,6 +1622,47 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 </style>
 
+<style id="tato-pc-button-audit-ui-refine-20261107">
+/* Botones de salida: iconos más visibles y texto equilibrado. */
+.creator .editor-shortcuts>.editor-shortcut{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ gap:10px!important;min-height:58px!important;height:auto!important;padding:9px 14px!important;
+}
+.creator .editor-shortcuts .editor-shortcut-icon{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ flex:0 0 auto!important;font-size:27px!important;line-height:1!important;
+}
+.creator .editor-shortcuts .editor-shortcut-label{
+ display:block!important;min-width:0!important;font-size:12px!important;
+ line-height:1.2!important;white-space:normal!important;text-align:left!important;
+}
+@media(max-width:720px){
+ .creator .editor-shortcuts>.editor-shortcut{min-height:54px!important;padding:7px 5px!important;gap:5px!important;flex-direction:column!important}
+ .creator .editor-shortcuts .editor-shortcut-icon{font-size:25px!important}
+ .creator .editor-shortcuts .editor-shortcut-label{font-size:10px!important;text-align:center!important}
+}
+/* Recorte: quitar el doble marco y conservar un solo borde fino. */
+.workspace-switch-card.workspace-trim-card{
+ border:0!important;outline:0!important;box-shadow:none!important;
+ background:transparent!important;padding:0!important;border-radius:10px!important;
+}
+.workspace-trim-card>.trim-panel{
+ border:1px solid light-dark(#e5dfeb,#302a36)!important;
+ outline:0!important;box-shadow:none!important;border-radius:10px!important;
+}
+/* Explorar: selector y acción en columna, misma anchura y altura. */
+.editor-tool-pane[data-pane="explore"].active .explore-reference-card .explore-social-grid{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ gap:9px!important;width:100%!important;
+}
+.editor-tool-pane[data-pane="explore"].active .explore-reference-card #inspirationPlatform,
+.editor-tool-pane[data-pane="explore"].active .explore-reference-card #saveInspiration{
+ display:block!important;width:100%!important;min-width:0!important;
+ min-height:44px!important;height:44px!important;box-sizing:border-box!important;
+ margin:0!important;border-radius:9px!important;
+}
+</style>
+
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1982,8 +2023,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
  if(actionRow){
   const shortcuts=document.createElement('div');shortcuts.className='editor-shortcuts';shortcuts.setAttribute('aria-label','Accesos directos');
-  const labels={saveBtn:'💾 Guardar borrador',exportSequenceBtn:'⚙️ Compilar proyecto',exportReelBtn:'🎬 Exportar Reel'};
-  Object.entries(labels).forEach(([id,label])=>{const button=document.getElementById(id);if(button){button.textContent=label;button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
+  const labels={saveBtn:['💾','Guardar borrador'],exportSequenceBtn:['⚙️','Compilar proyecto'],exportReelBtn:['🎬','Exportar Reel']};
+  Object.entries(labels).forEach(([id,parts])=>{const button=document.getElementById(id);if(button){const icon=document.createElement('span');icon.className='editor-shortcut-icon';icon.textContent=parts[0];const label=document.createElement('span');label.className='editor-shortcut-label';label.textContent=parts[1];button.replaceChildren(icon,label);button.setAttribute('aria-label',parts[1]);button.classList.remove('primary','secondary');button.classList.add('editor-shortcut');shortcuts.append(button);}});
   ['exportBtn','publishBtn'].forEach(id=>{const hiddenControl=document.getElementById(id);if(hiddenControl){hiddenControl.hidden=true;document.body.append(hiddenControl);}});
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
@@ -2221,6 +2262,7 @@ function showExportOptions(blob,filename){
  card.querySelector('#destClose').addEventListener('click',()=>backdrop.remove());backdrop.addEventListener('click',e=>{if(e.target===backdrop)backdrop.remove();});
 }
 
+const APP_PUBLIC_URL=window.location.origin||window.location.href;
 $('shareWhatsApp').addEventListener('click',()=>window.open('https://wa.me/?text='+encodeURIComponent('Prueba Tato Reels: '+APP_PUBLIC_URL),'_blank','noopener'));
 $('shareFacebook').addEventListener('click',()=>window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(APP_PUBLIC_URL),'_blank','noopener'));
 $('copyAppLink').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(APP_PUBLIC_URL);toast('Enlace de Tato Reels copiado.');}catch(error){window.prompt('Copia el enlace de Tato Reels:',APP_PUBLIC_URL);}});
@@ -2238,7 +2280,7 @@ let sequencePhoto=null;
 let sequencePhotoStartedAt=0;
 let sequencePhotoRemaining=0;
 let sequencePaused=false;
-let drafts = JSON.parse(localStorage.getItem('tatoReelsDrafts') || '[]');
+let drafts = (()=>{try{const value=JSON.parse(localStorage.getItem('tatoReelsDrafts')||'[]');return Array.isArray(value)?value:[];}catch(_){return [];}})();
 let filter = 'none';
 let photoScale = 1;
 let photoScaleApplied = false;
