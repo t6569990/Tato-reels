@@ -6,6 +6,7 @@
 <title>Tato Reels Creator</title>
 <link rel="icon" type="image/svg+xml" href="assets/tato-reels-icon.svg">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="/device-pc.css">
 <meta name="theme-color" content="#10104c">
 <style>
 :root {
@@ -815,54 +816,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 @media(max-width:380px){.editor-bottom-actions{gap:5px!important;padding:6px!important}.editor-bottom-action{padding:5px 2px!important}.bottom-action-label{font-size:9px!important}}
 </style>
 
-<style id="tato-mobile-tool-size-fix">
-/* Herramientas cómodas: cuadradas, legibles y con tamaño estable */
-.editor-toolbar .editor-tool{
-  box-sizing:border-box!important;
-  width:100%!important;
-  height:76px!important;
-  min-height:76px!important;
-  max-height:76px!important;
-  aspect-ratio:1/1!important;
-  padding:7px 4px!important;
-  gap:5px!important;
-  overflow:hidden!important;
-  transform:none!important;
-}
-.editor-toolbar .editor-tool .tool-icon{font-size:23px!important;line-height:1!important;flex:0 0 auto!important}
-.editor-toolbar .editor-tool .tool-label{
-  display:block!important;
-  max-width:100%!important;
-  font-size:11px!important;
-  line-height:1.15!important;
-  white-space:normal!important;
-  overflow-wrap:normal!important;
-  word-break:normal!important;
-  text-overflow:clip!important;
-}
-@media(max-width:720px){
-  .editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important}
-  .editor-toolbar .editor-tool{height:74px!important;min-height:74px!important;max-height:74px!important}
-  /* Una tarjeta por fila: evita que el contenido se comprima en dos columnas anidadas */
-  .editor-tool-pane[data-pane="video"].active{
-    display:grid!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:12px!important;
-  }
-  .editor-tool-pane[data-pane="video"]>.panel{width:100%!important;min-width:0!important;padding:14px!important}
-  .upload-options-grid{grid-template-columns:minmax(0,1fr)!important;gap:10px!important}
-  .upload-options-grid .upload-zone{width:100%!important;min-height:150px!important;padding:14px!important}
-  .upload-options-grid .upload-zone b{font-size:14px!important;line-height:1.35!important}
-  .upload-options-grid .upload-zone span{font-size:12px!important;line-height:1.45!important;overflow-wrap:break-word!important}
-  .upload-options-grid .upload-zone button{min-height:44px!important;padding:10px!important;font-size:13px!important;white-space:normal!important}
-}
-@media(max-width:380px){
-  .editor-toolbar{gap:6px!important}
-  .editor-toolbar .editor-tool{height:66px!important;min-height:66px!important;max-height:66px!important;padding:5px 2px!important}
-  .editor-toolbar .editor-tool .tool-icon{font-size:21px!important}
-  .editor-toolbar .editor-tool .tool-label{font-size:10px!important}
-}
-</style>
+
 
 
 <style id="tato-editor-layout-width-fix">
@@ -2265,9 +2219,6 @@ renderTimeline();
 /* La marca de agua de Tato Reels permanece visible sobre la vista previa. */
 .video-frame .tato-reel-watermark{display:block!important;visibility:visible!important;z-index:11!important;opacity:.9!important}
 </style>
-</body>
-</html>
-
 <style id="tato-creation-heading-match-trim-width">
 /* El encabezado ocupa las dos columnas de la herramienta Video, dentro de su contenedor */
 .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
@@ -2284,7 +2235,6 @@ renderTimeline();
   margin-right:0!important;
 }
 </style>
-
 
 <style id="tato-creation-heading-match-trim-width-v2">
 /* Igualar el ancho de ELIGE CÓMO CREAR TU REEL al contenedor de Recorta este video.
@@ -2312,7 +2262,6 @@ renderTimeline();
   }
 }
 </style>
-
 
 <style id="tato-creation-modes-two-column-layout">
 /* Distribución aislada de los tres modos: dos arriba y HÍBRIDO a todo lo ancho. */
@@ -2371,3 +2320,5 @@ renderTimeline();
   }
 }
 </style>
+</body>
+</html>
