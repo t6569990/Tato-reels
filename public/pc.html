@@ -1264,7 +1264,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 </style>
 </head>
 <body class="device-desktop">
-<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm" novalidate><label for="loginEmail">CORREO ELECTRÓNICO</label><input id="loginEmail" type="email" autocomplete="email" maxlength="254" placeholder="tucorreo@ejemplo.com" required><div id="passwordFields"><label for="loginPassword">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">◉</button></div></div><button class="login-main" id="loginSubmit" type="submit">ENTRAR</button></form><button class="login-switch" id="toggleAuthMode" type="button">Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">Olvidé mi contraseña</button><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note" id="loginNote">Entra con el correo y la contraseña de tu cuenta.</p></div></section>
+<section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm" novalidate><label id="loginEmailLabel" for="loginEmail">CORREO ELECTRÓNICO</label><input id="loginEmail" type="email" autocomplete="email" maxlength="254" placeholder="tucorreo@ejemplo.com" required><div id="passwordFields"><label for="loginPassword">CONTRASEÑA</label><div class="login-password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" placeholder="Mínimo 8 caracteres" required><button class="login-eye" id="togglePassword" type="button" aria-label="Mostrar contraseña" title="Mostrar contraseña">◉</button></div></div><button class="login-main" id="loginSubmit" type="submit">ENTRAR</button></form><button class="login-switch" id="toggleAuthMode" type="button">Crear cuenta</button><button class="login-switch" id="forgotPassword" type="button">Olvidé mi contraseña</button><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note" id="loginNote">Entra con el correo y la contraseña de tu cuenta.</p></div></section>
 <div id="app">
 <header class="topbar">
   <div class="brand"><img src="assets/tato-reels-icon.svg" alt="Icono de Tato Reels Creator" style="width:42px;height:42px;border-radius:12px;object-fit:cover">Tato <span style="color:#A98AEF">Reels</span> Creator</div>
@@ -1700,6 +1700,8 @@ const resetToken=new URLSearchParams(location.search).get('reset');
 function setMode(next){
  mode=next;
  const reset=mode==='reset',forgot=mode==='forgot',register=mode==='register';
+ $('loginEmailLabel').style.display=reset?'none':'block';
+ emailInput.style.display=reset?'none':'block';
  passwordFields.style.display=forgot?'none':'block';
  passwordInput.required=!forgot;
  passwordInput.autocomplete=reset?'new-password':register?'new-password':'current-password';
@@ -1749,7 +1751,7 @@ form?.addEventListener('submit',async event=>{
  showError('');
  const email=(emailInput?.value||'').trim().toLowerCase();
  const password=passwordInput?.value||'';
- if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showError('Escribe un correo electrónico válido.');emailInput?.focus();return;}
+ if(mode!=='reset'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showError('Escribe un correo electrónico válido.');emailInput?.focus();return;}
  if(mode!=='forgot'&&password.length<8){showError('La contraseña debe tener al menos 8 caracteres.');passwordInput?.focus();return;}
  submit.disabled=true;
  const original=submit.textContent;submit.textContent='UN MOMENTO…';
