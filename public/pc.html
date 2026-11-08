@@ -3375,5 +3375,24 @@ renderTimeline();
 <style id="tato-editor-navigation-recovery-style-20261107">.editor-toolbar{position:relative!important;z-index:1000!important;pointer-events:auto!important}.editor-toolbar *{pointer-events:auto!important}</style>
 <style id="tato-video-family-trim-visibility">.creator>.workspace-trim-card.is-hidden-by-tool{display:none!important}</style>
 <style id="tato-creation-modes-video-only-20261108">.creation-modes-layout.is-hidden-by-tool{display:none!important}</style>
+
+<style id="tato-trim-below-visualizer-final-20261108">
+/* Corrección definitiva: el recortador queda en flujo normal, debajo del visualizador. */
+.creator{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important}
+.creator>.floating-stage{order:1!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;contain:none!important;padding:42px 12px 14px!important;box-sizing:border-box!important}
+.creator>.floating-stage .preview-shell{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;transform:none!important;order:1!important;align-self:center!important;width:min(100%,245px)!important;max-width:245px!important;max-height:none!important;margin:0 auto!important;z-index:1!important}
+.creator>.floating-stage .preview-shell .video-frame{width:100%!important;height:auto!important;aspect-ratio:9/16!important;max-height:410px!important}
+.creator>.floating-stage>.workspace-trim-card{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;order:2!important;align-self:stretch!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;z-index:1!important;box-sizing:border-box!important}
+.creator>.floating-stage>.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;box-sizing:border-box!important}
+.creator>.workspace-trim-card{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;order:2!important;align-self:stretch!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;z-index:1!important;box-sizing:border-box!important}
+.creator>.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;box-sizing:border-box!important}
+@media(max-width:720px){
+ .creator{gap:9px!important}
+ .creator>.floating-stage{padding:38px 8px 10px!important;gap:9px!important}
+ .creator>.floating-stage .preview-shell{width:min(100%,210px)!important;max-width:210px!important}
+ .creator>.floating-stage .preview-shell .video-frame{max-height:350px!important}
+}
+</style>
+
 </body>
 </html>
