@@ -2110,7 +2110,7 @@ paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-
  previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  const creationModesLayout=creator.querySelector('.creation-modes-layout');
- function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});Object.entries(goTopButtons).forEach(([k,b])=>{b.hidden=k!==name;});const videoFamily=name==='video';trimCard.classList.toggle('is-hidden-by-tool',!videoFamily);trimCard.hidden=!videoFamily;trimCard.setAttribute('aria-hidden',String(!videoFamily));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',!videoFamily);creationModesLayout.hidden=!videoFamily;creationModesLayout.setAttribute('aria-hidden',String(!videoFamily));}}
+ function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});Object.entries(goTopButtons).forEach(([k,b])=>{b.hidden=k!==name;});const videoFamily=name==='video';trimCard.classList.toggle('is-hidden-by-tool',!videoFamily);trimCard.hidden=!videoFamily;trimCard.style.setProperty('display',videoFamily?'block':'none','important');trimCard.setAttribute('aria-hidden',String(!videoFamily));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',!videoFamily);creationModesLayout.hidden=!videoFamily;creationModesLayout.style.setProperty('display',videoFamily?'grid':'none','important');creationModesLayout.setAttribute('aria-hidden',String(!videoFamily));}}
  function setWorkspace(mode){
   const adding=mode==='add';
   creator.classList.toggle('workspace-mode-add',adding);
@@ -3433,9 +3433,9 @@ renderTimeline();
   const creator=document.querySelector('.creator');
   if(creator){creator.classList.toggle('workspace-mode-add',videoFamily);creator.classList.toggle('workspace-mode-preview',!videoFamily);}
   const modes=creator?.querySelector('.editor-panel > .creation-modes-layout');
-  if(modes){modes.hidden=!videoFamily;modes.classList.toggle('is-hidden-by-tool',!videoFamily);modes.setAttribute('aria-hidden',String(!videoFamily));}
-  const trim=creator?.querySelector(':scope > .workspace-trim-card');
-  if(trim){trim.hidden=!videoFamily;trim.classList.toggle('is-hidden-by-tool',!videoFamily);trim.setAttribute('aria-hidden',String(!videoFamily));}
+  if(modes){modes.hidden=!videoFamily;modes.classList.toggle('is-hidden-by-tool',!videoFamily);modes.style.setProperty('display',videoFamily?'grid':'none','important');modes.setAttribute('aria-hidden',String(!videoFamily));}
+  const trimCards=creator?.querySelectorAll('.workspace-trim-card')||[];
+  trimCards.forEach(trim=>{trim.hidden=!videoFamily;trim.classList.toggle('is-hidden-by-tool',!videoFamily);trim.style.setProperty('display',videoFamily?'block':'none','important');trim.setAttribute('aria-hidden',String(!videoFamily));});
   return true;
  };
  document.addEventListener('click',event=>{const button=event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]');if(!button)return;if(activate(button.dataset.pane))event.preventDefault();},true);
