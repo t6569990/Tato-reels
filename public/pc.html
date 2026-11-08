@@ -2333,7 +2333,7 @@ let textDecorationsApplied = false;
 function refreshDraftCount(){ $('draftCount').textContent=drafts.length; }
 function toast(message) { const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>el.classList.remove('show'),2600); }
 function openVisualizerAfterVideoAdded(){const previewButton=document.querySelector('.workspace-switch-btn');if(previewButton)previewButton.click();}
-function openLocalFilePicker(inputId){const input=$(inputId);if(!input){toast('No se encontró el selector de archivos. Recarga la página e inténtalo otra vez.');return;}input.value='';try{input.click();}catch(error){console.error('No se pudo abrir el selector local:',error);toast('El navegador no permitió abrir tus archivos. Inténtalo de nuevo.');}}
+function openLocalFilePicker(inputId){const input=$(inputId);if(!input){toast('No se encontró el selector de archivos. Recarga la página e inténtalo otra vez.');return;}input.value='';try{if(typeof input.showPicker==='function'){input.showPicker();return;}input.click();}catch(error){console.warn('showPicker no disponible; se intenta click nativo:',error);try{input.click();}catch(fallbackError){console.error('No se pudo abrir el selector local:',fallbackError);toast('El navegador bloqueó el selector de archivos. Haz clic de nuevo en Elegir video.');}}}
 $('uploadBtn').addEventListener('click',()=>openLocalFilePicker('fileInput'));
 $('addClipsBtn').addEventListener('click',()=>openLocalFilePicker('clipsInput'));
 // La carga de videos y fotos se gestiona en un único listener más abajo.
@@ -3474,5 +3474,15 @@ renderTimeline();
 <style id="tato-native-file-picker-inputs">.tato-file-picker-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;opacity:0!important;pointer-events:none!important}</style>
 
 
+<style id="tato-pc-toolbar-scale-and-file-picker-fix-20261108">
+/* PC: iconos más visibles y textos adaptables al ancho real de la barra. */
+.editor-toolbar{container-type:inline-size!important;display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;align-items:stretch!important;gap:clamp(5px,1cqi,10px)!important;width:100%!important;min-width:0!important;padding:clamp(6px,1.2cqi,12px)!important}
+.editor-toolbar .editor-tool{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:clamp(3px,.65cqi,7px)!important;width:100%!important;min-width:0!important;height:auto!important;min-height:clamp(62px,8.2cqi,88px)!important;max-height:none!important;aspect-ratio:1/1!important;padding:clamp(4px,.8cqi,9px)!important;overflow:hidden!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.15!important;text-align:center!important}
+.editor-toolbar .editor-tool .tool-icon{display:block!important;flex:0 0 auto!important;width:100%!important;height:auto!important;min-width:0!important;overflow:visible!important;font-size:clamp(23px,3.1cqi,36px)!important;line-height:1.05!important}
+.editor-toolbar .editor-tool .tool-label{display:block!important;flex:0 1 auto!important;width:100%!important;height:auto!important;min-width:0!important;overflow:visible!important;white-space:normal!important;overflow-wrap:anywhere!important;font-size:clamp(9px,1.35cqi,13px)!important;line-height:1.15!important;text-align:center!important}
+@container (max-width:700px){.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@container (max-width:360px){.editor-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+.tato-file-picker-input{pointer-events:none!important}
+</style>
 </body>
 </html>
