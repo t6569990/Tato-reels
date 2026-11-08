@@ -3644,3 +3644,17 @@ renderTimeline();
   }
 }
 </style>
+
+
+<style id="tato-pc-final-video-family-visibility-20261108">
+/* Prioridad final: ocultar ambos contenedores fuera de la pestaña Video,
+   incluso frente a reglas anteriores con display:grid/block!important. */
+html body #app .creator .editor-panel > .creation-modes-layout[hidden],
+html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool {
+  display: none !important;
+}
+html body #app .creator > .workspace-trim-card[hidden],
+html body #app .creator > .workspace-trim-card.is-hidden-by-tool {
+  display: none !important;
+}
+</style>
