@@ -2338,31 +2338,70 @@ $('uploadBtn').addEventListener('click',()=>openLocalFilePicker('fileInput'));
 $('addClipsBtn').addEventListener('click',()=>openLocalFilePicker('clipsInput'));
 // La carga de videos y fotos se gestiona en un único listener más abajo.
 function getMediaKind(file){const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();if(type.startsWith('image/')||/\.(jpe?g|png|webp)$/i.test(name))return 'image';if(type.startsWith('video/')||/\.(mp4|mov|webm|m4v|ogv)$/i.test(name))return 'video';return '';}
+function showMediaInVisualizer(item){
+ if(!item)return;
+ sequenceActive=false;stopSequenceTimer();video.pause();
+ $('sampleArt').style.display='none';
+ if(item.isImage){
+  video.style.display='none';
+  const photo=ensureSequencePhoto();
+  photo.src=item.url;photo.style.display='block';photo.style.transform='scale('+photoScale+')';
+  $('videoStatus').textContent='Fotografía: '+item.name;
+ }else{
+  if(sequencePhoto)sequencePhoto.style.display='none';
+  video.style.display='block';video.classList.add('show');
+  if(video.src!==item.url){video.src=item.url;video.load();}
+  $('videoStatus').textContent=item.name;
+ }
+}
+function addMediaFiles(fileList,mode){
+ const files=Array.from(fileList||[]);
+ if(!files.length)return;
+ let added=0,skipped=0,firstAdded=null;
+ if(mode==='video'){
+  const file=files.find(entry=>getMediaKind(entry)==='video');
+  skipped=files.length-(file?1:0);
+  if(!file){toast('Selecciona un video MP4, MOV o WebM válido.');return;}
+  const previousMain=timelineItems.find(item=>item.isMain);
+  if(previousMain){
+   const oldIndex=timelineItems.indexOf(previousMain);
+   timelineItems.splice(oldIndex,1);
+   if(previousMain.url&&previousMain.url!==objectUrl&&!timelineItems.some(item=>item.url===previousMain.url))URL.revokeObjectURL(previousMain.url);
+  }
+  if(objectUrl){const oldUrl=objectUrl;objectUrl=null;if(!timelineItems.some(item=>item.url===oldUrl))URL.revokeObjectURL(oldUrl);}
+  const url=URL.createObjectURL(file);
+  const item={id:'main-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:file.name,url,file,isMain:true,isImage:false,start:0,end:null,duration:0};
+  objectUrl=url;timelineItems.unshift(item);firstAdded=item;added=1;
+  inspectTimelineClip(item);
+ }else{
+  files.forEach((file,index)=>{
+   const kind=getMediaKind(file);
+   if(mode==='photos'&&kind!=='image'||mode==='hybrid'&&!kind){skipped++;return;}
+   if(mode==='photos'&&kind!=='image'){skipped++;return;}
+   const isImage=kind==='image';
+   const url=URL.createObjectURL(file);
+   const becomesMain=kind==='video'&&!timelineItems.some(entry=>entry.isMain);
+   const item={id:(isImage?'photo-':'clip-')+Date.now()+'-'+index+'-'+Math.random().toString(36).slice(2,7),name:file.name,file,url,isMain:becomesMain,isImage,start:0,end:isImage?3:null,duration:isImage?3:0};
+   timelineItems.push(item);
+   if(becomesMain)objectUrl=url;
+   if(!firstAdded)firstAdded=item;
+   inspectTimelineClip(item);added++;
+  });
+ }
+ if(!added){toast('No se encontraron archivos compatibles. Usa videos MP4, MOV o WebM y fotos JPG, PNG o WebP.');return;}
+ syncExtraClipsFromTimeline();
+ selectedTimelineId=firstAdded.id;
+ editSequence=[];
+ renderClips();renderTimeline();syncTrimControlsToSelection();
+ showMediaInVisualizer(firstAdded);
+ $('sequenceNote').textContent=timelineItems.length+' elemento(s) agregado(s). Pulsa Crear secuencia para reproducirlos en orden.';
+ if(mode==='video')toast('Video cargado y agregado al visualizador.');
+ else toast(added+' archivo(s) agregado(s) al visualizador y a la secuencia.');
+ if(skipped)toast(skipped+' archivo(s) omitido(s) por formato o modo no compatible.');
+}
 function renderClips(){const list=$('clipList');list.innerHTML='';const main=timelineItems.find(item=>item.isMain);if(main){const row=document.createElement('div');row.className='clip-item main-clip-item';const name=document.createElement('strong');name.textContent='1. '+main.file.name+' · video principal';row.append(name);list.append(row);}if(!extraClips.length&&!main){list.innerHTML='<div class="file-note">Aún no agregas clips adicionales.</div>';return;}extraClips.forEach((clip,index)=>{const row=document.createElement('div');row.className='clip-item';const name=document.createElement('strong');name.textContent=(index+(main?2:1))+'. '+clip.file.name;row.append(name);[['↑','up'],['↓','down'],['×','remove']].forEach(([label,action])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.action=action;button.dataset.index=index;button.setAttribute('aria-label',action+' '+clip.file.name);row.append(button);});list.append(row);});}
 $('clipList').addEventListener('click',e=>{const button=e.target.closest('button[data-action]');if(!button)return;const index=Number(button.dataset.index);const action=button.dataset.action;if(action==='remove'){URL.revokeObjectURL(extraClips[index].url);extraClips.splice(index,1);}else{const next=index+(action==='up'?-1:1);if(next<0||next>=extraClips.length)return;[extraClips[index],extraClips[next]]=[extraClips[next],extraClips[index]];}renderClips();});
-$('fileInput').addEventListener('change',e=>{
- const file=e.target.files && e.target.files[0]; if(!file) return;
- if(getMediaKind(file)!=='video') { toast('Selecciona un video MP4, MOV o WebM válido.'); e.target.value=''; return; }
- if(objectUrl) URL.revokeObjectURL(objectUrl);
- objectUrl=URL.createObjectURL(file);
- sequenceActive=false;stopSequenceTimer();
- if(sequencePhoto)sequencePhoto.style.display='none';
- video.style.display='';video.src=objectUrl;video.classList.add('show');
- $('sampleArt').style.display='none';
- $('videoStatus').textContent=file.name.length>22?file.name.slice(0,19)+'…':file.name;
- video.load();
- // Registrar el archivo principal en la secuencia y la línea de tiempo en el mismo evento.
- timelineItems=timelineItems.filter(item=>!item.isMain);
- const mainItem={id:'main-'+Date.now(),name:file.name,url:objectUrl,file,isMain:true,isImage:false,start:0,end:null,duration:0};
- timelineItems.unshift(mainItem);
- selectedTimelineId=mainItem.id;
- editSequence=[];
- renderClips();renderTimeline();
- inspectTimelineClip(mainItem);
- openVisualizerAfterVideoAdded();
- toast('Video cargado y agregado a la línea de tiempo.');
- setTimeout(()=>{e.target.value='';},0);
-});
+$('fileInput').addEventListener('change',event=>{addMediaFiles(event.target.files,'video');event.target.value='';});
 video.addEventListener('loadedmetadata',()=>{ $('trimStart').max=video.duration; $('trimEnd').max=video.duration; $('trimEnd').value=video.duration.toFixed(1); $('durationNote').textContent='Duración total: '+video.duration.toFixed(1)+' segundos.';if(typeof syncTrimControlsToSelection==='function')syncTrimControlsToSelection(); });
 video.addEventListener('ended',()=>{if(sequenceActive)advanceSequence();});
 $('playBtn').addEventListener('click',()=>{if(sequenceActive&&editSequence[sequenceIndex]?.isImage){if(sequencePaused){sequencePaused=false;sequencePhotoStartedAt=Date.now();sequenceTimer=setTimeout(advanceSequence,sequencePhotoRemaining);$('playBtn').textContent='Ⅱ';}else{sequencePaused=true;stopSequenceTimer();sequencePhotoRemaining=Math.max(0,sequencePhotoRemaining-(Date.now()-sequencePhotoStartedAt));$('playBtn').textContent='▶';}return;}if(!video.src){toast('Primero selecciona un video.');return;}if(video.paused)video.play().catch(()=>{});else video.pause();});
@@ -2596,24 +2635,9 @@ function syncExtraClipsFromTimeline(){extraClips=timelineItems.filter(item=>!ite
  function syncTrimControlsToSelection(){const item=timelineItems.find(entry=>entry.id===selectedTimelineId)||timelineItems.find(entry=>entry.isMain);const start=$('trimStart'),end=$('trimEnd'),preview=$('previewTrim'),markStart=$('markTrimStart'),markEnd=$('markTrimEnd'),apply=$('applyTrim');if(!item){[preview,markStart,markEnd,apply].forEach(button=>{if(button)button.disabled=true;});$('durationNote').textContent='Agrega o selecciona un video para recortarlo.';return;}const duration=Number(item.duration)||(item.isMain?video.duration:0);start.value=String(Math.max(0,Number(item.start)||0));end.value=String(item.end==null?duration:Number(item.end));start.max=duration||'';end.max=duration||'';const canPreview=!!item.isMain&&!item.isImage&&!sequenceActive&&!!video.src&&!!objectUrl&&video.src===objectUrl;[preview,markStart,markEnd].forEach(button=>{if(button)button.disabled=!canPreview;});if(apply)apply.disabled=!!item.isImage||!duration;$('durationNote').textContent=item.isImage?'Fotografía seleccionada · duración inicial de 3 segundos. Ajusta su duración en la línea de tiempo.':(item.isMain?'Video principal seleccionado · ':'Clip seleccionado · ')+item.name+' · '+(duration?duration.toFixed(1)+' segundos':'cargando duración');}
  $('timelineTrack').addEventListener('click',event=>{if(event.target.closest('button,input'))return;const card=event.target.closest('.timeline-clip');if(!card)return;const item=timelineItems.find(entry=>entry.id===card.dataset.id);if(!item)return;selectedTimelineId=item.id;syncTrimControlsToSelection();});
 
-$('clipsInput').addEventListener('change',event=>{
-  const files=Array.from(event.target.files||[]);let added=0,skipped=0,addedVideo=false;
-  files.forEach((file,index)=>{
-   const kind=getMediaKind(file),isImage=kind==='image';
-   if(!kind){skipped++;return;}
-   if(kind==='video')addedVideo=true;
-    const url=URL.createObjectURL(file),becomesMain=kind==='video'&&!objectUrl&&!timelineItems.some(entry=>entry.isMain),item={id:(isImage?'photo-':'clip-')+Date.now()+'-'+index+'-'+Math.random().toString(36).slice(2,6),name:file.name,file,url,isMain:becomesMain,isImage,start:0,end:isImage?3:null,duration:isImage?3:0};
-    if(becomesMain){selectedTimelineId=item.id;objectUrl=url;sequenceActive=false;stopSequenceTimer();if(sequencePhoto)sequencePhoto.style.display='none';video.style.display='';video.src=url;video.classList.add('show');$('sampleArt').style.display='none';$('videoStatus').textContent=file.name;video.load();}else extraClips.push(item);timelineItems.push(item);inspectTimelineClip(item);added++;
-  });
-  renderClips();renderTimeline();
-  if(added)toast(added+' archivo(s) agregado(s) a la secuencia.');
-  if(added&&!objectUrl&&!timelineItems.some(item=>item.isMain)){const firstPhoto=timelineItems.find(item=>item.isImage);if(firstPhoto){sequenceActive=false;stopSequenceTimer();video.pause();video.style.display='none';sequencePhoto=ensureSequencePhoto();sequencePhoto.src=firstPhoto.url;sequencePhoto.style.display='block';$('sampleArt').style.display='none';$('videoStatus').textContent='Fotografía: '+firstPhoto.name;openVisualizerAfterVideoAdded();}}
-  if(addedVideo)openVisualizerAfterVideoAdded();
-  if(skipped)toast(skipped+' archivo(s) omitido(s). Usa videos o fotos JPG, PNG y WebP.');
-  event.target.value='';
- });
+$('clipsInput').addEventListener('change',event=>{addMediaFiles(event.target.files,'hybrid');event.target.value='';});
  $('addPhotosBtn').addEventListener('click',()=>openLocalFilePicker('photosInput'));
-  $('photosInput').addEventListener('change',event=>{const files=Array.from(event.target.files||[]);let added=0,skipped=0;files.forEach(file=>{if(getMediaKind(file)!=='image'){skipped++;return;}const url=URL.createObjectURL(file);const item={id:'photo-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:file.name,file,url,isMain:false,isImage:true,start:0,end:3,duration:3};extraClips.push(item);timelineItems.push(item);inspectTimelineClip(item);added++;});renderClips();renderTimeline();if(added)toast(added+' fotografía(s) agregada(s). Duración inicial: 3 segundos cada una.');else if(files.length)toast('No se reconocieron fotografías compatibles. Usa JPG, PNG o WebP.');if(added&&!objectUrl){const firstPhoto=timelineItems.find(item=>item.isImage);if(firstPhoto){sequenceActive=false;stopSequenceTimer();video.pause();video.style.display='none';sequencePhoto=ensureSequencePhoto();sequencePhoto.src=firstPhoto.url;sequencePhoto.style.display='block';$('sampleArt').style.display='none';$('videoStatus').textContent='Fotografía: '+firstPhoto.name;openVisualizerAfterVideoAdded();}}if(skipped)toast(skipped+' archivo(s) omitido(s).');event.target.value='';});
+  $('photosInput').addEventListener('change',event=>{addMediaFiles(event.target.files,'photos');event.target.value='';});
 $('timelineTrack').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const index=timelineItems.findIndex(item=>item.id===b.dataset.id);if(index<0)return;const item=timelineItems[index],action=b.dataset.action;if(action==='up'&&index>0){timelineItems.splice(index,1);timelineItems.splice(index-1,0,item);}else if(action==='down'&&index<timelineItems.length-1){timelineItems.splice(index,1);timelineItems.splice(index+1,0,item);}else if(action==='duplicate'){const copy={...item,id:'copy-'+Date.now(),name:item.name+' (copia)',start:item.start,end:item.end,isMain:false};timelineItems.splice(index+1,0,copy);}else if(action==='remove'){const removedUrl=item.url;timelineItems.splice(index,1);if(item.isMain){objectUrl=null;video.pause();video.removeAttribute('src');video.load();$('fileInput').value='';}else extraClips=extraClips.filter(clip=>clip.url!==removedUrl);if(removedUrl&&removedUrl!==objectUrl&&!timelineItems.some(clip=>clip.url===removedUrl)&&!extraClips.some(clip=>clip.url===removedUrl)&&!editSequence.some(clip=>clip.url===removedUrl))URL.revokeObjectURL(removedUrl);}selectedTimelineId=timelineItems[Math.min(index,timelineItems.length-1)]?.id||null;renderTimeline();syncExtraClipsFromTimeline();});
 $('timelineTrack').addEventListener('change',e=>{const input=e.target.closest('input[data-trim]');if(!input)return;const item=timelineItems.find(x=>x.id===input.dataset.id);if(!item)return;const value=Math.max(0,Number(input.value)||0);if(input.dataset.trim==='start')item.start=Math.min(value,(item.end??item.duration)-0.1);else item.end=Math.min(item.duration||value,Math.max(value,(item.start||0)+0.1));if(item.end!=null&&item.end<=(item.start||0)){toast('El final debe ser posterior al inicio.');return;}renderTimeline();});
  $('timelineTrack').addEventListener('change',event=>{const input=event.target.closest('input[data-trim]');if(!input)return;const item=timelineItems.find(entry=>entry.id===input.dataset.id);if(!item)return;selectedTimelineId=item.id;syncTrimControlsToSelection();});
