@@ -1784,19 +1784,19 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
             <b>🎬 SOLO VIDEO</b>
             <span>Agrega un video desde tu dispositivo. Ideal para editar un solo clip.</span>
             <button class="primary" id="uploadBtn" type="button">Elegir video</button>
-            <input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden>
+            <input id="fileInput" class="tato-file-picker-input" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" tabindex="-1" aria-hidden="true">
           </div>
           <div class="panel upload-zone creation-mode-card">
             <b>📸 SOLO FOTOS</b>
             <span>Selecciona varias fotos JPG, PNG o WebP y crea un Reel fotográfico.</span>
             <button class="secondary" id="addPhotosBtn" type="button">Elegir fotos</button>
-            <input id="photosInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            <input id="photosInput" class="tato-file-picker-input" type="file" accept="image/jpeg,image/png,image/webp" multiple tabindex="-1" aria-hidden="true">
           </div>
           <div class="panel upload-zone creation-mode-card">
             <b>🎬＋📸 HÍBRIDO</b>
             <span>Mezcla videos y fotografías en una sola secuencia y ordénalos.</span>
             <button class="secondary" id="addClipsBtn" type="button">Elegir videos y fotos</button>
-            <input id="clipsInput" type="file" accept="video/*,image/jpeg,image/png,image/webp" multiple hidden>
+            <input id="clipsInput" class="tato-file-picker-input" type="file" accept="video/*,image/jpeg,image/png,image/webp" multiple tabindex="-1" aria-hidden="true">
           </div>
         </div>
         <div class="panel sequence-items-panel">
@@ -2333,8 +2333,9 @@ let textDecorationsApplied = false;
 function refreshDraftCount(){ $('draftCount').textContent=drafts.length; }
 function toast(message) { const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>el.classList.remove('show'),2600); }
 function openVisualizerAfterVideoAdded(){const previewButton=document.querySelector('.workspace-switch-btn');if(previewButton)previewButton.click();}
-$('uploadBtn').addEventListener('click',()=>$('fileInput').click());
-$('addClipsBtn').addEventListener('click',()=>$('clipsInput').click());
+function openLocalFilePicker(inputId){const input=$(inputId);if(!input){toast('No se encontró el selector de archivos. Recarga la página e inténtalo otra vez.');return;}input.value='';try{input.click();}catch(error){console.error('No se pudo abrir el selector local:',error);toast('El navegador no permitió abrir tus archivos. Inténtalo de nuevo.');}}
+$('uploadBtn').addEventListener('click',()=>openLocalFilePicker('fileInput'));
+$('addClipsBtn').addEventListener('click',()=>openLocalFilePicker('clipsInput'));
 // La carga de videos y fotos se gestiona en un único listener más abajo.
 function getMediaKind(file){const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();if(type.startsWith('image/')||/\.(jpe?g|png|webp)$/i.test(name))return 'image';if(type.startsWith('video/')||/\.(mp4|mov|webm|m4v|ogv)$/i.test(name))return 'video';return '';}
 function renderClips(){const list=$('clipList');list.innerHTML='';const main=timelineItems.find(item=>item.isMain);if(main){const row=document.createElement('div');row.className='clip-item main-clip-item';const name=document.createElement('strong');name.textContent='1. '+main.file.name+' · video principal';row.append(name);list.append(row);}if(!extraClips.length&&!main){list.innerHTML='<div class="file-note">Aún no agregas clips adicionales.</div>';return;}extraClips.forEach((clip,index)=>{const row=document.createElement('div');row.className='clip-item';const name=document.createElement('strong');name.textContent=(index+(main?2:1))+'. '+clip.file.name;row.append(name);[['↑','up'],['↓','down'],['×','remove']].forEach(([label,action])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.action=action;button.dataset.index=index;button.setAttribute('aria-label',action+' '+clip.file.name);row.append(button);});list.append(row);});}
@@ -2611,7 +2612,7 @@ $('clipsInput').addEventListener('change',event=>{
   if(skipped)toast(skipped+' archivo(s) omitido(s). Usa videos o fotos JPG, PNG y WebP.');
   event.target.value='';
  });
- $('addPhotosBtn').addEventListener('click',()=>$('photosInput').click());
+ $('addPhotosBtn').addEventListener('click',()=>openLocalFilePicker('photosInput'));
   $('photosInput').addEventListener('change',event=>{const files=Array.from(event.target.files||[]);let added=0,skipped=0;files.forEach(file=>{if(getMediaKind(file)!=='image'){skipped++;return;}const url=URL.createObjectURL(file);const item={id:'photo-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:file.name,file,url,isMain:false,isImage:true,start:0,end:3,duration:3};extraClips.push(item);timelineItems.push(item);inspectTimelineClip(item);added++;});renderClips();renderTimeline();if(added)toast(added+' fotografía(s) agregada(s). Duración inicial: 3 segundos cada una.');else if(files.length)toast('No se reconocieron fotografías compatibles. Usa JPG, PNG o WebP.');if(added&&!objectUrl){const firstPhoto=timelineItems.find(item=>item.isImage);if(firstPhoto){sequenceActive=false;stopSequenceTimer();video.pause();video.style.display='none';sequencePhoto=ensureSequencePhoto();sequencePhoto.src=firstPhoto.url;sequencePhoto.style.display='block';$('sampleArt').style.display='none';$('videoStatus').textContent='Fotografía: '+firstPhoto.name;openVisualizerAfterVideoAdded();}}if(skipped)toast(skipped+' archivo(s) omitido(s).');event.target.value='';});
 $('timelineTrack').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const index=timelineItems.findIndex(item=>item.id===b.dataset.id);if(index<0)return;const item=timelineItems[index],action=b.dataset.action;if(action==='up'&&index>0){timelineItems.splice(index,1);timelineItems.splice(index-1,0,item);}else if(action==='down'&&index<timelineItems.length-1){timelineItems.splice(index,1);timelineItems.splice(index+1,0,item);}else if(action==='duplicate'){const copy={...item,id:'copy-'+Date.now(),name:item.name+' (copia)',start:item.start,end:item.end,isMain:false};timelineItems.splice(index+1,0,copy);}else if(action==='remove'){const removedUrl=item.url;timelineItems.splice(index,1);if(item.isMain){objectUrl=null;video.pause();video.removeAttribute('src');video.load();$('fileInput').value='';}else extraClips=extraClips.filter(clip=>clip.url!==removedUrl);if(removedUrl&&removedUrl!==objectUrl&&!timelineItems.some(clip=>clip.url===removedUrl)&&!extraClips.some(clip=>clip.url===removedUrl)&&!editSequence.some(clip=>clip.url===removedUrl))URL.revokeObjectURL(removedUrl);}selectedTimelineId=timelineItems[Math.min(index,timelineItems.length-1)]?.id||null;renderTimeline();syncExtraClipsFromTimeline();});
 $('timelineTrack').addEventListener('change',e=>{const input=e.target.closest('input[data-trim]');if(!input)return;const item=timelineItems.find(x=>x.id===input.dataset.id);if(!item)return;const value=Math.max(0,Number(input.value)||0);if(input.dataset.trim==='start')item.start=Math.min(value,(item.end??item.duration)-0.1);else item.end=Math.min(item.duration||value,Math.max(value,(item.start||0)+0.1));if(item.end!=null&&item.end<=(item.start||0)){toast('El final debe ser posterior al inicio.');return;}renderTimeline();});
@@ -3446,61 +3447,8 @@ renderTimeline();
 </style>
 
 <!-- PC-only recovery: restore file-picker and apply-mode actions above overlapping editor layers. -->
-<style id="tato-pc-creation-mode-click-recovery-20261108">
-@media (min-width:721px){
-  .creator>.editor-panel,
-  .creator>.editor-panel .editor-tool-panes,
-  .creator>.editor-panel .editor-tool-pane[data-pane="video"],
-  .creator>.editor-panel .creation-modes-layout,
-  .creator>.editor-panel .creation-modes-layout>.panel{
-    position:relative!important;z-index:40!important;pointer-events:auto!important;
-  }
-  .creator>.editor-panel .creation-modes-layout button{
-    position:relative!important;z-index:41!important;pointer-events:auto!important;cursor:pointer!important;
-  }
-  .creator>.editor-panel .creation-modes-layout input[type="file"]{pointer-events:none!important}
-}
-</style>
-<script id="tato-pc-creation-mode-click-recovery-20261108">
-(()=> {
-  document.addEventListener('click',event=>{
-    if(window.matchMedia && !window.matchMedia('(min-width:721px)').matches)return;
-    const button=event.target && event.target.closest
-      ? event.target.closest('#uploadBtn,#addPhotosBtn,#addClipsBtn,#applyCreationModeBtn') : null;
-    if(!button)return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    if(button.id==='applyCreationModeBtn'){
-      const hasItems=!!document.querySelector('#timelineTrack .timeline-clip,#clipList .clip-item');
-      if(!hasItems){
-        const note=document.getElementById('sequenceNote');
-        if(note)note.textContent='Primero agrega videos o fotografías con uno de los tres botones. Después pulsa Aplicar cambios.';
-        const toast=document.getElementById('toast');
-        if(toast){toast.textContent='Primero agrega videos o fotos para aplicar los cambios.';toast.classList.add('show');}
-        return;
-      }
-      if(typeof timelineItems==='undefined'||!timelineItems.length){
-        const note=document.getElementById('sequenceNote');
-        if(note)note.textContent='Primero agrega videos o fotografías con uno de los tres botones.';
-        return;
-      }
-      editSequence=timelineItems.map(item=>({...item}));
-      const note=document.getElementById('sequenceNote');
-      const status=document.getElementById('timelineStatus');
-      if(note)note.textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para editar.';
-      if(status)status.textContent='✓ Cambios del modo de creación aplicados.';
-      const combine=document.getElementById('combineBtn');
-      if(combine)combine.textContent='Actualizar secuencia editable';
-      const toast=document.getElementById('toast');
-      if(toast){toast.textContent='Cambios del modo de creación aplicados.';toast.classList.add('show');}
-      return;
-    }
-    const inputId=button.id==='uploadBtn'?'fileInput':button.id==='addPhotosBtn'?'photosInput':'clipsInput';
-    const input=document.getElementById(inputId);
-    if(input){input.value='';input.click();}
-  },true);
-})();
-</script>
+<style id="tato-native-file-picker-inputs">.tato-file-picker-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;opacity:0!important;pointer-events:none!important}</style>
+
 
 </body>
 </html>
