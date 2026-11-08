@@ -1704,6 +1704,23 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   .creator>.workspace-trim-card>.trim-panel{padding:7px!important}
 }
 </style>
+
+<style id="tato-pc-final-visualizer-timeline-layout-20261108">
+/* Visualizador y recorte: dos contenedores hermanos, uno debajo del otro. */
+.creator>.floating-stage{order:1!important;position:relative!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+.creator>.floating-stage>.preview-shell{position:relative!important;inset:auto!important;transform:none!important;align-self:center!important;width:min(100%,380px)!important;max-width:380px!important;height:auto!important;max-height:none!important;margin:0 auto!important}
+.creator>.floating-stage>.preview-shell>.video-frame{width:100%!important;height:auto!important;aspect-ratio:9/16!important;max-height:650px!important}
+.creator>.workspace-trim-card{order:2!important;position:relative!important;inset:auto!important;align-self:stretch!important;width:100%!important;max-width:none!important;margin:12px 0 0!important;padding:0!important;z-index:1!important;box-sizing:border-box!important}
+.creator>.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;box-sizing:border-box!important}
+/* IR ARRIBA: un acceso por herramienta, todos colocados bajo Línea de tiempo. */
+.timeline-panel>.editor-go-top{display:flex!important;position:relative!important;grid-column:auto!important;justify-self:center!important;align-self:center!important;margin:14px auto 4px!important}
+.timeline-panel>.editor-go-top[hidden]{display:none!important}
+@media(max-width:720px){
+ .creator>.floating-stage>.preview-shell{width:min(100%,260px)!important;max-width:260px!important}
+ .creator>.floating-stage>.preview-shell>.video-frame{max-height:460px!important}
+ .creator>.workspace-trim-card{margin-top:9px!important}
+}
+</style>
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -2068,7 +2085,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   sharePanel.replaceWith(infoCard,actionsCard);
  }
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
- if(timeline)editor.append(timeline);
+ if(timeline){editor.append(timeline);paneNames.forEach(name=>timeline.append(goTopButtons[name]));}
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
  if(actionRow){
   const shortcuts=document.createElement('div');shortcuts.className='editor-shortcuts';shortcuts.setAttribute('aria-label','Accesos directos');
@@ -2081,17 +2098,17 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  // Sustituir las acciones y la barra duplicada inferior por un único acceso discreto.
  const makeGoTop=()=>{const goTop=document.createElement('button');goTop.type='button';goTop.className='editor-go-top';goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';goTop.addEventListener('click',()=>toolbar.scrollIntoView({behavior:'smooth',block:'start'}));return goTop;};
  const goTopButtons={};
-paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-top-'+name);goTop.style.gridColumn='1 / -1';goTop.style.justifySelf='center';panes[name].append(goTop);goTopButtons[name]=goTop;});
+paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-top-'+name);goTopButtons[name]=goTop;});
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.append(trimCard);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  const creationModesLayout=creator.querySelector('.creation-modes-layout');
- function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});trimCard.classList.toggle('is-hidden-by-tool',name!=='video');trimCard.hidden=name!=='video';trimCard.setAttribute('aria-hidden',String(name!=='video'));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',name!=='video');creationModesLayout.setAttribute('aria-hidden',String(name!=='video'));}}
+ function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});Object.entries(goTopButtons).forEach(([k,b])=>{b.hidden=k!==name;});trimCard.classList.toggle('is-hidden-by-tool',name!=='video');trimCard.hidden=name!=='video';trimCard.setAttribute('aria-hidden',String(name!=='video'));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',name!=='video');creationModesLayout.setAttribute('aria-hidden',String(name!=='video'));}}
  function setWorkspace(mode){
   const adding=mode==='add';
   creator.classList.toggle('workspace-mode-add',adding);
