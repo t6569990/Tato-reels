@@ -2047,7 +2047,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
  previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
- function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});trimCard.classList.toggle('is-hidden-by-tool',name!=='video');trimCard.setAttribute('aria-hidden',String(name!=='video'));}
+ const creationModesLayout=creator.querySelector('.creation-modes-layout');
+ function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});trimCard.classList.toggle('is-hidden-by-tool',name!=='video');trimCard.setAttribute('aria-hidden',String(name!=='video'));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',name!=='video');creationModesLayout.setAttribute('aria-hidden',String(name!=='video'));}}
  function setWorkspace(mode){
   const adding=mode==='add';
   creator.classList.toggle('workspace-mode-add',adding);
@@ -3327,5 +3328,6 @@ renderTimeline();
 </script>
 <style id="tato-editor-navigation-recovery-style-20261107">.editor-toolbar{position:relative!important;z-index:1000!important;pointer-events:auto!important}.editor-toolbar *{pointer-events:auto!important}</style>
 <style id="tato-video-family-trim-visibility">.creator>.workspace-trim-card.is-hidden-by-tool{display:none!important}</style>
+<style id="tato-creation-modes-video-only-20261108">.creation-modes-layout.is-hidden-by-tool{display:none!important}</style>
 </body>
 </html>
