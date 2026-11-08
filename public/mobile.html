@@ -2274,7 +2274,7 @@ renderTimeline();
   const offset=(list.length%6)*7;list.push({id,x:50+offset,y:38+offset,size:42});savePlaced(list);renderPlaced();
   const layer=document.getElementById('reelStickerLayer');if(layer)layer.scrollIntoView?.({block:'nearest'});
  }
- window.clearPlacedReelStickers=function(){savePlaced([]);renderPlaced();};
+ window.clearPlacedReelStickers=function(){try{savePlaced([]);}catch(error){console.warn('No se pudo guardar la limpieza de stickers:',error);}renderPlaced();};
  window.drawExportReelStickers=function(ctx){
   const list=getPlaced();list.forEach(item=>{const sticker=catalog.find(x=>x.id===item.id);if(!sticker)return;ctx.save();ctx.font='900 '+Math.round(item.size*2.1)+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=10;ctx.fillText(sticker.emoji,item.x/100*720,item.y/100*1280);ctx.restore();});
  };
