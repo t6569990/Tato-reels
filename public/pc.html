@@ -1978,12 +1978,12 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  // IMAGEN: convertir el panel general en tarjetas hermanas, sin marco exterior.
  const imagePanel=[...panes.image.children].find(node=>node.classList?.contains('panel'));
  if(imagePanel){
-  const filter=imagePanel.querySelector('.filter-row');
+  const filter=imagePanel.querySelector('.image-filter-list,.filter-row');
   const scale=imagePanel.querySelector('.photo-scale-field');
   const apply=imagePanel.querySelector('#applyImageChanges');
   const status=imagePanel.querySelector('#imageApplyStatus');
   const makeCard=cls=>{const card=document.createElement('section');card.className='panel image-tool-card '+cls;return card;};
-  const filterCard=makeCard('image-filter-card'),scaleCard=makeCard('image-scale-card');
+  const filterCard=makeCard('image-filter-group-card'),scaleCard=makeCard('image-scale-card');
   if(filter)filterCard.append(filter);
   if(scale)scaleCard.append(scale);
   if(apply)scaleCard.append(apply);
