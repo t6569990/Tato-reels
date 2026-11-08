@@ -1287,6 +1287,45 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 }
 </style>
 
+<style id="tato-mobile-disable-floating-visualizer">
+/* En celular el visualizador permanece fijo; el modo flotante es exclusivo de PC. */
+@media(max-width:720px){
+  .creator .preview-drag-handle,
+  .creator .preview-resize-handle{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  .creator .floating-stage.tato-preview-container-locked{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    transform:none!important;
+  }
+  .creator .floating-stage.tato-preview-container-locked:before{
+    content:"VISTA PREVIA"!important;
+  }
+  .creator .floating-stage.tato-preview-container-locked>.preview-shell{
+    position:relative!important;
+    inset:auto!important;
+    left:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:min(100%,220px)!important;
+    max-width:220px!important;
+    margin:0 auto!important;
+    touch-action:pan-y!important;
+    cursor:default!important;
+  }
+}
+</style>
+
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
