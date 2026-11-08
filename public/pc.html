@@ -3394,5 +3394,19 @@ renderTimeline();
 }
 </style>
 
+
+<style id="tato-restore-editor-button-interaction-20261108">
+/* Evitar que capas del visualizador o tarjetas intercepten los clics de las herramientas. */
+.creator,.creator .editor-panel,.creator .editor-tool-panes,.creator .editor-tool-pane,.creator .editor-toolbar,.creator .editor-bottom-toolbar,.creator .editor-bottom-actions{pointer-events:auto!important}
+.creator .editor-toolbar,.creator .editor-bottom-toolbar,.creator .editor-bottom-actions{position:relative!important;z-index:30!important}
+.creator .editor-tool-panes,.creator .editor-tool-pane{position:relative!important;z-index:2!important}
+.creator button,.creator input,.creator select,.creator textarea,.creator label,.creator a,.creator [role="button"]{pointer-events:auto!important}
+.creator>.floating-stage,.creator .floating-stage:before,.creator .floating-stage:after{pointer-events:none!important}
+.creator .floating-stage>.preview-shell,.creator .floating-stage>.workspace-trim-card,.creator .floating-stage>.workspace-trim-card *{pointer-events:auto!important}
+.creator .preview-drag-handle,.creator .preview-resize-handle{pointer-events:none!important}
+.creator .reel-sticker-layer{pointer-events:none!important}
+.creator .reel-sticker-item{pointer-events:auto!important}
+</style>
+
 </body>
 </html>
