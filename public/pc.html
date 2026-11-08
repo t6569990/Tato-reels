@@ -3546,9 +3546,10 @@ renderTimeline();
 </style>
 
 <style id="tato-pc-creation-modes-two-row-alignment-20261108">
-/* PC: Video y Fotos en la primera fila; Híbrido y Aplicar cambios debajo. */
+/* PC: Solo Video y Solo Fotos arriba; Híbrido y Aplicar cambios debajo. */
+/* El layout es hijo directo de .editor-panel, no de .editor-tool-pane. */
 @media(min-width:721px){
- .editor-tool-pane[data-pane="video"] .creation-modes-layout{
+ .creator .editor-panel > .creation-modes-layout{
   display:grid!important;
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
   grid-template-areas:
@@ -3559,25 +3560,40 @@ renderTimeline();
   align-items:stretch!important;
   gap:12px!important;
   width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
  }
- .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-modes-panel{grid-area:intro!important;width:100%!important;min-width:0!important}
- .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-card:nth-of-type(2){grid-area:video!important}
- .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-card:nth-of-type(4){grid-area:photos!important}
- .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-card:nth-of-type(5){grid-area:hybrid!important;width:100%!important}
- .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-apply-row{grid-area:apply!important;justify-content:flex-start!important;width:100%!important}
- .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-card{width:100%!important;min-width:0!important}
- .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-apply-row>#applyCreationModeBtn{width:100%!important;max-width:none!important}
+ .creator .editor-panel > .creation-modes-layout > .creation-modes-panel{
+  grid-area:intro!important;width:100%!important;min-width:0!important;
+ }
+ .creator .editor-panel > .creation-modes-layout > .creation-mode-card:nth-of-type(2){grid-area:video!important}
+ .creator .editor-panel > .creation-modes-layout > .creation-mode-card:nth-of-type(4){grid-area:photos!important}
+ .creator .editor-panel > .creation-modes-layout > .creation-mode-card:nth-of-type(5){grid-area:hybrid!important;width:100%!important}
+ .creator .editor-panel > .creation-modes-layout > .creation-mode-apply-row{
+  grid-area:apply!important;display:flex!important;justify-content:flex-start!important;width:100%!important;
+ }
+ .creator .editor-panel > .creation-modes-layout > .creation-mode-card{width:100%!important;min-width:0!important}
+ .creator .editor-panel > .creation-modes-layout > .creation-mode-apply-row > #applyCreationModeBtn{
+  width:100%!important;max-width:none!important;
+ }
 }
 </style>
 
 <style id="tato-yellow-global-project-actions-20261108">
-/* Acciones principales del proyecto: amarillo original en todos los apartados de herramientas. */
-.editor-shortcuts .editor-shortcut,.editor-shortcuts .editor-shortcut:hover,.editor-shortcuts .editor-shortcut:focus-visible,.editor-shortcuts .editor-shortcut:active{
+/* Acciones reales del proyecto: amarillo en cualquier herramienta. */
+#saveBtn,#exportSequenceBtn,#exportReelBtn,
+#saveBtn:hover,#exportSequenceBtn:hover,#exportReelBtn:hover,
+#saveBtn:focus-visible,#exportSequenceBtn:focus-visible,#exportReelBtn:focus-visible,
+#saveBtn:active,#exportSequenceBtn:active,#exportReelBtn:active{
  background:linear-gradient(135deg,#FFE978 0%,#FFC928 100%)!important;
- border:1px solid #D9A900!important;color:#302400!important;box-shadow:0 4px 12px #D9A90035!important;
+ border:1px solid #D9A900!important;color:#302400!important;
+ box-shadow:0 4px 12px #D9A90035!important;
 }
-.editor-shortcuts .editor-shortcut .editor-shortcut-icon,.editor-shortcuts .editor-shortcut .editor-shortcut-label{color:#302400!important}
-.editor-shortcuts .editor-shortcut:disabled{background:linear-gradient(135deg,#F7E7A0 0%,#EBCB65 100%)!important;border-color:#C6A94F!important;opacity:.7!important;cursor:not-allowed!important}
+#saveBtn:disabled,#exportSequenceBtn:disabled,#exportReelBtn:disabled{
+ background:linear-gradient(135deg,#F7E7A0 0%,#EBCB65 100%)!important;
+ border-color:#C6A94F!important;color:#66551D!important;
+ opacity:.8!important;cursor:not-allowed!important;
+}
 </style>
 
 </body>
