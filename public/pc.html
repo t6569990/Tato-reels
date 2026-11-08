@@ -2250,13 +2250,22 @@ const safeSet=(key,value)=>{try{window.localStorage.setItem(key,value);return tr
 function showAuthError(message){const error=$('authError');if(error)error.textContent=message||'';}
 function enterApp(user){
  const screen=$('loginScreen'),app=$('app');
- if(!screen||!app){showAuthError('No se pudo abrir el editor. Tu usuario se conserva; recarga e inténtalo otra vez.');return false;}
- app.dataset.username=user||'';
- app.classList.add('authenticated');
- app.style.display='block';
- screen.style.display='none';
- screen.setAttribute('aria-hidden','true');
- return true;
+ if(!screen||!app){showAuthError('No se pudo abrir el editor. Recarga la página e inténtalo otra vez.');return false;}
+ try{
+  app.dataset.username=user||'';
+  app.hidden=false;
+  app.classList.add('authenticated');
+  app.style.setProperty('display','block','important');
+  app.style.setProperty('visibility','visible','important');
+  app.removeAttribute('aria-hidden');
+  screen.hidden=true;
+  screen.style.setProperty('display','none','important');
+  screen.setAttribute('aria-hidden','true');
+  return true;
+ }catch(error){
+  showAuthError('No se pudo iniciar el editor. Recarga la página. '+(error?.message||''));
+  return false;
+ }
 }
 const input=$('loginUser'),form=$('loginForm');
 if(input)input.value=safeGet('tatoUsername')||'Tato';
