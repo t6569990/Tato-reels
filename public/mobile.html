@@ -2065,7 +2065,7 @@ $('clipsInput').addEventListener('change',event=>{
    if(!kind){skipped++;return;}
    if(kind==='video')addedVideo=true;
     const url=URL.createObjectURL(file),becomesMain=kind==='video'&&!objectUrl&&!timelineItems.some(entry=>entry.isMain),item={id:(isImage?'photo-':'clip-')+Date.now()+'-'+index+'-'+Math.random().toString(36).slice(2,6),name:file.name,file,url,isMain:becomesMain,isImage,start:0,end:isImage?3:null,duration:isImage?3:0};
-    if(becomesMain){objectUrl=url;sequenceActive=false;stopSequenceTimer();if(sequencePhoto)sequencePhoto.style.display='none';video.style.display='';video.src=url;video.classList.add('show');$('sampleArt').style.display='none';$('videoStatus').textContent=file.name;video.load();}else extraClips.push(item);timelineItems.push(item);inspectTimelineClip(item);added++;
+    if(becomesMain){selectedTimelineId=item.id;objectUrl=url;sequenceActive=false;stopSequenceTimer();if(sequencePhoto)sequencePhoto.style.display='none';video.style.display='';video.src=url;video.classList.add('show');$('sampleArt').style.display='none';$('videoStatus').textContent=file.name;video.load();}else extraClips.push(item);timelineItems.push(item);inspectTimelineClip(item);added++;
   });
   renderClips();renderTimeline();
   if(added)toast(added+' archivo(s) agregado(s) a la secuencia.');
