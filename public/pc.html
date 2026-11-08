@@ -2339,9 +2339,26 @@ function renderClips(){const list=$('clipList');list.innerHTML='';if(!extraClips
 $('clipList').addEventListener('click',e=>{const button=e.target.closest('button[data-action]');if(!button)return;const index=Number(button.dataset.index);const action=button.dataset.action;if(action==='remove'){URL.revokeObjectURL(extraClips[index].url);extraClips.splice(index,1);}else{const next=index+(action==='up'?-1:1);if(next<0||next>=extraClips.length)return;[extraClips[index],extraClips[next]]=[extraClips[next],extraClips[index]];}renderClips();});
 $('fileInput').addEventListener('change',e=>{
  const file=e.target.files && e.target.files[0]; if(!file) return;
-  if(getMediaKind(file)!=='video') { toast('Selecciona un video MP4, MOV o WebM válido.'); e.target.value=''; return; }
+ if(getMediaKind(file)!=='video') { toast('Selecciona un video MP4, MOV o WebM válido.'); e.target.value=''; return; }
  if(objectUrl) URL.revokeObjectURL(objectUrl);
- objectUrl=URL.createObjectURL(file);sequenceActive=false;stopSequenceTimer();if(sequencePhoto)sequencePhoto.style.display='none';video.style.display='';video.src=objectUrl;video.classList.add('show');$('sampleArt').style.display='none'; $('videoStatus').textContent=file.name.length>22?file.name.slice(0,19)+'…':file.name; video.load(); openVisualizerAfterVideoAdded(); toast('Video cargado para vista previa.');setTimeout(()=>{e.target.value='';},0);
+ objectUrl=URL.createObjectURL(file);
+ sequenceActive=false;stopSequenceTimer();
+ if(sequencePhoto)sequencePhoto.style.display='none';
+ video.style.display='';video.src=objectUrl;video.classList.add('show');
+ $('sampleArt').style.display='none';
+ $('videoStatus').textContent=file.name.length>22?file.name.slice(0,19)+'…':file.name;
+ video.load();
+ // Registrar el archivo principal en la secuencia y la línea de tiempo en el mismo evento.
+ timelineItems=timelineItems.filter(item=>!item.isMain);
+ const mainItem={id:'main-'+Date.now(),name:file.name,url:objectUrl,file,isMain:true,isImage:false,start:0,end:null,duration:0};
+ timelineItems.unshift(mainItem);
+ selectedTimelineId=mainItem.id;
+ editSequence=[];
+ renderClips();renderTimeline();
+ inspectTimelineClip(mainItem);
+ openVisualizerAfterVideoAdded();
+ toast('Video cargado y agregado a la línea de tiempo.');
+ setTimeout(()=>{e.target.value='';},0);
 });
 video.addEventListener('loadedmetadata',()=>{ $('trimStart').max=video.duration; $('trimEnd').max=video.duration; $('trimEnd').value=video.duration.toFixed(1); $('durationNote').textContent='Duración total: '+video.duration.toFixed(1)+' segundos.';if(typeof syncTrimControlsToSelection==='function')syncTrimControlsToSelection(); });
 video.addEventListener('ended',()=>{if(sequenceActive)advanceSequence();});
@@ -2575,7 +2592,7 @@ function renderTimeline(){const track=$('timelineTrack');if(!track)return;track.
 function syncExtraClipsFromTimeline(){extraClips=timelineItems.filter(item=>!item.isMain);}
  function syncTrimControlsToSelection(){const item=timelineItems.find(entry=>entry.id===selectedTimelineId)||timelineItems.find(entry=>entry.isMain);const start=$('trimStart'),end=$('trimEnd'),preview=$('previewTrim'),markStart=$('markTrimStart'),markEnd=$('markTrimEnd'),apply=$('applyTrim');if(!item){[preview,markStart,markEnd,apply].forEach(button=>{if(button)button.disabled=true;});$('durationNote').textContent='Agrega o selecciona un video para recortarlo.';return;}const duration=Number(item.duration)||(item.isMain?video.duration:0);start.value=String(Math.max(0,Number(item.start)||0));end.value=String(item.end==null?duration:Number(item.end));start.max=duration||'';end.max=duration||'';const canPreview=!!item.isMain&&!item.isImage&&!sequenceActive&&!!video.src&&!!objectUrl&&video.src===objectUrl;[preview,markStart,markEnd].forEach(button=>{if(button)button.disabled=!canPreview;});if(apply)apply.disabled=!!item.isImage||!duration;$('durationNote').textContent=item.isImage?'Fotografía seleccionada · duración inicial de 3 segundos. Ajusta su duración en la línea de tiempo.':(item.isMain?'Video principal seleccionado · ':'Clip seleccionado · ')+item.name+' · '+(duration?duration.toFixed(1)+' segundos':'cargando duración');}
  $('timelineTrack').addEventListener('click',event=>{if(event.target.closest('button,input'))return;const card=event.target.closest('.timeline-clip');if(!card)return;const item=timelineItems.find(entry=>entry.id===card.dataset.id);if(!item)return;selectedTimelineId=item.id;syncTrimControlsToSelection();});
-$('fileInput').addEventListener('change',()=>{const file=$('fileInput').files?.[0];if(!file||!objectUrl||getMediaKind(file)!=='video')return;timelineItems=timelineItems.filter(item=>!item.isMain);const main={id:'main-'+Date.now(),name:file.name,url:objectUrl,file,isMain:true,start:0,end:null,duration:0};timelineItems.unshift(main);selectedTimelineId=main.id;inspectTimelineClip(main);renderTimeline();});
+
 $('clipsInput').addEventListener('change',event=>{
   const files=Array.from(event.target.files||[]);let added=0,skipped=0,addedVideo=false;
   files.forEach((file,index)=>{
@@ -3460,11 +3477,20 @@ renderTimeline();
         if(toast){toast.textContent='Primero agrega videos o fotos para aplicar los cambios.';toast.classList.add('show');}
         return;
       }
-      document.getElementById('combineBtn')?.click();
+      if(typeof timelineItems==='undefined'||!timelineItems.length){
+        const note=document.getElementById('sequenceNote');
+        if(note)note.textContent='Primero agrega videos o fotografías con uno de los tres botones.';
+        return;
+      }
+      editSequence=timelineItems.map(item=>({...item}));
       const note=document.getElementById('sequenceNote');
       const status=document.getElementById('timelineStatus');
-      if(note)note.textContent='✓ Modo aplicado. Tu secuencia está lista para editar.';
+      if(note)note.textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para editar.';
       if(status)status.textContent='✓ Cambios del modo de creación aplicados.';
+      const combine=document.getElementById('combineBtn');
+      if(combine)combine.textContent='Actualizar secuencia editable';
+      const toast=document.getElementById('toast');
+      if(toast){toast.textContent='Cambios del modo de creación aplicados.';toast.classList.add('show');}
       return;
     }
     const inputId=button.id==='uploadBtn'?'fileInput':button.id==='addPhotosBtn'?'photosInput':'clipsInput';
