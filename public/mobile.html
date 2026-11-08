@@ -813,6 +813,11 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  .bottom-action-label{font-size:10px!important;overflow-wrap:normal!important;word-break:normal!important}
 }
 @media(max-width:380px){.editor-bottom-actions{gap:5px!important;padding:6px!important}.editor-bottom-action{padding:5px 2px!important}.bottom-action-label{font-size:9px!important}}
+
+/* Tato: seis filtros en dos filas y botón de aplicar debajo */
+.editor-tool-pane[data-pane="image"] .filter-row.image-effects{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+.editor-tool-pane[data-pane="image"] .filter-row.image-effects .filter{min-height:36px!important;padding:7px 5px!important;font-size:10px!important}
+.editor-tool-pane[data-pane="image"] #applyImageChanges{display:block!important;width:100%!important;margin-top:10px!important}
 </style>
 
 <style id="tato-mobile-tool-size-fix">
@@ -1469,7 +1474,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         </div>
         <div class="panel">
           <h3>🎨 Estilo de vista</h3>
-          <div class="filter-row image-effects"><button class="filter active" data-filter="none">Original</button><button class="filter" data-filter="nitido">HD / Nitidez</button><button class="filter" data-filter="warm">Cálido</button><button class="filter" data-filter="mono">B&amp;N</button><button class="filter" data-filter="vintage">Vintage</button><button class="filter" data-filter="cinema">Cine</button><button class="filter" data-filter="sepia">Sepia</button><button class="filter" data-filter="cool">Frío</button></div><div class="file-note">Elige un estilo. Se aplica a la vista previa y al Reel exportado.</div>
+          <div class="filter-row image-effects"><button class="filter active" data-filter="none">Original</button><button class="filter" data-filter="nitido">HD / Nitidez</button><button class="filter" data-filter="warm">Cálido</button><button class="filter" data-filter="mono">B&amp;N</button><button class="filter" data-filter="vintage">Vintage</button><button class="filter" data-filter="cinema">Cine</button></div><div class="file-note">Elige un estilo. Se aplica a la vista previa y al Reel exportado.</div>
         </div>
         <div class="panel">
           <h3>📐 Formato</h3>
