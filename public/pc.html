@@ -2087,7 +2087,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   sharePanel.replaceWith(infoCard,actionsCard);
  }
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
- if(timeline){editor.append(timeline);paneNames.forEach(name=>timeline.append(goTopButtons[name]));}
+ if(timeline){panes.video.append(timeline);paneNames.forEach(name=>timeline.append(goTopButtons[name]));}
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
  if(actionRow){
   const shortcuts=document.createElement('div');shortcuts.className='editor-shortcuts';shortcuts.setAttribute('aria-label','Accesos directos');
@@ -3713,6 +3713,26 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   max-height:none!important;
   margin:0!important;
   box-sizing:border-box!important;
+}
+</style>
+
+<style id="tato-timeline-video-pane-only-20261108">
+/* La Línea de tiempo pertenece exclusivamente a la familia Video. */
+html body #app .creator .editor-tool-pane[data-pane="video"] > .timeline-panel {
+  display:block!important;
+  position:relative!important;
+  grid-column:1 / -1!important;
+  grid-row:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:12px 0 0!important;
+  box-sizing:border-box!important;
+  align-self:stretch!important;
+  justify-self:stretch!important;
+}
+html body #app .creator .editor-tool-pane:not([data-pane="video"]) > .timeline-panel {
+  display:none!important;
 }
 </style>
 </html>
