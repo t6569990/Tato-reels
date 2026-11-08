@@ -2072,8 +2072,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  }
  // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
  // Sustituir las acciones y la barra duplicada inferior por un único acceso discreto.
- const makeGoTop=()=>{const goTop=document.createElement('button');goTop.type='button';goTop.className='editor-go-top';goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';goTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));return goTop;};
- paneNames.forEach(name=>panes[name].append(makeGoTop()));
+ const makeGoTop=()=>{const goTop=document.createElement('button');goTop.type='button';goTop.className='editor-go-top';goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';goTop.addEventListener('click',()=>toolbar.scrollIntoView({behavior:'smooth',block:'start'}));return goTop;};
+ paneNames.forEach(name=>{const goTop=makeGoTop();goTop.style.gridColumn='1 / -1';goTop.style.justifySelf='center';panes[name].append(goTop);});
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
@@ -2092,7 +2092,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   previewSwitch.setAttribute('aria-pressed',String(!adding));addSwitch.setAttribute('aria-pressed',String(adding));
  }
  previewSwitch.addEventListener('click',()=>{activate('video');setWorkspace('preview');stage.scrollIntoView({behavior:'smooth',block:'start'});});
- addSwitch.addEventListener('click',()=>{activate('video');setWorkspace('add');panes.video.scrollIntoView({behavior:'smooth',block:'start'});});
+ addSwitch.addEventListener('click',()=>{activate('video');setWorkspace('add');const target=creationModesLayout?.querySelector('.creation-modes-panel')||creationModesLayout;if(target)target.scrollIntoView({behavior:'smooth',block:'start'});});
  tabs.forEach(b=>b.addEventListener('click',()=>{const name=b.dataset.pane;activate(name);setWorkspace(name==='video'?'add':'preview');}));
  activate('video');setWorkspace('preview');
  let floating=false,moving=false,resizing=false,dragMoved=false,suppressToggle=false,startX=0,startY=0,startLeft=0,startTop=0,startW=0,startH=0;
@@ -2621,7 +2621,7 @@ function startSequence(){if(!timelineItems.length){toast('Carga al menos un clip
  $('previewSequenceBtn').addEventListener('click',()=>startSequence());
 video.addEventListener('timeupdate',()=>{if(!sequenceActive||!editSequence.length)return;const current=editSequence[sequenceIndex];if(current&&!current.isImage&&current.end!=null&&video.currentTime>=current.end)advanceSequence();});
 $('combineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Carga y agrega clips en la línea de tiempo.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='Secuencia actualizada con videos, fotografías y recortes. Los archivos originales siguen separados.';$('combineBtn').textContent='Actualizar secuencia editable';startSequence();});
-$('applyCreationModeBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Primero agrega videos o fotos con el modo que elegiste.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para editar.';$('timelineStatus').textContent='✓ Cambios del modo de creación aplicados.';$('combineBtn').textContent='Actualizar secuencia editable';startSequence();});
+$('applyCreationModeBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Primero agrega videos o fotos con el modo que elegiste.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para editar.';$('timelineStatus').textContent='✓ Cambios del modo de creación aplicados.';$('combineBtn').textContent='Actualizar secuencia editable';});
 // Exporta la secuencia completa dibujando cada clip y el título sobre un canvas.
 function waitForMedia(target,event){return new Promise((resolve,reject)=>{const ok=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(new Error('No se pudo leer uno de los videos.'));};const cleanup=()=>{target.removeEventListener(event,ok);target.removeEventListener('error',fail);};target.addEventListener(event,ok,{once:true});target.addEventListener('error',fail,{once:true});});}
 function drawCover(ctx,source,width,height,zoom=1){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const scale=Math.max(width/sw,height/sh)*Math.max(.5,Number(zoom)||1),dw=sw*scale,dh=sh*scale;ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);}
