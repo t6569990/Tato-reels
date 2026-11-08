@@ -3779,3 +3779,60 @@ html body #app .creator > .workspace-trim-card.is-hidden-by-tool {
   display: none !important;
 }
 </style>
+
+
+<style id="tato-trim-final-authority-fix-20261108">
+/* Autoridad final: el recortador solo puede mostrarse dentro de la herramienta VIDEO. */
+html body #app .creator .workspace-trim-card[hidden],
+html body #app .creator .workspace-trim-card.is-hidden-by-tool {
+  display: none !important;
+}
+html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-card:not([hidden]):not(.is-hidden-by-tool) {
+  display: block !important;
+}
+</style>
+<script id="tato-trim-final-authority-fix-20261108">
+(()=>{
+  const creator=document.querySelector('#app .creator');
+  if(!creator)return;
+  const videoPane=creator.querySelector('.editor-tool-pane[data-pane="video"]');
+  if(!videoPane)return;
+
+  let cards=[...creator.querySelectorAll('.workspace-trim-card')];
+  let card=cards.shift()||null;
+  if(!card){
+    const panel=creator.querySelector('.trim-panel');
+    if(panel){
+      card=document.createElement('div');
+      card.className='workspace-switch-card workspace-trim-card';
+      card.append(panel);
+    }
+  }
+  if(!card)return;
+
+  /* Reunir cualquier duplicado en una sola tarjeta y eliminar envolturas sobrantes. */
+  cards.forEach(extra=>{
+    const panel=extra.querySelector('.trim-panel');
+    if(panel&&!card.querySelector('.trim-panel'))card.append(panel);
+    extra.remove();
+  });
+  if(card.parentElement!==videoPane)videoPane.append(card);
+
+  const sync=()=>{
+    const active=creator.querySelector('.editor-toolbar [data-pane].active, .editor-bottom-toolbar [data-pane].active');
+    const show=!!active&&active.dataset.pane==='video';
+    card.hidden=!show;
+    card.classList.toggle('is-hidden-by-tool',!show);
+    card.setAttribute('aria-hidden',String(!show));
+    card.style.removeProperty('display');
+  };
+  creator.addEventListener('click',event=>{
+    if(event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]'))sync();
+  },true);
+  const observer=new MutationObserver(sync);
+  creator.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]').forEach(tab=>{
+    observer.observe(tab,{attributes:true,attributeFilter:['class','aria-pressed']});
+  });
+  sync();
+})();
+</script>
