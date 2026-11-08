@@ -3603,6 +3603,49 @@ renderTimeline();
 }
 </style>
 
+
+<style id="tato-trim-single-authority-20261108">
+/* El contenedor completo de recorte solo puede mostrarse en la familia Video. */
+html body #app .creator > .workspace-switch-card.workspace-trim-card[hidden],
+html body #app .creator > .workspace-switch-card.workspace-trim-card.is-hidden-by-tool,
+html body #app .creator:not(:has(.editor-toolbar [data-pane].active[data-pane="video"])) > .workspace-switch-card.workspace-trim-card {
+  display:none!important;
+}
+html body #app .creator > .workspace-switch-card.workspace-trim-card:not([hidden]):not(.is-hidden-by-tool) {
+  display:block!important;
+}
+</style>
+<script id="tato-trim-single-authority-20261108">
+(()=>{
+  const syncTrimVisibility=(requestedName)=>{
+    const creator=document.querySelector('#app .creator');
+    if(!creator)return;
+    const activeName=requestedName ||
+      document.querySelector('.editor-toolbar [data-pane].active')?.dataset.pane ||
+      document.querySelector('.editor-bottom-toolbar [data-pane].active')?.dataset.pane ||
+      'video';
+    const show=activeName==='video';
+    creator.querySelectorAll('.workspace-switch-card.workspace-trim-card').forEach(card=>{
+      card.hidden=!show;
+      card.classList.toggle('is-hidden-by-tool',!show);
+      card.setAttribute('aria-hidden',String(!show));
+      card.style.setProperty('display',show?'block':'none','important');
+    });
+  };
+  document.addEventListener('click',event=>{
+    const tab=event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]');
+    if(tab)syncTrimVisibility(tab.dataset.pane);
+  },true);
+  const toolbar=document.querySelector('.editor-toolbar');
+  if(toolbar){
+    new MutationObserver(()=>syncTrimVisibility()).observe(toolbar,{
+      subtree:true,attributes:true,attributeFilter:['class','aria-pressed']
+    });
+  }
+  syncTrimVisibility();
+})();
+</script>
+
 </body>
 
 <style id="tato-pc-strict-family-visibility-20261108">
