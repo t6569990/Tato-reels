@@ -3544,5 +3544,31 @@ renderTimeline();
   width:min(100%,360px)!important;min-height:46px!important;margin:0!important;
 }
 </style>
+
+<style id="tato-pc-creation-modes-two-row-alignment-20261108">
+/* PC: Video y Fotos en la primera fila; Híbrido y Aplicar cambios debajo. */
+@media(min-width:721px){
+ .editor-tool-pane[data-pane="video"] .creation-modes-layout{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-areas:
+   "intro intro"
+   "video photos"
+   "hybrid hybrid"
+   "apply apply"!important;
+  align-items:stretch!important;
+  gap:12px!important;
+  width:100%!important;
+ }
+ .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-modes-panel{grid-area:intro!important;width:100%!important;min-width:0!important}
+ .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-card:nth-of-type(2){grid-area:video!important}
+ .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-card:nth-of-type(4){grid-area:photos!important}
+ .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-card:nth-of-type(5){grid-area:hybrid!important;width:100%!important}
+ .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-apply-row{grid-area:apply!important;justify-content:flex-start!important;width:100%!important}
+ .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-card{width:100%!important;min-width:0!important}
+ .editor-tool-pane[data-pane="video"] .creation-modes-layout>.creation-mode-apply-row>#applyCreationModeBtn{width:100%!important;max-width:none!important}
+}
+</style>
+
 </body>
 </html>
