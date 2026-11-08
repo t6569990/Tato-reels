@@ -1486,6 +1486,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
           <div class="field title-color-field"><label class="field-label" for="titleColor">Color del texto</label><div class="title-color-picker"><input id="titleColor" class="title-hue-slider" type="range" min="0" max="360" value="0" step="1" aria-label="Desliza para elegir el color del texto"><span id="titleColorPreview" class="title-color-preview" aria-live="polite">Rojo</span></div><div class="file-note">Desliza sobre la paleta para elegir cualquier tono.</div></div><div class="field"><label class="field-label" for="titleFont">Tipografía</label><select id="titleFont" style="width:100%;padding:9px;border-radius:9px;background:light-dark(#FBFAFD,#100F17);color:inherit;border:1px solid light-dark(#E3DDEB,#373244)"><option value="Arial,sans-serif">Moderna</option><option value="Georgia,serif">Clásica</option><option value="Impact,sans-serif">Impacto</option><option value="Trebuchet MS,sans-serif">Redondeada</option><option value="'Courier New',monospace">Técnica</option></select></div><div class="file-note">Arrastra el texto directamente sobre el video para colocarlo donde quieras.</div>
           <div class="range-row"><label>Tamaño<input id="titleSize" type="range" min="16" max="44" value="28"></label><label>Duración (s)<input id="titleDuration" type="number" min="1" max="30" value="5" step="1"></label></div>
           <button class="secondary" id="clearAnimatedText" style="width:100%;margin-top:9px">Quitar texto</button>
+          <button class="secondary" id="clearReelVisualChanges" type="button" style="width:100%;min-height:44px;margin-top:9px">🧹 Borrar cambios del visualizador</button>
           <div class="file-note">Vista previa del texto animado. La exportación del Reel completo se habilitará en la siguiente integración.</div>
         </div>
         <div class="panel">
@@ -1913,6 +1914,7 @@ updateAnimatedTitle();
 video.addEventListener('loadedmetadata',updateAnimatedTitle);
 (()=>{const title=$('animatedTitle'),frame=$('videoFrame');let dragging=false;title.addEventListener('pointerdown',e=>{if(title.hidden)return;dragging=true;title.setPointerCapture(e.pointerId);e.preventDefault();});title.addEventListener('pointermove',e=>{if(!dragging)return;const r=frame.getBoundingClientRect();const x=Math.max(8,Math.min(r.width-8,e.clientX-r.left));const y=Math.max(8,Math.min(r.height-8,e.clientY-r.top));title.style.left=(x/r.width*100)+'%';title.style.top=(y/r.height*100)+'%';});const stop=()=>{dragging=false;};title.addEventListener('pointerup',stop);title.addEventListener('pointercancel',stop);})();
 $('clearAnimatedText').addEventListener('click',()=>{$('animatedText').value='';updateAnimatedTitle();toast('Texto animado eliminado.');});
+$('clearReelVisualChanges').addEventListener('click',()=>{ $('animatedText').value=''; updateAnimatedTitle(); window.clearPlacedReelStickers?.(); if(typeof textDecorationsApplied!=='undefined')textDecorationsApplied=false; const status=$('textApplyStatus'); if(status)status.textContent='Visualizador limpio. Puedes preparar el siguiente Reel.'; toast('Se quitaron los textos y premios colocados en el visualizador. Tu colección de premios sigue intacta.'); });
 $('openInstagram').addEventListener('click',()=>{window.open('https://www.instagram.com/','_blank','noopener');$('socialStatus').textContent='Instagram abierto. Para publicar, usa la opción Crear dentro de tu cuenta y selecciona el video exportado.';});
 $('openFacebook').addEventListener('click',()=>{window.open('https://www.facebook.com/','_blank','noopener');$('socialStatus').textContent='Facebook abierto. Para publicar, crea un Reel desde tu cuenta y selecciona el video exportado.';});
 $('openTikTok').addEventListener('click',()=>{window.open('https://www.tiktok.com/upload','_blank','noopener');$('socialStatus').textContent='Centro de carga de TikTok abierto. Selecciona el video exportado para completar la publicación.';});
@@ -2241,6 +2243,7 @@ renderTimeline();
   const offset=(list.length%6)*7;list.push({id,x:50+offset,y:38+offset,size:42});savePlaced(list);renderPlaced();
   const layer=document.getElementById('reelStickerLayer');if(layer)layer.scrollIntoView?.({block:'nearest'});
  }
+ window.clearPlacedReelStickers=function(){savePlaced([]);renderPlaced();};
  window.drawExportReelStickers=function(ctx){
   const list=getPlaced();list.forEach(item=>{const sticker=catalog.find(x=>x.id===item.id);if(!sticker)return;ctx.save();ctx.font='900 '+Math.round(item.size*2.1)+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=10;ctx.fillText(sticker.emoji,item.x/100*720,item.y/100*1280);ctx.restore();});
  };
