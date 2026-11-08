@@ -1666,6 +1666,33 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 <style id="tato-three-primary-shortcuts-balanced-20261107">
 @media(min-width:721px){.creator .editor-shortcuts{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 </style>
+
+<style id="tato-video-tab-tight-spacing">
+/* Reducir el espacio vertical entre vista previa, divisiones, controles y recorte. */
+.creator>.floating-stage.tato-preview-container-locked{
+  min-height:420px!important;
+  margin-bottom:2px!important;
+  padding-bottom:0!important;
+}
+.creator>.floating-stage.tato-preview-container-locked>.preview-shell{
+  margin-bottom:0!important;
+  padding-bottom:3px!important;
+}
+.creator .sequence-marker-wrap{margin:2px 0 0!important;padding:0 2px!important}
+.creator .sequence-marker-caption{margin-bottom:2px!important}
+.creator .player-controls{padding:2px 2px 0!important;min-height:22px!important}
+.creator>.workspace-trim-card{margin-top:2px!important;margin-bottom:2px!important;padding:0!important}
+.creator>.workspace-trim-card>.trim-panel{padding:8px!important}
+.creator>.workspace-trim-card>.trim-panel h3{margin:0 0 3px!important;line-height:1.2!important}
+.creator>.workspace-trim-card>.trim-panel .trim-help{margin:0 0 5px!important;line-height:1.3!important}
+.creator>.workspace-trim-card>.trim-panel .range-row{margin:0!important;gap:6px!important}
+@media(max-width:720px){
+  .creator>.floating-stage.tato-preview-container-locked{min-height:0!important;height:auto!important;margin-bottom:2px!important}
+  .creator>.floating-stage.tato-preview-container-locked>.preview-shell{padding:4px!important}
+  .creator>.workspace-trim-card{margin-top:2px!important;margin-bottom:2px!important}
+  .creator>.workspace-trim-card>.trim-panel{padding:7px!important}
+}
+</style>
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
