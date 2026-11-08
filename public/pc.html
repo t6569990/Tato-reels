@@ -3425,5 +3425,54 @@ renderTimeline();
   .creator>.editor-panel label{pointer-events:auto!important}
 }
 </style>
+
+<!-- PC-only recovery: restore file-picker and apply-mode actions above overlapping editor layers. -->
+<style id="tato-pc-creation-mode-click-recovery-20261108">
+@media (min-width:721px){
+  .creator>.editor-panel,
+  .creator>.editor-panel .editor-tool-panes,
+  .creator>.editor-panel .editor-tool-pane[data-pane="video"],
+  .creator>.editor-panel .creation-modes-layout,
+  .creator>.editor-panel .creation-modes-layout>.panel{
+    position:relative!important;z-index:40!important;pointer-events:auto!important;
+  }
+  .creator>.editor-panel .creation-modes-layout button{
+    position:relative!important;z-index:41!important;pointer-events:auto!important;cursor:pointer!important;
+  }
+  .creator>.editor-panel .creation-modes-layout input[type="file"]{pointer-events:none!important}
+}
+</style>
+<script id="tato-pc-creation-mode-click-recovery-20261108">
+(()=> {
+  document.addEventListener('click',event=>{
+    if(window.matchMedia && !window.matchMedia('(min-width:721px)').matches)return;
+    const button=event.target && event.target.closest
+      ? event.target.closest('#uploadBtn,#addPhotosBtn,#addClipsBtn,#applyCreationModeBtn') : null;
+    if(!button)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if(button.id==='applyCreationModeBtn'){
+      const hasItems=!!document.querySelector('#timelineTrack .timeline-clip,#clipList .clip-item');
+      if(!hasItems){
+        const note=document.getElementById('sequenceNote');
+        if(note)note.textContent='Primero agrega videos o fotografías con uno de los tres botones. Después pulsa Aplicar cambios.';
+        const toast=document.getElementById('toast');
+        if(toast){toast.textContent='Primero agrega videos o fotos para aplicar los cambios.';toast.classList.add('show');}
+        return;
+      }
+      document.getElementById('combineBtn')?.click();
+      const note=document.getElementById('sequenceNote');
+      const status=document.getElementById('timelineStatus');
+      if(note)note.textContent='✓ Modo aplicado. Tu secuencia está lista para editar.';
+      if(status)status.textContent='✓ Cambios del modo de creación aplicados.';
+      return;
+    }
+    const inputId=button.id==='uploadBtn'?'fileInput':button.id==='addPhotosBtn'?'photosInput':'clipsInput';
+    const input=document.getElementById(inputId);
+    if(input){input.value='';input.click();}
+  },true);
+})();
+</script>
+
 </body>
 </html>
