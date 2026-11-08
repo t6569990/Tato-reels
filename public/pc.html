@@ -813,6 +813,11 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  .bottom-action-label{font-size:10px!important;overflow-wrap:normal!important;word-break:normal!important}
 }
 @media(max-width:380px){.editor-bottom-actions{gap:5px!important;padding:6px!important}.editor-bottom-action{padding:5px 2px!important}.bottom-action-label{font-size:9px!important}}
+
+/* Tato: seis filtros en dos filas y botón de aplicar debajo */
+.editor-tool-pane[data-pane="image"] .filter-row.image-effects{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+.editor-tool-pane[data-pane="image"] .filter-row.image-effects .filter{min-height:36px!important;padding:7px 5px!important;font-size:10px!important}
+.editor-tool-pane[data-pane="image"] #applyImageChanges{display:block!important;width:100%!important;margin-top:10px!important}
 </style>
 
 <style id="tato-mobile-tool-size-fix">
@@ -1814,7 +1819,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         </div>
         <div class="panel">
           <h3>🎨 Estilo de vista</h3>
-          <div class="filter-row"><button class="filter active" data-filter="none">Original</button><button class="filter" data-filter="warm">Cálido</button><button class="filter" data-filter="mono">B&amp;N</button></div>
+          <div class="filter-row image-effects"><button class="filter active" data-filter="none">Original</button><button class="filter" data-filter="nitido">HD / Nitidez</button><button class="filter" data-filter="warm">Cálido</button><button class="filter" data-filter="mono">B&amp;N</button><button class="filter" data-filter="vintage">Vintage</button><button class="filter" data-filter="cinema">Cine</button></div>
           <div class="field photo-scale-field"><label class="field-label" for="photoScale">Escala de fotografías <strong id="photoScaleValue">100%</strong></label><input id="photoScale" type="range" min="0.75" max="1.5" step="0.05" value="1" style="width:100%"><div class="file-note">Ajusta el acercamiento de las fotos de tu secuencia.</div></div>
           <button class="primary" id="applyImageChanges" type="button" style="width:100%">✓ Aplicar imagen al Reel</button><div class="file-note" id="imageApplyStatus">Los filtros se previsualizan; aplica la escala para incluirla al compilar.</div>
         </div>
@@ -2341,7 +2346,7 @@ $('caption').addEventListener('input',updateCaption);
 $('username').addEventListener('input',()=> $('overlayName').textContent=$('username').value || '@creador');
 document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); filter=btn.dataset.filter;
- video.style.filter=filter==='warm'?'sepia(.25) saturate(1.25)':filter==='mono'?'grayscale(1)':'none'; $('sampleArt').style.filter=video.style.filter; toast('Estilo de vista: '+btn.textContent+'.');
+ const imageFilterStyles={none:'none',nitido:'contrast(1.14) saturate(1.08)',warm:'sepia(.22) saturate(1.18)',mono:'grayscale(1)',vintage:'sepia(.38) contrast(1.08) saturate(.82)',cinema:'contrast(1.18) saturate(1.12) brightness(.94)'}; video.style.filter=imageFilterStyles[filter]||'none'; $('sampleArt').style.filter=video.style.filter; toast('Estilo de vista: '+btn.textContent+'.');
 }));
 document.querySelectorAll('[data-ratio]').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('[data-ratio]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); $('videoFrame').style.aspectRatio=btn.dataset.ratio; toast('Formato de vista actualizado.');
