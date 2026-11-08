@@ -1512,7 +1512,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 /* Un solo botón pequeño para regresar al inicio, sin barra ni acciones duplicadas. */
 .editor-go-top{
  display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
- gap:2px!important;width:58px!important;height:58px!important;margin:18px auto 8px!important;
+ gap:2px!important;width:min(100%,190px)!important;min-width:150px!important;height:48px!important;margin:18px auto 8px!important;
  padding:5px!important;border:1px solid #493442!important;border-radius:13px!important;
  background:linear-gradient(145deg,#211b2a,#120f18)!important;color:#f7eaf0!important;
  box-shadow:0 5px 14px #0004!important;cursor:pointer!important;
@@ -2072,12 +2072,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  }
  // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
  // Sustituir las acciones y la barra duplicada inferior por un único acceso discreto.
- const goTop=document.createElement('button');
- goTop.type='button';goTop.className='editor-go-top';
- goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';
- goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';
- goTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
- creator.append(goTop);
+ const makeGoTop=()=>{const goTop=document.createElement('button');goTop.type='button';goTop.className='editor-go-top';goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';goTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));return goTop;};
+ paneNames.forEach(name=>panes[name].append(makeGoTop()));
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
@@ -2335,7 +2331,7 @@ $('uploadBtn').addEventListener('click',()=>$('fileInput').click());
 $('addClipsBtn').addEventListener('click',()=>$('clipsInput').click());
 // La carga de videos y fotos se gestiona en un único listener más abajo.
 function getMediaKind(file){const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();if(type.startsWith('image/')||/\.(jpe?g|png|webp)$/i.test(name))return 'image';if(type.startsWith('video/')||/\.(mp4|mov|webm|m4v|ogv)$/i.test(name))return 'video';return '';}
-function renderClips(){const list=$('clipList');list.innerHTML='';if(!extraClips.length){list.innerHTML='<div class="file-note">Aún no agregas clips adicionales.</div>';return;}extraClips.forEach((clip,index)=>{const row=document.createElement('div');row.className='clip-item';const name=document.createElement('strong');name.textContent=(index+2)+'. '+clip.file.name;row.append(name);[['↑','up'],['↓','down'],['×','remove']].forEach(([label,action])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.action=action;button.dataset.index=index;button.setAttribute('aria-label',action+' '+clip.file.name);row.append(button);});list.append(row);});}
+function renderClips(){const list=$('clipList');list.innerHTML='';const main=timelineItems.find(item=>item.isMain);if(main){const row=document.createElement('div');row.className='clip-item main-clip-item';const name=document.createElement('strong');name.textContent='1. '+main.file.name+' · video principal';row.append(name);list.append(row);}if(!extraClips.length&&!main){list.innerHTML='<div class="file-note">Aún no agregas clips adicionales.</div>';return;}extraClips.forEach((clip,index)=>{const row=document.createElement('div');row.className='clip-item';const name=document.createElement('strong');name.textContent=(index+(main?2:1))+'. '+clip.file.name;row.append(name);[['↑','up'],['↓','down'],['×','remove']].forEach(([label,action])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.action=action;button.dataset.index=index;button.setAttribute('aria-label',action+' '+clip.file.name);row.append(button);});list.append(row);});}
 $('clipList').addEventListener('click',e=>{const button=e.target.closest('button[data-action]');if(!button)return;const index=Number(button.dataset.index);const action=button.dataset.action;if(action==='remove'){URL.revokeObjectURL(extraClips[index].url);extraClips.splice(index,1);}else{const next=index+(action==='up'?-1:1);if(next<0||next>=extraClips.length)return;[extraClips[index],extraClips[next]]=[extraClips[next],extraClips[index]];}renderClips();});
 $('fileInput').addEventListener('change',e=>{
  const file=e.target.files && e.target.files[0]; if(!file) return;
@@ -2625,7 +2621,7 @@ function startSequence(){if(!timelineItems.length){toast('Carga al menos un clip
  $('previewSequenceBtn').addEventListener('click',()=>startSequence());
 video.addEventListener('timeupdate',()=>{if(!sequenceActive||!editSequence.length)return;const current=editSequence[sequenceIndex];if(current&&!current.isImage&&current.end!=null&&video.currentTime>=current.end)advanceSequence();});
 $('combineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Carga y agrega clips en la línea de tiempo.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='Secuencia actualizada con videos, fotografías y recortes. Los archivos originales siguen separados.';$('combineBtn').textContent='Actualizar secuencia editable';startSequence();});
-$('applyCreationModeBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Primero agrega videos o fotos con el modo que elegiste.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para editar.';$('timelineStatus').textContent='✓ Cambios del modo de creación aplicados.';toast('Cambios del modo de creación aplicados.');$('combineBtn').textContent='Actualizar secuencia editable';});
+$('applyCreationModeBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Primero agrega videos o fotos con el modo que elegiste.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para editar.';$('timelineStatus').textContent='✓ Cambios del modo de creación aplicados.';$('combineBtn').textContent='Actualizar secuencia editable';startSequence();});
 // Exporta la secuencia completa dibujando cada clip y el título sobre un canvas.
 function waitForMedia(target,event){return new Promise((resolve,reject)=>{const ok=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(new Error('No se pudo leer uno de los videos.'));};const cleanup=()=>{target.removeEventListener(event,ok);target.removeEventListener('error',fail);};target.addEventListener(event,ok,{once:true});target.addEventListener('error',fail,{once:true});});}
 function drawCover(ctx,source,width,height,zoom=1){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const scale=Math.max(width/sw,height/sh)*Math.max(.5,Number(zoom)||1),dw=sw*scale,dh=sh*scale;ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);}
