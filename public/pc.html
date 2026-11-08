@@ -1778,7 +1778,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         <div class="creation-modes-layout">
           <div class="panel creation-modes-panel">
             <h3>🎞️ ELIGE CÓMO CREAR TU REEL</h3>
-            <div class="file-note">Elige uno de los tres modos. Puedes volver a agregar elementos para ampliar tu secuencia.</div><button class="primary" id="applyCreationModeBtn" type="button" style="width:100%;margin-top:10px">✓ Aplicar cambios</button>
+            <div class="file-note">Elige uno de los tres modos. Puedes volver a agregar elementos para ampliar tu secuencia.</div>
           </div>
           <div class="panel upload-zone creation-mode-card">
             <b>🎬 SOLO VIDEO</b>
@@ -1786,6 +1786,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
             <button class="primary" id="uploadBtn" type="button">Elegir video</button>
             <input id="fileInput" class="tato-file-picker-input" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" tabindex="-1" aria-hidden="true">
           </div>
+          <div class="creation-mode-apply-row"><button class="primary" id="applyCreationModeBtn" type="button">✓ Aplicar cambios</button></div>
           <div class="panel upload-zone creation-mode-card">
             <b>📸 SOLO FOTOS</b>
             <span>Selecciona varias fotos JPG, PNG o WebP y crea un Reel fotográfico.</span>
@@ -1991,7 +1992,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   const makeCard=cls=>{const card=document.createElement('section');card.className='panel image-tool-card '+cls;return card;};
   const filterCard=makeCard('image-filter-group-card'),scaleCard=makeCard('image-scale-card');
   if(filter)filterCard.append(filter);
-  if(scale)scaleCard.append(scale);
+  if(scale){const scaleHeading=document.createElement('h3');scaleHeading.className='image-scale-heading';scaleHeading.textContent='📷 Escala y acercamiento de fotografías';scaleCard.append(scaleHeading,scale);}
   if(apply)scaleCard.append(apply);
   if(status)scaleCard.append(status);
   imagePanel.replaceWith(...[filterCard,scaleCard].filter(card=>card.children.length));
@@ -2079,7 +2080,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
  // Sustituir las acciones y la barra duplicada inferior por un único acceso discreto.
  const makeGoTop=()=>{const goTop=document.createElement('button');goTop.type='button';goTop.className='editor-go-top';goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';goTop.addEventListener('click',()=>toolbar.scrollIntoView({behavior:'smooth',block:'start'}));return goTop;};
- paneNames.forEach(name=>{const goTop=makeGoTop();goTop.style.gridColumn='1 / -1';goTop.style.justifySelf='center';panes[name].append(goTop);});
+ const goTopButtons={};
+paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-top-'+name);goTop.style.gridColumn='1 / -1';goTop.style.justifySelf='center';panes[name].append(goTop);goTopButtons[name]=goTop;});
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
@@ -2089,7 +2091,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
  previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.append(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  const creationModesLayout=creator.querySelector('.creation-modes-layout');
- function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});trimCard.classList.toggle('is-hidden-by-tool',name!=='video');trimCard.setAttribute('aria-hidden',String(name!=='video'));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',name!=='video');creationModesLayout.setAttribute('aria-hidden',String(name!=='video'));}}
+ function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});trimCard.classList.toggle('is-hidden-by-tool',name!=='video');trimCard.hidden=name!=='video';trimCard.setAttribute('aria-hidden',String(name!=='video'));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',name!=='video');creationModesLayout.setAttribute('aria-hidden',String(name!=='video'));}}
  function setWorkspace(mode){
   const adding=mode==='add';
   creator.classList.toggle('workspace-mode-add',adding);
@@ -3483,6 +3485,18 @@ renderTimeline();
 @container (max-width:700px){.editor-toolbar{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
 @container (max-width:360px){.editor-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 .tato-file-picker-input{pointer-events:none!important}
+</style>
+<style id="tato-pc-requested-video-image-layout-20261108">
+.creation-mode-apply-row{grid-column:1/-1!important;display:flex!important;justify-content:flex-start!important;align-items:center!important;width:100%!important;margin:0!important;padding:0!important}
+.creation-mode-apply-row #applyCreationModeBtn{width:min(100%,360px)!important;min-height:44px!important;margin:0!important}
+.image-scale-heading{width:100%!important;margin:0 0 8px!important;text-align:left!important;font-size:15px!important;line-height:1.3!important}
+.editor-tool-pane[data-pane="image"] .image-filter-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card{display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;padding:6px!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-height:44px!important;padding:8px 5px!important;text-align:center!important;white-space:normal!important;line-height:1.2!important}
+.editor-tool-pane[data-pane="video"] .editor-go-top-video{order:999!important;align-self:center!important;margin-top:16px!important}
+.editor-tool-pane[data-pane="image"] .editor-go-top-image{order:999!important;align-self:center!important;margin-top:18px!important}
+.workspace-trim-card[hidden]{display:none!important}
+@media(max-width:720px){.creation-mode-apply-row #applyCreationModeBtn{width:100%!important}.editor-tool-pane[data-pane="image"] .image-filter-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 </style>
 </body>
 </html>
