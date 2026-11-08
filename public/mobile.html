@@ -818,6 +818,12 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 .editor-tool-pane[data-pane="image"] .filter-row.image-effects{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
 .editor-tool-pane[data-pane="image"] .filter-row.image-effects .filter{min-height:36px!important;padding:7px 5px!important;font-size:10px!important}
 .editor-tool-pane[data-pane="image"] #applyImageChanges{display:block!important;width:100%!important;margin-top:10px!important}
+
+/* Filtros de imagen: tarjetas independientes apiladas */
+.editor-tool-pane[data-pane="image"] .image-filter-list{display:flex!important;flex-direction:column!important;gap:7px!important;width:100%!important;margin:8px 0 12px!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card{display:block!important;width:100%!important;padding:5px!important;border:1px solid var(--site-border,rgba(140,130,160,.28))!important;border-radius:12px!important;background:var(--panel-soft,rgba(140,130,160,.07))!important;box-sizing:border-box!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;min-height:38px!important;padding:8px 13px!important;border-radius:8px!important;text-align:left!important;font-size:12px!important}
+
 </style>
 
 <style id="tato-mobile-tool-size-fix">
@@ -1474,7 +1480,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
         </div>
         <div class="panel">
           <h3>🎨 Estilo de vista</h3>
-          <div class="filter-row image-effects"><button class="filter active" data-filter="none">Original</button><button class="filter" data-filter="nitido">HD / Nitidez</button><button class="filter" data-filter="warm">Cálido</button><button class="filter" data-filter="mono">B&amp;N</button><button class="filter" data-filter="vintage">Vintage</button><button class="filter" data-filter="cinema">Cine</button></div><div class="file-note">Elige un estilo. Se aplica a la vista previa y al Reel exportado.</div>
+          <div class="image-filter-list"><div class="image-filter-card"><button class="filter active" data-filter="none" type="button">Original</button></div><div class="image-filter-card"><button class="filter" data-filter="nitido" type="button">HD / Nitidez</button></div><div class="image-filter-card"><button class="filter" data-filter="warm" type="button">Cálido</button></div><div class="image-filter-card"><button class="filter" data-filter="mono" type="button">B&amp;N</button></div><div class="image-filter-card"><button class="filter" data-filter="vintage" type="button">Vintage</button></div><div class="image-filter-card"><button class="filter" data-filter="cinema" type="button">Cine</button></div></div><div class="file-note">Elige un estilo. Se aplica a la vista previa y al Reel exportado.</div>
         </div>
         <div class="panel">
           <h3>📐 Formato</h3>
