@@ -3605,27 +3605,24 @@ renderTimeline();
 
 
 <style id="tato-trim-single-authority-20261108">
-/* El contenedor completo de recorte solo puede mostrarse en la familia Video. */
+/* El recortador solo se muestra cuando una pestaña Video está activa. */
 html body #app .creator > .workspace-switch-card.workspace-trim-card[hidden],
 html body #app .creator > .workspace-switch-card.workspace-trim-card.is-hidden-by-tool,
-html body #app .creator:not(:has(.editor-toolbar [data-pane].active[data-pane="video"])) > .workspace-switch-card.workspace-trim-card {
+html body #app .creator:not(:has(.editor-toolbar [data-pane="video"].active, .editor-bottom-toolbar [data-pane="video"].active)) > .workspace-switch-card.workspace-trim-card {
   display:none!important;
-}
-html body #app .creator > .workspace-switch-card.workspace-trim-card:not([hidden]):not(.is-hidden-by-tool) {
-  display:block!important;
 }
 </style>
 <script id="tato-trim-single-authority-20261108">
 (()=>{
-  const syncTrimVisibility=(requestedName)=>{
-    const creator=document.querySelector('#app .creator');
+  const creatorSelector='#app .creator';
+  const trimSelector='.workspace-switch-card.workspace-trim-card';
+  const activeVideoSelector='.editor-toolbar [data-pane="video"].active, .editor-bottom-toolbar [data-pane="video"].active';
+  const syncTrimVisibility=()=>{
+    const creator=document.querySelector(creatorSelector);
     if(!creator)return;
-    const activeName=requestedName ||
-      document.querySelector('.editor-toolbar [data-pane].active')?.dataset.pane ||
-      document.querySelector('.editor-bottom-toolbar [data-pane].active')?.dataset.pane ||
-      'video';
-    const show=activeName==='video';
-    creator.querySelectorAll('.workspace-switch-card.workspace-trim-card').forEach(card=>{
+    const activeTab=creator.querySelector('.editor-toolbar [data-pane].active, .editor-bottom-toolbar [data-pane].active');
+    const show=!!activeTab && activeTab.dataset.pane==='video';
+    creator.querySelectorAll(trimSelector).forEach(card=>{
       card.hidden=!show;
       card.classList.toggle('is-hidden-by-tool',!show);
       card.setAttribute('aria-hidden',String(!show));
@@ -3633,15 +3630,15 @@ html body #app .creator > .workspace-switch-card.workspace-trim-card:not([hidden
     });
   };
   document.addEventListener('click',event=>{
-    const tab=event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]');
-    if(tab)syncTrimVisibility(tab.dataset.pane);
-  },true);
-  const toolbar=document.querySelector('.editor-toolbar');
-  if(toolbar){
-    new MutationObserver(()=>syncTrimVisibility()).observe(toolbar,{
-      subtree:true,attributes:true,attributeFilter:['class','aria-pressed']
-    });
-  }
+    if(event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')) {
+      syncTrimVisibility();
+    }
+  });
+  const observer=new MutationObserver(syncTrimVisibility);
+  const observeRoot=document.querySelector(creatorSelector) || document.querySelector('#app') || document.documentElement;
+  observer.observe(observeRoot,{
+    subtree:true,childList:true,attributes:true,attributeFilter:['class','aria-pressed','hidden']
+  });
   syncTrimVisibility();
 })();
 </script>
