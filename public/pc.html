@@ -1956,6 +1956,12 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
   else if(/Salida a redes/i.test(h))key='publish';
   panes[key].append(card);
  });
+ // Mantener la acción de limpieza siempre visible al abrir la herramienta TEXTO.
+ const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
+ if(clearVisualizerButton){
+  clearVisualizerButton.style.cssText='display:block!important;visibility:visible!important;grid-column:1 / -1;width:100%;min-height:46px;margin:0 0 4px!important;position:relative;z-index:3;';
+  panes.text.insertBefore(clearVisualizerButton,panes.text.children[1]||null);
+ }
  // Música: eliminar el contenedor general y convertir Biblioteca y Edición en tarjetas hermanas independientes.
  const musicPanel=panes.music.querySelector(':scope > .music-panel');
  if(musicPanel){
