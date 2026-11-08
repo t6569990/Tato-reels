@@ -1231,7 +1231,7 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 <style id="tato-trim-under-visualizer-card">
 /* Visualizador, carga y recorte viven en contenedores independientes */
 .workspace-switch-card{min-width:0!important;box-sizing:border-box!important}
-.workspace-trim-card{grid-column:1/-1!important;display:block!important;width:100%!important;max-width:none!important;padding:12px!important;margin-bottom:-8px!important};position:absolute!important;left:16px!important;right:16px!important;bottom:12px!important;margin:0!important;padding:0!important;z-index:5!important
+.workspace-trim-card{grid-column:1/-1!important;display:block!important;width:100%!important;max-width:none!important;position:absolute!important;left:16px!important;right:16px!important;bottom:12px!important;margin:0!important;padding:0!important;z-index:5!important}
 /* Dejar solo un espacio visual entre Recorta este video y CREAR Y EDITAR */
 .workspace-trim-card+.editor-toolbar,.workspace-trim-card~.editor-toolbar{margin-top:0!important}
 .workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;display:block!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:12px!important;box-sizing:border-box!important;border:1px solid light-dark(#E2D9EE,#40364F)!important;border-radius:11px!important;background:light-dark(#F8F6FB,#100E17)!important;z-index:1!important}
@@ -2794,7 +2794,7 @@ renderTimeline();
   const offset=(list.length%6)*7;list.push({id,x:50+offset,y:38+offset,size:42});savePlaced(list);renderPlaced();
   const layer=document.getElementById('reelStickerLayer');if(layer)layer.scrollIntoView?.({block:'nearest'});
  }
- window.clearPlacedReelStickers=function(){savePlaced([]);renderPlaced();};
+ window.clearPlacedReelStickers=function(){try{savePlaced([]);}catch(error){console.warn('No se pudo guardar la limpieza de stickers:',error);}renderPlaced();};
  window.drawExportReelStickers=function(ctx){
   const list=getPlaced();list.forEach(item=>{const sticker=catalog.find(x=>x.id===item.id);if(!sticker)return;ctx.save();ctx.font='900 '+Math.round(item.size*2.1)+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=10;ctx.fillText(sticker.emoji,item.x/100*720,item.y/100*1280);ctx.restore();});
  };
