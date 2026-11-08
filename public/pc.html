@@ -3605,3 +3605,25 @@ renderTimeline();
   display:none!important;
 }
 </style>
+
+
+<style id="tato-center-editor-toolbar-in-middle-area">
+/* Centrar las ocho herramientas entre los márgenes del área central en PC. */
+@media(min-width:721px){
+  .editor-toolbar.editor-toolbar-one-line{
+    display:grid!important;
+    grid-template-columns:repeat(8,minmax(72px,84px))!important;
+    justify-content:center!important;
+    justify-items:stretch!important;
+    align-items:stretch!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .editor-toolbar.editor-toolbar-one-line>.editor-tool{
+    width:100%!important;
+    min-width:0!important;
+  }
+}
+</style>
