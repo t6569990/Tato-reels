@@ -2107,7 +2107,7 @@ paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);stage.after(trimCard);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);panes.video.append(trimCard);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  const creationModesLayout=creator.querySelector('.creation-modes-layout');
  function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});Object.entries(goTopButtons).forEach(([k,b])=>{b.hidden=k!==name;});const videoFamily=name==='video';trimCard.classList.toggle('is-hidden-by-tool',!videoFamily);trimCard.hidden=!videoFamily;trimCard.style.setProperty('display',videoFamily?'block':'none','important');trimCard.setAttribute('aria-hidden',String(!videoFamily));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',!videoFamily);creationModesLayout.hidden=!videoFamily;creationModesLayout.style.setProperty('display',videoFamily?'grid':'none','important');creationModesLayout.setAttribute('aria-hidden',String(!videoFamily));}}
@@ -3682,6 +3682,36 @@ html body #app .creator > .workspace-trim-card > .trim-panel {
   max-width:none!important;
   margin-left:0!important;
   margin-right:0!important;
+  box-sizing:border-box!important;
+}
+</style>
+
+<style id="tato-trim-markup-video-pane-only-20261108">
+/* El HTML del recortador vive físicamente dentro de la familia Video. */
+html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-card {
+  display:block!important;
+  position:relative!important;
+  inset:auto!important;
+  grid-column:1 / -1!important;
+  grid-row:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:10px 0 0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  align-self:stretch!important;
+  justify-self:stretch!important;
+}
+html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-card > .trim-panel {
+  display:block!important;
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
   box-sizing:border-box!important;
 }
 </style>
