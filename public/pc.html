@@ -3408,5 +3408,22 @@ renderTimeline();
 .creator .reel-sticker-item{pointer-events:auto!important}
 </style>
 
+
+<style id="tato-pc-editor-layer-order-and-click-fix-20261108">
+/* PC: el visualizador va primero y el panel de herramientas queda encima en la pila de capas. */
+@media (min-width:721px){
+  .creator{display:flex!important;flex-direction:column!important;align-items:stretch!important}
+  .creator>.floating-stage{order:0!important;position:relative!important;z-index:1!important;pointer-events:none!important}
+  .creator>.editor-panel{order:1!important;position:relative!important;z-index:20!important;display:grid!important;width:100%!important;min-width:0!important;pointer-events:auto!important}
+  .creator>.editor-panel *{pointer-events:auto}
+  .creator>.editor-panel .editor-tool-panes,
+  .creator>.editor-panel .editor-tool-pane{position:relative!important;z-index:21!important;pointer-events:auto!important}
+  .creator>.editor-panel button,
+  .creator>.editor-panel input,
+  .creator>.editor-panel select,
+  .creator>.editor-panel textarea,
+  .creator>.editor-panel label{pointer-events:auto!important}
+}
+</style>
 </body>
 </html>
