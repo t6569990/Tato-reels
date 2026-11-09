@@ -2923,15 +2923,32 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(activeClip){activeClip.pause();activeClip.removeAttribute('src');activeClip.load();}if(recorderStream)recorderStream.getTracks().forEach(track=>track.stop());if(stream)stream.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='⚙️ Compilar proyecto';}
 });
 async function saveCompiledReel(blob,filename){
- try{
-  if(window.isSecureContext&&typeof window.showSaveFilePicker==='function'){
+ if(!(blob instanceof Blob)||!blob.size){toast('El Reel no contiene datos exportables. Vuelve a compilar el proyecto.');return;}
+ const downloadBlob=()=>{
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=filename;a.rel='noopener';a.style.display='none';
+  document.body.append(a);a.click();a.remove();
+  window.setTimeout(()=>URL.revokeObjectURL(url),120000);
+  toast('Descarga iniciada. Revisa la carpeta Descargas.');
+ };
+ if(window.isSecureContext&&typeof window.showSaveFilePicker==='function'){
+  try{
    const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Video WebM',accept:{'video/webm':['.webm']}}]});
-   const writable=await handle.createWritable();await writable.write(blob);await writable.close();toast('Reel guardado en la carpeta que elegiste.');return;
+   const writable=await handle.createWritable();await writable.write(blob);await writable.close();
+   toast('Reel guardado en la carpeta que elegiste.');return;
+  }catch(error){
+   if(error&&error.name==='AbortError')return;
+   console.error('No se pudo usar el selector de archivos; se intentará descarga directa:',error);
   }
-  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.rel='noopener';a.style.display='none';document.body.append(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),120000);toast('Descarga iniciada. Revisa la carpeta Descargas.');
- }catch(error){if(error.name==='AbortError')return;toast('No se pudo guardar el Reel. Inténtalo otra vez o revisa los permisos del navegador.');}
+ }
+ try{downloadBlob();}
+ catch(error){console.error('Error al descargar el Reel:',error);toast('Chrome bloqueó la descarga. Permite las descargas para este sitio e inténtalo de nuevo.');}
 }
-$('exportReelBtn').addEventListener('click',()=>{if(!window.tatoCompiledReelBlob){toast('Primero pulsa Compilar proyecto y espera a que termine.');return;}saveCompiledReel(window.tatoCompiledReelBlob,'tato-reel-completo.webm');});
+$('exportReelBtn').addEventListener('click',()=>{
+ const blob=window.tatoCompiledReelBlob;
+ if(!blob){toast('Primero pulsa Compilar proyecto y espera a que termine.');return;}
+ saveCompiledReel(blob,'tato-reel-completo.webm');
+});
 // Biblioteca de inspiración: referencias y archivos locales persistidos en IndexedDB.
 const inspirationDBName='tatoReelsInspirationDB';
 function openInspirationDB(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window)){reject(new Error('Este navegador no ofrece almacenamiento local de archivos.'));return;}const request=indexedDB.open(inspirationDBName,1);request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains('videos'))db.createObjectStore('videos',{keyPath:'id'});};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error||new Error('No se pudo abrir la biblioteca.'));});}
