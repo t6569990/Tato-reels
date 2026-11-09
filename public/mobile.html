@@ -1357,6 +1357,26 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   .creator>.workspace-trim-card>.trim-panel .range-row{margin:0!important;gap:6px!important}
 }
 </style>
+
+<style id="tato-official-social-pairs-final">
+/* Cuatro redes: dos columnas, logo centrado y nombre debajo en PC y móvil. */
+.editor-tool-pane[data-pane="explore"].active .explore-official-social-grid{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:10px!important;width:100%!important;align-items:stretch!important;
+}
+.editor-tool-pane[data-pane="explore"].active .explore-official-social-grid button{
+ display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ gap:7px!important;width:100%!important;min-width:0!important;min-height:88px!important;height:auto!important;
+ padding:10px 6px!important;text-align:center!important;white-space:normal!important;
+}
+.editor-tool-pane[data-pane="explore"].active .explore-official-social-grid button img{
+ display:block!important;width:30px!important;height:30px!important;max-width:30px!important;
+ object-fit:contain!important;flex:0 0 30px!important;
+}
+.editor-tool-pane[data-pane="explore"].active .explore-official-social-grid button span{
+ display:block!important;font-size:12px!important;line-height:1.2!important;font-weight:800!important;
+}
+</style>
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
