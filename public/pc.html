@@ -3762,8 +3762,8 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 (()=>{
   const creator=document.querySelector('#app .creator');
   if(!creator)return;
-  const videoPane=creator.querySelector('.editor-tool-pane[data-pane="video"]');
-  if(!videoPane)return;
+  const floatingStage=creator.querySelector('.floating-stage');
+  if(!floatingStage)return;
 
   let cards=[...creator.querySelectorAll('.workspace-trim-card')];
   let card=cards.shift()||null;
@@ -3783,7 +3783,8 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     if(panel&&!card.querySelector('.trim-panel'))card.append(panel);
     extra.remove();
   });
-  if(card.parentElement!==videoPane)videoPane.append(card);
+  /* La tarjeta queda justo debajo de la vista previa, dentro del área visualizadora. */
+  if(card.parentElement!==floatingStage)floatingStage.append(card);
 
   const sync=()=>{
     const active=creator.querySelector('.editor-toolbar [data-pane].active, .editor-bottom-toolbar [data-pane].active');
@@ -3832,5 +3833,34 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   }, true);
 })();
 </script>
+
+<style id="tato-pc-larger-preview-trim-below-20261108">
+/* PC: ampliar la vista previa y mantener el recortador inmediatamente debajo. */
+@media (min-width:721px) {
+  .creator > .floating-stage {
+    padding:42px 18px 18px!important;
+    gap:14px!important;
+  }
+  .creator > .floating-stage > .preview-shell {
+    width:min(100%,340px)!important;
+    max-width:340px!important;
+    align-self:center!important;
+  }
+  .creator > .floating-stage > .preview-shell > .video-frame {
+    width:100%!important;
+    height:auto!important;
+    aspect-ratio:9/16!important;
+    max-height:610px!important;
+  }
+  .creator > .floating-stage > .workspace-trim-card {
+    order:2!important;
+    width:100%!important;
+    max-width:none!important;
+    align-self:stretch!important;
+    margin:0!important;
+  }
+}
+</style>
+
 </body>
 </html>
