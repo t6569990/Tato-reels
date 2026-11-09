@@ -2367,6 +2367,36 @@ renderTimeline();
 })();
 </script>
 
+<script id="tato-login-independent-failsafe-mobile">
+/* Acceso de emergencia independiente: no deja que el formulario recargue la página. */
+(()=>{
+  const reveal = user => {
+    const screen = document.getElementById('loginScreen');
+    const app = document.getElementById('app');
+    if (!screen || !app || !user) return false;
+    app.dataset.username = user;
+    app.classList.add('authenticated');
+    app.style.setProperty('display', 'block', 'important');
+    app.style.setProperty('visibility', 'visible', 'important');
+    screen.style.setProperty('display', 'none', 'important');
+    screen.setAttribute('aria-hidden', 'true');
+    return true;
+  };
+  let saved = '';
+  try { saved = (localStorage.getItem('tatoUsername') || '').trim(); } catch (_) {}
+  if (saved) reveal(saved);
+  document.addEventListener('submit', event => {
+    if (!event.target || event.target.id !== 'loginForm') return;
+    const input = document.getElementById('loginUser');
+    const user = (input && input.value || '').trim();
+    if (!user) return;
+    event.preventDefault();
+    try { localStorage.setItem('tatoUsername', user); } catch (_) {}
+    reveal(user);
+  }, true);
+})();
+</script>
+
 <script>
 /* Convierte las herramientas existentes en botones compactos con icono y etiqueta */
 (()=>{
