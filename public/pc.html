@@ -1774,7 +1774,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
             <b>🎬 SOLO VIDEO</b>
             <span>Agrega un video desde tu dispositivo. Ideal para editar un solo clip.</span>
             <button class="primary" id="uploadBtn" type="button">Elegir video</button>
-            <input id="fileInput" class="tato-file-picker-input" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" tabindex="-1" aria-hidden="true">
+            <input id="fileInput" class="tato-file-picker-input" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" multiple tabindex="-1" aria-hidden="true">
           </div>
           <div class="creation-mode-apply-row"><button class="primary" id="applyCreationModeBtn" type="button">✓ Aplicar cambios</button></div>
           
@@ -2423,6 +2423,7 @@ let selectedTimelineId=null;
 let timelineDragId=null;
 let editSequence = [];
 let sequenceIndex = 0;
+let sequenceAdvancedFromIndex = -1;
 let sequenceActive = false;
 let sequenceTimer=null;
 let sequencePhoto=null;
@@ -2475,21 +2476,20 @@ function addMediaFiles(fileList,mode){
  setFloatingUploadStatus('Preparando '+files.length+' archivo(s) multimedia…',null,'working');
  let added=0,skipped=0,failed=0,firstAdded=null;
  if(mode==='video'){
-  const file=files.find(entry=>getMediaKind(entry)==='video');
-  skipped=files.length-(file?1:0);
-  if(!file){toast('Selecciona un video MP4, MOV o WebM válido.');finishFloatingUploadStatus('No se encontró un video compatible');return;}
-  const previousMain=timelineItems.find(item=>item.isMain);
-  if(previousMain){
-   const oldIndex=timelineItems.indexOf(previousMain);
-   timelineItems.splice(oldIndex,1);
-   if(previousMain.url&&previousMain.url!==objectUrl&&!timelineItems.some(item=>item.url===previousMain.url))URL.revokeObjectURL(previousMain.url);
-  }
-  if(objectUrl){const oldUrl=objectUrl;objectUrl=null;if(!timelineItems.some(item=>item.url===oldUrl))URL.revokeObjectURL(oldUrl);}
-  try{
-   const url=URL.createObjectURL(file);
-   const item={id:'main-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:file.name,url,file,isMain:true,isImage:false,start:0,end:null,duration:0};
-   objectUrl=url;timelineItems.unshift(item);firstAdded=item;added=1;inspectTimelineClip(item);
-  }catch(error){failed++;console.error('No se pudo agregar el video:',file.name,error);}
+  files.forEach((file,index)=>{
+   try{
+    if(getMediaKind(file)!=='video'){skipped++;return;}
+    const url=URL.createObjectURL(file);
+    const becomesMain=!timelineItems.some(entry=>entry.isMain);
+    const item={id:(becomesMain?'main-':'clip-')+Date.now()+'-'+index+'-'+Math.random().toString(36).slice(2,7),name:file.name,url,file,isMain:becomesMain,isImage:false,start:0,end:null,duration:0};
+    timelineItems.push(item);
+    if(becomesMain)objectUrl=url;
+    if(!firstAdded)firstAdded=item;
+    inspectTimelineClip(item);
+    added++;
+   }catch(error){failed++;console.error('No se pudo agregar el video:',file?.name||'archivo',error);}
+  });
+  if(!added&&!failed){toast('Selecciona uno o más videos MP4, MOV o WebM válidos.');finishFloatingUploadStatus('No se encontraron videos compatibles');return;}
  }else{
   files.forEach((file,index)=>{
    try{
@@ -2518,7 +2518,7 @@ function addMediaFiles(fileList,mode){
  renderClips();renderTimeline();
  showMediaInVisualizer(firstAdded);
  $('sequenceNote').textContent=timelineItems.length+' elemento(s) agregado(s). Pulsa Crear secuencia para reproducirlos en orden.';
- if(mode==='video')toast('Video cargado y agregado al visualizador.');
+ if(mode==='video')toast(added+' video(s) agregado(s) a la secuencia sin eliminar los anteriores.');
  else toast(added+' archivo(s) agregado(s) al visualizador y a la secuencia.');
  if(skipped)toast(skipped+' archivo(s) omitido(s) por formato o modo no compatible.');
  if(failed)toast(failed+' archivo(s) no se pudieron procesar; los demás sí se conservaron.');
@@ -2534,7 +2534,7 @@ if(pcVideoPicker)pcVideoPicker.addEventListener('change',event=>{
  catch(error){console.error('Error al cargar el video en Tato Reels:',error);toast('No se pudo cargar el video. Revisa la consola del navegador para ver el error.');}
  finally{picker.value='';}
 });
-video.addEventListener('ended',()=>{if(sequenceActive)advanceSequence();});
+video.addEventListener('ended',()=>{if(!sequenceActive||!editSequence.length)return;const current=editSequence[sequenceIndex];if(current&&!current.isImage&&Number(current.end)>=Number(current.duration)-.05)advanceSequence();});
 $('playBtn').addEventListener('click',()=>{if(sequenceActive&&editSequence[sequenceIndex]?.isImage){if(sequencePaused){sequencePaused=false;sequencePhotoStartedAt=Date.now();sequenceTimer=setTimeout(advanceSequence,sequencePhotoRemaining);$('playBtn').textContent='Ⅱ';}else{sequencePaused=true;stopSequenceTimer();sequencePhotoRemaining=Math.max(0,sequencePhotoRemaining-(Date.now()-sequencePhotoStartedAt));$('playBtn').textContent='▶';}return;}if(!video.src){toast('Primero selecciona un video.');return;}if(video.paused)video.play().catch(()=>{});else video.pause();});
 video.addEventListener('play',()=>$('playBtn').textContent='Ⅱ'); video.addEventListener('pause',()=>$('playBtn').textContent='▶');
 $('muteBtn').addEventListener('click',()=>{video.muted=!video.muted; $('muteBtn').textContent=video.muted?'×':'♫';});
@@ -2799,7 +2799,7 @@ refreshDraftCount();
 refreshExportFormats();
 // Timeline editor: each source clip keeps its own trim range and order in memory.
 function inspectTimelineClip(item){if(item.isImage){const probe=new Image();probe.onload=()=>{item.duration=Number(item.duration)||3;if(item.end==null)item.end=item.duration;renderTimeline();};probe.onerror=()=>{item.duration=3;if(item.end==null)item.end=3;renderTimeline();};probe.src=item.url;return;}const probe=document.createElement('video');probe.preload='metadata';probe.src=item.url;probe.onloadedmetadata=()=>{item.duration=Number.isFinite(probe.duration)?probe.duration:0;if(item.end==null)item.end=item.duration;renderTimeline();probe.removeAttribute('src');probe.load();};probe.onerror=()=>{item.duration=0;renderTimeline();};}
-function renderTimeline(){const track=$('timelineTrack');if(!track)return;track.innerHTML='';if(!timelineItems.length){track.innerHTML='<div class="timeline-empty">Carga un video y agrega clips para comenzar.</div>';return;}timelineItems.forEach((item,index)=>{const card=document.createElement('div');card.className='timeline-clip'+(item.id===selectedTimelineId?' selected':'');card.draggable=true;card.dataset.id=item.id;const head=document.createElement('div');head.className='timeline-head';const name=document.createElement('strong');name.textContent=(index+1)+'. '+item.name;head.append(name);[['↑','up'],['↓','down'],['＋','duplicate'],['×','remove']].forEach(([label,action])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.action=action;b.dataset.id=item.id;b.title=action;head.append(b);});card.append(head);const bar=document.createElement('div');bar.className='timeline-bar';const total=item.duration||0;const start=Number(item.start)||0;const end=item.end==null?total:Number(item.end);bar.style.width=(total?Math.max(12,Math.min(100,((end-start)/total)*100)):100)+'%';card.append(bar);const trim=document.createElement('div');trim.className='timeline-trim';[['Inicio (s)','start',start],['Final (s)','end',end]].forEach(([label,key,value])=>{const wrap=document.createElement('label');wrap.textContent=label;const input=document.createElement('input');input.type='number';input.min='0';input.step='0.1';input.max=total||'';input.value=Number.isFinite(value)?value.toFixed(1):'0';input.dataset.trim=key;input.dataset.id=item.id;wrap.append(input);trim.append(wrap);});card.append(trim);card.addEventListener('click',e=>{if(e.target.closest('button')||e.target.closest('input'))return;selectedTimelineId=item.id;renderTimeline();});card.addEventListener('dragstart',()=>{timelineDragId=item.id;card.style.opacity='.5';});card.addEventListener('dragend',()=>{timelineDragId=null;card.style.opacity='1';});card.addEventListener('dragover',e=>e.preventDefault());card.addEventListener('drop',e=>{e.preventDefault();const from=timelineItems.findIndex(x=>x.id===timelineDragId),to=timelineItems.findIndex(x=>x.id===item.id);if(from<0||to<0||from===to)return;const moved=timelineItems.splice(from,1)[0];timelineItems.splice(to,0,moved);renderTimeline();$('timelineStatus').textContent='Orden actualizado. Arrastra los clips para reorganizarlos.';});track.append(card);});$('timelineStatus').textContent=timelineItems.length+' clip(s) en la línea de tiempo. Puedes seleccionar, recortar, reordenar, duplicar y eliminar.';}
+function renderTimeline(){const track=$('timelineTrack');if(!track)return;track.innerHTML='';if(!timelineItems.length){track.innerHTML='<div class="timeline-empty">Carga un video y agrega clips para comenzar.</div>';return;}timelineItems.forEach((item,index)=>{const card=document.createElement('div');card.className='timeline-clip'+(item.id===selectedTimelineId?' selected':'');card.draggable=true;card.dataset.id=item.id;const head=document.createElement('div');head.className='timeline-head';const name=document.createElement('strong');name.textContent=(index+1)+'. '+item.name;head.append(name);[['↑','up'],['↓','down'],['＋','duplicate'],['×','remove']].forEach(([label,action])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.action=action;b.dataset.id=item.id;b.title=action;head.append(b);});card.append(head);const bar=document.createElement('div');bar.className='timeline-bar';const total=item.duration||0;const start=Number(item.start)||0;const end=item.end==null?total:Number(item.end);bar.style.width=(total?Math.max(12,Math.min(100,((end-start)/total)*100)):100)+'%';card.append(bar);const trim=document.createElement('div');trim.className='timeline-trim';[['Inicio (s)','start',start],['Final (s)','end',end]].forEach(([label,key,value])=>{const wrap=document.createElement('label');wrap.textContent=label;const input=document.createElement('input');input.type='number';input.min='0';input.step='0.1';input.max=total||'';input.value=Number.isFinite(value)?value.toFixed(1):'0';input.dataset.trim=key;input.dataset.id=item.id;wrap.append(input);trim.append(wrap);});card.append(trim);const timing=document.createElement('div');timing.className='timeline-trim';const durationWrap=document.createElement('label');durationWrap.textContent=item.isImage?'Duración de foto (s)':'Duración seleccionada (s)';const durationInput=document.createElement('input');durationInput.type='number';durationInput.min=item.isImage?'0.5':'0';durationInput.max=item.isImage?'60':(total||'');durationInput.step='0.5';durationInput.value=(item.isImage?(Number(item.duration)||3):Math.max(0,end-start)).toFixed(1);durationInput.dataset.duration='true';durationInput.dataset.id=item.id;if(!item.isImage){durationInput.readOnly=true;durationInput.title='Ajusta el inicio y el final para cambiar la duración del video.';}else{durationInput.title='Tiempo que permanecerá esta fotografía en la secuencia (de 0.5 a 60 segundos).';}durationWrap.append(durationInput);timing.append(durationWrap);card.append(timing);card.addEventListener('click',e=>{if(e.target.closest('button')||e.target.closest('input'))return;selectedTimelineId=item.id;renderTimeline();});card.addEventListener('dragstart',()=>{timelineDragId=item.id;card.style.opacity='.5';});card.addEventListener('dragend',()=>{timelineDragId=null;card.style.opacity='1';});card.addEventListener('dragover',e=>e.preventDefault());card.addEventListener('drop',e=>{e.preventDefault();const from=timelineItems.findIndex(x=>x.id===timelineDragId),to=timelineItems.findIndex(x=>x.id===item.id);if(from<0||to<0||from===to)return;const moved=timelineItems.splice(from,1)[0];timelineItems.splice(to,0,moved);renderTimeline();$('timelineStatus').textContent='Orden actualizado. Arrastra los clips para reorganizarlos.';});track.append(card);});$('timelineStatus').textContent=timelineItems.length+' clip(s) en la línea de tiempo. Puedes seleccionar, recortar, reordenar, duplicar y eliminar.';}
 function syncExtraClipsFromTimeline(){extraClips=timelineItems.filter(item=>!item.isMain);}
  $('timelineTrack').addEventListener('click',event=>{if(event.target.closest('button,input'))return;const card=event.target.closest('.timeline-clip');if(!card)return;const item=timelineItems.find(entry=>entry.id===card.dataset.id);if(!item)return;selectedTimelineId=item.id;renderTimeline();});
 
@@ -2819,6 +2819,21 @@ $('timelineTrack').addEventListener('input',event=>{
  $('timelineStatus').textContent='Recorte en edición: '+item.name+' · '+Number(item.start||0).toFixed(1)+'–'+Number(item.end??duration).toFixed(1)+' s. Pulsa Aplicar cambios para confirmarlo.';
 });
 $('timelineTrack').addEventListener('change',event=>{
+  const durationInput=event.target.closest('input[data-duration]');
+  if(durationInput){
+   const item=timelineItems.find(entry=>entry.id===durationInput.dataset.id);
+   if(!item||!item.isImage)return;
+   const requested=Number(durationInput.value);
+   if(!Number.isFinite(requested)){renderTimeline();return;}
+   item.duration=Math.max(.5,Math.min(60,requested));
+   item.start=0;item.end=item.duration;
+   selectedTimelineId=item.id;editSequence=[];
+   window.tatoCompiledReelBlob=null;
+   renderTimeline();
+   $('timelineStatus').textContent='Duración de '+item.name+' actualizada a '+item.duration.toFixed(1)+' segundos. Pulsa Aplicar cambios para confirmarla y después Guardar borrador para conservarla.';
+   $('sequenceNote').textContent='Duración de fotografía modificada. Aplica los cambios antes de compilar.';
+   return;
+  }
   const input=event.target.closest('input[data-trim]');
   if(!input)return;
   const item=timelineItems.find(entry=>entry.id===input.dataset.id);
@@ -2859,7 +2874,7 @@ $('timelineTrack').addEventListener('change',event=>{
   const main=timelineItems.find(item=>item.isMain&&!item.isImage);
   if(main&&video.src===main.url){const start=Math.max(0,Number(main.start)||0);try{video.currentTime=start;}catch(_){}}
   $('sequenceNote').textContent='✓ Línea de tiempo aplicada: '+timelineItems.length+' elemento(s) listos para compilar.';
-  $('timelineStatus').textContent='✓ Recortes, inicio y orden aplicados a la secuencia.';
+  $('timelineStatus').textContent='✓ Recortes, duración de fotografías, inicio y orden aplicados a la secuencia. Guarda el borrador para conservarlos.';
   finishFloatingUploadStatus('Cambios de la línea de tiempo aplicados',100,'done');
   toast('Cambios de la línea de tiempo aplicados. La vista previa comenzará desde el nuevo inicio.');
  });
@@ -2867,11 +2882,11 @@ $('timelineTrack').addEventListener('change',event=>{
 function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}return sequencePhoto;}
 function stopSequenceTimer(){if(sequenceTimer){clearTimeout(sequenceTimer);sequenceTimer=null;}}
 function finishSequence(){stopSequenceTimer();sequenceActive=false;sequencePaused=false;video.pause();$('videoStatus').textContent='Secuencia completa';$('playBtn').textContent='▶';finishFloatingUploadStatus('Vista previa de secuencia terminada');}
-function advanceSequence(){if(!sequenceActive)return;stopSequenceTimer();if(sequenceIndex>=editSequence.length-1){finishSequence();return;}sequenceIndex++;showSequenceItem();}
+function advanceSequence(){if(!sequenceActive||sequenceAdvancedFromIndex===sequenceIndex)return;sequenceAdvancedFromIndex=sequenceIndex;stopSequenceTimer();if(sequenceIndex>=editSequence.length-1){finishSequence();return;}sequenceIndex++;showSequenceItem();}
 function showSequenceItem(){if(!sequenceActive||!editSequence.length)return;stopSequenceTimer();const item=editSequence[sequenceIndex];$('videoStatus').textContent='Vista previa · clip '+(sequenceIndex+1)+' de '+editSequence.length;setFloatingUploadStatus('Vista previa: clip '+(sequenceIndex+1)+' de '+editSequence.length,Math.round((sequenceIndex+1)/editSequence.length*100),'working');if(item.isImage){video.pause();video.style.display='none';const photo=ensureSequencePhoto();photo.src=item.url;photo.style.display='block';photo.style.transform='scale('+photoScale+')';sequencePhotoRemaining=Math.max(100,((Number(item.end)||Number(item.duration)||3)-(Number(item.start)||0))*1000);sequencePhotoStartedAt=Date.now();sequencePaused=false;$('playBtn').textContent='Ⅱ';sequenceTimer=setTimeout(advanceSequence,sequencePhotoRemaining);}else{if(sequencePhoto)sequencePhoto.style.display='none';video.style.display='block';video.src=item.url;video.load();const start=()=>{video.removeEventListener('loadedmetadata',start);if(!sequenceActive)return;const target=Math.min(Number(item.start)||0,Math.max(0,video.duration-.05));try{video.currentTime=target;}catch(_){}video.play().then(()=>$('playBtn').textContent='Ⅱ').catch(()=>{$('videoStatus').textContent='Pulsa reproducir para continuar · clip '+(sequenceIndex+1);});};video.addEventListener('loadedmetadata',start);}}
-function startSequence(){const source=editSequence.length===timelineItems.length&&editSequence.length&&editSequence.every((item,index)=>item.id===timelineItems[index].id)?editSequence:timelineItems;if(!source.length){toast('Carga al menos un clip.');return;}const invalid=source.find(item=>!item.isImage&&(!(Number(item.end)>Number(item.start||0))));if(invalid){toast('Revisa el inicio y final de '+invalid.name+' antes de reproducir.');return;}stopSequenceTimer();editSequence=source.map(item=>({...item}));sequenceIndex=0;sequenceActive=true;sequencePaused=false;video.pause();setFloatingUploadStatus('Preparando vista previa de la secuencia…',0,'working');showSequenceItem();toast('Vista previa de videos y fotografías iniciada.');}
+function startSequence(){const source=editSequence.length===timelineItems.length&&editSequence.length&&editSequence.every((item,index)=>item.id===timelineItems[index].id)?editSequence:timelineItems;if(!source.length){toast('Carga al menos un clip.');return;}const invalid=source.find(item=>!item.isImage&&(!(Number(item.end)>Number(item.start||0))));if(invalid){toast('Revisa el inicio y final de '+invalid.name+' antes de reproducir.');return;}stopSequenceTimer();editSequence=source.map(item=>({...item}));sequenceIndex=0;sequenceAdvancedFromIndex=-1;sequenceActive=true;sequencePaused=false;video.pause();setFloatingUploadStatus('Preparando vista previa de la secuencia…',0,'working');showSequenceItem();toast('Vista previa de videos y fotografías iniciada.');}
  $('previewSequenceBtn').addEventListener('click',()=>startSequence());
-video.addEventListener('timeupdate',()=>{if(!sequenceActive||!editSequence.length)return;const current=editSequence[sequenceIndex];if(current&&!current.isImage&&current.end!=null&&video.currentTime>=current.end)advanceSequence();});
+video.addEventListener('timeupdate',()=>{if(!sequenceActive||!editSequence.length)return;const current=editSequence[sequenceIndex];if(current&&!current.isImage&&current.end!=null&&Number(current.end)<Number(current.duration)-.05&&video.currentTime>=current.end)advanceSequence();});
 $('combineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Carga y agrega clips en la línea de tiempo.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='Secuencia actualizada con videos, fotografías y recortes. Los archivos originales siguen separados.';$('combineBtn').textContent='Actualizar secuencia editable';startSequence();});
 $('applyCreationModeBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Primero agrega videos o fotos con el modo que elegiste.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para editar.';$('timelineStatus').textContent='✓ Cambios del modo de creación aplicados.';$('combineBtn').textContent='Actualizar secuencia editable';});
 // Exporta la secuencia completa dibujando cada clip y el título sobre un canvas.
