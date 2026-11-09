@@ -183,7 +183,7 @@ textarea { min-height:76px; }
  .editor-panel .tool-pane { grid-template-columns:repeat(2,minmax(0,1fr)); }
  @media(max-width:720px){ .editor-panel .tool-pane { grid-template-columns:1fr; } }
 
-.explore-social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}.explore-social-grid button,.explore-social-grid select{min-width:0;width:100%;font-size:12.1px}.explore-social-grid select{border:1px solid #493442;border-radius:10px;background:#151019;color:inherit;padding:9px}.inspiration-library{display:grid;gap:8px;margin-top:10px}.inspiration-item{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #3b2938;border-radius:10px;background:#151019;min-width:0}.inspiration-item .inspiration-meta{flex:1;min-width:0;font-size:11px;overflow-wrap:anywhere}.inspiration-item .inspiration-meta strong{display:block;font-size:12.1px;margin-bottom:3px}.inspiration-item button{flex:0 0 auto;padding:7px 8px;font-size:11px}@media(max-width:390px){.explore-social-grid{grid-template-columns:1fr}}
+.explore-social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}.explore-social-grid button,.explore-social-grid select{min-width:0;width:100%;font-size:12.1px}.explore-social-grid select{border:1px solid #493442;border-radius:10px;background:#151019;color:inherit;padding:9px}.explore-official-social-grid button{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:6px!important;min-height:82px!important;padding:10px 6px!important;font-weight:800!important}.explore-official-social-grid img{display:block!important;width:27px!important;height:27px!important;object-fit:contain!important}.explore-official-social-grid span{display:block!important;font-size:12px!important;line-height:1.2!important}.inspiration-library{display:grid;gap:8px;margin-top:10px}.inspiration-item{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid #3b2938;border-radius:10px;background:#151019;min-width:0}.inspiration-item .inspiration-meta{flex:1;min-width:0;font-size:11px;overflow-wrap:anywhere}.inspiration-item .inspiration-meta strong{display:block;font-size:12.1px;margin-bottom:3px}.inspiration-item button{flex:0 0 auto;padding:7px 8px;font-size:11px}@media(max-width:390px){.explore-social-grid{grid-template-columns:1fr}}
 /* TATO REELS · DARK ROCK IDENTITY */
 :root{--site-primary:#e50920;--site-secondary:#171018;--site-background:#050407;color-scheme:dark}
 html,body,#app{background:#050407;color:#f5f1f5}
@@ -1533,11 +1533,19 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
         <div class="panel">
           <h3>🌐 Explorar redes y biblioteca</h3>
           <div class="file-note">Visita redes, descubre ideas y guarda referencias. Si descargas un video por medios permitidos o tienes autorización para usarlo, impórtalo a tu biblioteca privada de Tato Reels.</div>
-          <div class="explore-social-grid">
-            <button class="secondary" type="button" data-explore-url="https://www.instagram.com/">📸 Instagram</button>
-            <button class="secondary" type="button" data-explore-url="https://www.facebook.com/">🔵 Facebook</button>
-            <button class="secondary" type="button" data-explore-url="https://www.tiktok.com/">🎵 TikTok</button>
-            <button class="secondary" type="button" data-explore-url="https://www.youtube.com/">▶️ YouTube</button>
+          <div class="explore-social-grid explore-official-social-grid" aria-label="Accesos a redes sociales">
+            <button class="secondary" type="button" data-explore-url="https://www.instagram.com/" aria-label="Abrir Instagram">
+              <img src="https://cdn.simpleicons.org/instagram/E4405F" alt="" aria-hidden="true"><span>Instagram</span>
+            </button>
+            <button class="secondary" type="button" data-explore-url="https://www.facebook.com/" aria-label="Abrir Facebook">
+              <img src="https://cdn.simpleicons.org/facebook/0866FF" alt="" aria-hidden="true"><span>Facebook</span>
+            </button>
+            <button class="secondary" type="button" data-explore-url="https://www.tiktok.com/" aria-label="Abrir TikTok">
+              <img src="https://cdn.simpleicons.org/tiktok/FFFFFF" alt="" aria-hidden="true"><span>TikTok</span>
+            </button>
+            <button class="secondary" type="button" data-explore-url="https://www.youtube.com/" aria-label="Abrir YouTube">
+              <img src="https://cdn.simpleicons.org/youtube/FF0033" alt="" aria-hidden="true"><span>YouTube</span>
+            </button>
           </div>
           <div class="file-note" style="margin-top:12px">Guardar una referencia conserva el enlace, no descarga el video. Para importar un archivo, usa un video propio, descargado con permiso o autorizado por su creador.</div>
           <label class="field-label" for="inspirationUrl" style="margin-top:12px">Enlace de inspiración</label>
