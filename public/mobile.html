@@ -2139,7 +2139,7 @@ function addMobileMediaFiles(fileList,mode){
  editSequence=[];
  renderClips();renderTimeline();syncExtraClipsFromTimeline();
  if(addedVideo)openVisualizerAfterVideoAdded();
- else if(!objectUrl){
+ else if(mode==='photos'||(!objectUrl&&!addedVideo)){
   const firstPhoto=firstAdded||timelineItems.find(item=>item.isImage);
   if(firstPhoto){sequenceActive=false;stopSequenceTimer();video.pause();video.style.display='none';sequencePhoto=ensureSequencePhoto();sequencePhoto.src=firstPhoto.url;sequencePhoto.style.display='block';$('sampleArt').style.display='none';$('videoStatus').textContent='Fotografía: '+firstPhoto.name;openVisualizerAfterVideoAdded();}
  }
@@ -2151,7 +2151,29 @@ $('addPhotosBtn').addEventListener('click',()=>{const picker=$('photosInput');if
 $('photosInput').addEventListener('change',event=>{try{addMobileMediaFiles(event.target.files,'photos');}catch(error){console.error('Error al cargar fotografías:',error);toast('No se pudieron agregar las fotografías. Revisa el formato e inténtalo otra vez.');}finally{event.target.value='';}});
 $('timelineTrack').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const index=timelineItems.findIndex(item=>item.id===b.dataset.id);if(index<0)return;const item=timelineItems[index],action=b.dataset.action;if(action==='up'&&index>0){timelineItems.splice(index,1);timelineItems.splice(index-1,0,item);}else if(action==='down'&&index<timelineItems.length-1){timelineItems.splice(index,1);timelineItems.splice(index+1,0,item);}else if(action==='duplicate'){const copy={...item,id:'copy-'+Date.now(),name:item.name+' (copia)',start:item.start,end:item.end,isMain:false};timelineItems.splice(index+1,0,copy);}else if(action==='remove'){const removedUrl=item.url;timelineItems.splice(index,1);if(item.isMain){objectUrl=null;video.pause();video.removeAttribute('src');video.load();$('fileInput').value='';}else extraClips=extraClips.filter(clip=>clip.url!==removedUrl);if(removedUrl&&removedUrl!==objectUrl&&!timelineItems.some(clip=>clip.url===removedUrl)&&!extraClips.some(clip=>clip.url===removedUrl)&&!editSequence.some(clip=>clip.url===removedUrl))URL.revokeObjectURL(removedUrl);}selectedTimelineId=timelineItems[Math.min(index,timelineItems.length-1)]?.id||null;renderTimeline();syncExtraClipsFromTimeline();});
 
- $('timelineTrack').addEventListener('change',event=>{const input=event.target.closest('input[data-trim]');if(!input)return;const item=timelineItems.find(entry=>entry.id===input.dataset.id);if(!item)return;selectedTimelineId=item.id;syncTrimControlsToSelection();});
+ 
+function updateMobileTimelineTrim(event){
+ const input=event.target.closest('input[data-trim]');if(!input)return;
+ const item=timelineItems.find(entry=>entry.id===input.dataset.id);if(!item)return;
+ const duration=Number(item.duration)||(item.isImage?3:0);
+ if(!Number.isFinite(duration)||duration<=0){$('timelineStatus').textContent='Espera a que termine de cargar la duración del archivo.';return;}
+ const value=Number(input.value);if(!Number.isFinite(value))return;
+ const minGap=Math.min(.1,duration);
+ if(input.dataset.trim==='start'){
+  item.start=Math.max(0,Math.min(value,duration-minGap));
+  if(item.end==null||item.end<=item.start)item.end=duration;
+ }else{
+  item.end=Math.max(item.start+minGap,Math.min(duration,Math.max(0,value)));
+ }
+ selectedTimelineId=item.id;
+ item.start=Math.max(0,Math.min(Number(item.start)||0,duration-minGap));
+ item.end=Math.max(item.start+minGap,Math.min(duration,Number(item.end)||duration));
+ renderTimeline();
+ syncTrimControlsToSelection();
+ $('timelineStatus').textContent='Recorte actualizado: '+item.name+' · '+item.start.toFixed(1)+'–'+item.end.toFixed(1)+' s.';
+}
+$('timelineTrack').addEventListener('change',updateMobileTimelineTrim);
+
 $('applyTimelineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Agrega videos o fotos antes de aplicar la línea de tiempo.');return;}const invalid=timelineItems.find(item=>{const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);return duration<=0||end<=start||end>duration+.05;});if(invalid){toast('No se puede aplicar el recorte de '+invalid.name+'. Espera a que cargue su duración y revisa Inicio y Final.');$('timelineStatus').textContent='Revisa el recorte de '+invalid.name+'.';return;}editSequence=timelineItems.map(item=>({...item,start:Number(item.start)||0,end:item.end==null?(Number(item.duration)||(item.isImage?3:0)):Number(item.end)}));syncExtraClipsFromTimeline();renderTimeline();renderSequenceMarkers(-1);$('timelineStatus').textContent='✓ Recortes, duración y orden aplicados a '+editSequence.length+' elemento(s).';$('sequenceNote').textContent='✓ Secuencia actualizada con los recortes aplicados.';toast('Cambios aplicados. La vista previa y la exportación usarán estos tiempos.');});
 $('resetTimelineBtn').addEventListener('click',()=>{timelineItems.forEach(item=>{item.start=0;item.end=item.duration||null;});renderTimeline();toast('Recortes de la línea de tiempo restablecidos.');});
 function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}return sequencePhoto;}
