@@ -2120,9 +2120,11 @@ paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-
  const previewSwitch=document.createElement('button');previewSwitch.type='button';previewSwitch.className='workspace-switch-btn';previewSwitch.textContent='👁 Visualizador';
  const addSwitch=document.createElement('button');addSwitch.type='button';addSwitch.className='workspace-switch-btn';addSwitch.textContent='＋ Agregar video y fotos';
  const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';
- previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);stage.append(trimCard);toolbar.before(switchBar);
+ previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);trimCard.append(trim);toolbar.before(switchBar);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
- const creationModesLayout=creator.querySelector('.creation-modes-layout');
+ const creationModesLayout=panes.video.querySelector('.creation-modes-layout');
+ if(creationModesLayout)creationModesLayout.parentNode.insertBefore(trimCard,creationModesLayout);
+ else panes.video.append(trimCard);
  function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;});Object.entries(goTopButtons).forEach(([k,b])=>{b.hidden=k!==name;});const videoFamily=name==='video';trimCard.classList.toggle('is-hidden-by-tool',!videoFamily);trimCard.hidden=!videoFamily;trimCard.style.setProperty('display',videoFamily?'block':'none','important');trimCard.setAttribute('aria-hidden',String(!videoFamily));if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',!videoFamily);creationModesLayout.hidden=!videoFamily;creationModesLayout.style.setProperty('display',videoFamily?'grid':'none','important');creationModesLayout.setAttribute('aria-hidden',String(!videoFamily));}}
  function setWorkspace(mode){
   const adding=mode==='add';
@@ -3771,57 +3773,7 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   display: block !important;
 }
 </style>
-<script id="tato-trim-final-authority-fix-20261108-duplicate-2">
-(()=>{
-  const creator=document.querySelector('#app .creator');
-  if(!creator)return;
-  const floatingStage=creator.querySelector('.floating-stage');
-  if(!floatingStage)return;
 
-  let cards=[...creator.querySelectorAll('.workspace-trim-card')];
-  let card=cards.shift()||null;
-  if(!card){
-    const panel=creator.querySelector('.trim-panel');
-    if(panel){
-      card=document.createElement('div');
-      card.className='workspace-switch-card workspace-trim-card';
-      card.append(panel);
-    }
-  }
-  if(!card)return;
-
-  /* Reunir cualquier duplicado en una sola tarjeta y eliminar envolturas sobrantes. */
-  cards.forEach(extra=>{
-    const panel=extra.querySelector('.trim-panel');
-    if(panel&&!card.querySelector('.trim-panel'))card.append(panel);
-    extra.remove();
-  });
-  /* La tarjeta de corte queda entre el contenedor del visualizador y el contenedor de modos de creación. */
-  const creationModes=creator.querySelector('.creation-modes-layout');
-  if(creationModes){
-    if(card.parentElement!==creator||card.nextElementSibling!==creationModes)creator.insertBefore(card,creationModes);
-  }else if(card.parentElement!==floatingStage){
-    floatingStage.insertAdjacentElement('afterend',card);
-  }
-
-  const sync=()=>{
-    const active=creator.querySelector('.editor-toolbar [data-pane].active, .editor-bottom-toolbar [data-pane].active');
-    const show=!!active&&active.dataset.pane==='video';
-    card.hidden=!show;
-    card.classList.toggle('is-hidden-by-tool',!show);
-    card.setAttribute('aria-hidden',String(!show));
-    card.style.removeProperty('display');
-  };
-  creator.addEventListener('click',event=>{
-    if(event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]'))sync();
-  },true);
-  const observer=new MutationObserver(sync);
-  creator.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]').forEach(tab=>{
-    observer.observe(tab,{attributes:true,attributeFilter:['class','aria-pressed']});
-  });
-  sync();
-})();
-</script>
 
 <script id="tato-login-independent-failsafe">
 /* Acceso independiente: permite abrir la interfaz aunque falle la inicialización de herramientas. */
@@ -4132,40 +4084,6 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 }
 </style>
 
-<style id="tato-pc-trim-between-preview-and-creation-20261109">
-/* PC: recortador visible solo en VIDEO y colocado entre visualizador y modos de creación. */
-@media(min-width:721px){
-  html body #app .creator>.workspace-trim-card{
-    display:block;
-    position:relative!important;
-    inset:auto!important;
-    top:auto!important;
-    right:auto!important;
-    bottom:auto!important;
-    left:auto!important;
-    transform:none!important;
-    order:2!important;
-    align-self:stretch!important;
-    width:100%!important;
-    max-width:none!important;
-    min-width:0!important;
-    margin:0 0 14px!important;
-    padding:0!important;
-    z-index:2!important;
-    box-sizing:border-box!important;
-  }
-  html body #app .creator>.workspace-trim-card>.trim-panel{
-    position:relative!important;
-    inset:auto!important;
-    width:100%!important;
-    max-width:none!important;
-    max-height:none!important;
-    overflow:visible!important;
-    margin:0!important;
-    box-sizing:border-box!important;
-  }
-  html body #app .creator>.floating-stage{margin-bottom:14px!important}
-}
-</style>
+
 </body>
 </html>
