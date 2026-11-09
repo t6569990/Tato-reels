@@ -2022,19 +2022,20 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   sideNav.className='editor-side-navigation';
   sideNav.setAttribute('role','group');
   sideNav.setAttribute('aria-label','Navegación entre herramientas');
-  const makeSideNavButton=(arrow,label,aria)=>{
+  const makeSideNavButton=(arrow,aria)=>{
    const button=document.createElement('button');
    button.type='button';
    button.className='editor-side-nav-button';
    button.setAttribute('aria-label',aria);
    button.title=aria;
-   const glyph=document.createElement('span');glyph.className='editor-side-nav-arrow';glyph.textContent=arrow;
-   const caption=document.createElement('small');caption.textContent=label;
-   button.append(glyph,caption);
+   const glyph=document.createElement('span');glyph.className='editor-side-nav-arrow';glyph.setAttribute('aria-hidden','true');glyph.textContent=arrow;
+   button.append(glyph);
    return button;
   };
-  const sidePrev=makeSideNavButton('←','ANTERIOR','Ir a la herramienta anterior');
-  const sideNext=makeSideNavButton('→','SIGUIENTE','Ir a la herramienta siguiente');
+  const sideHome=makeSideNavButton('↑','Ir al inicio de la página');
+  const sidePrev=makeSideNavButton('←','Ir a la herramienta anterior');
+  const sideNext=makeSideNavButton('→','Ir a la herramienta siguiente');
+  sideHome.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
   const refreshSideNav=()=>{
    const order=[...toolbar.querySelectorAll('.editor-tool[data-pane]')].map(button=>button.dataset.pane);
    const current=toolbar.querySelector('.editor-tool.active')?.dataset.pane||'video';
@@ -2052,7 +2053,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   };
   sidePrev.addEventListener('click',()=>moveTool(-1));
   sideNext.addEventListener('click',()=>moveTool(1));
-  sideNav.append(sidePrev,sideNext);
+  sideNav.append(sideHome,sidePrev,sideNext);
   sidebar.append(sideNav);
   window.tatoReelsRefreshToolSideNav=refreshSideNav;
   refreshSideNav();
@@ -4350,7 +4351,8 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     box-shadow:0 4px 10px #0003!important;cursor:pointer!important;
   }
   html body #app .editor-side-nav-arrow{font-size:27px!important;font-weight:900!important;line-height:1!important}
-  html body #app .editor-side-nav-button small{font-size:7.5px!important;font-weight:900!important;letter-spacing:.35px!important;line-height:1.1!important}
+  html body #app .editor-side-nav-button{font-size:0!important;line-height:1!important}
+  html body #app .editor-side-nav-arrow{display:block!important;font-size:31px!important;font-weight:900!important;line-height:1!important}
   html body #app .editor-side-nav-button:disabled{opacity:.38!important;cursor:default!important;filter:grayscale(.25)}
   html body #app .editor-side-nav-button:not(:disabled):hover{transform:translateY(-2px)!important;box-shadow:0 6px 14px #0004!important}
 
