@@ -1955,7 +1955,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
       </table>
     </div>
     <div class="rail-card"><div class="rail-title">📦 Tu espacio de creación</div><div style="display:flex;justify-content:space-between;font-size:11px;margin:12px 0"><span style="color:light-dark(#817A8F,#A29BAD)">Borradores guardados</span><b id="draftCount">0</b></div><div style="height:6px;background:light-dark(#EEEAF3,#2A2635);border-radius:8px;overflow:hidden"><div style="width:12%;height:100%;background:#9875EA;border-radius:8px"></div></div><p style="font-size:10px;color:light-dark(#8A8396,#A29BAD);line-height:1.5;margin:12px 0 0">Los borradores de esta demo se conservan mientras la página permanezca abierta.</p></div>
-    <div class="rail-card"><div class="rail-title">🛠️ Herramientas añadidas</div><div style="font-size:11px;color:light-dark(#817A8F,#A29BAD);line-height:1.7">✓ Biblioteca local de audio<br>✓ Texto animado en vista previa<br>✓ Recorte individual en la línea de tiempo<br>✓ Accesos a Instagram, Facebook y TikTok<br><br>La publicación automática y la exportación de secuencias con títulos requieren una siguiente integración.</div></div>
+    <div class="rail-card tools-added-card"><div class="rail-title">🛠️ Herramientas añadidas</div><div class="tools-added-copy"><div>✓ Biblioteca local de audio</div><div>✓ Texto animado en vista previa</div><div>✓ Recorte individual en la línea de tiempo</div><div>✓ Accesos a Instagram, Facebook y TikTok</div><p>La publicación automática y la exportación de secuencias con títulos requieren una siguiente integración.</p></div></div>
   </aside>
 </div>
 <nav class="mobile-nav"><button class="current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>Crear</button><button id="mobileDraft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5zM8 8h8M8 12h8"/></svg>Borradores</button><button id="mobilePosts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4zM8 9h8"/></svg>Publicados</button><button id="mobileProfile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</button><button id="mobileSettings" type="button" aria-label="Ajustes">⚙️<span>Ajustes</span></button></nav>
@@ -4089,6 +4089,40 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     overflow:visible!important;
     margin:0!important;
     box-sizing:border-box!important;
+  }
+}
+</style>
+
+<style id="tato-pc-tools-added-readable-responsive-20261109">
+/* Tarjeta de herramientas añadidas: tipografía centrada y fluida en PC. */
+@media(min-width:721px){
+  html body .tools-added-card{
+    text-align:center!important;
+    padding:clamp(16px,1.5vw,24px)!important;
+  }
+  html body .tools-added-card .rail-title{
+    justify-content:center!important;
+    text-align:center!important;
+    font-size:clamp(17px,1.25vw,22px)!important;
+    line-height:1.25!important;
+    margin-bottom:clamp(12px,1vw,18px)!important;
+  }
+  html body .tools-added-card .tools-added-copy{
+    color:light-dark(#655D73,#C2B8D1)!important;
+    font-size:clamp(14px,1.05vw,18px)!important;
+    line-height:1.65!important;
+    text-align:center!important;
+    overflow-wrap:anywhere!important;
+    word-break:normal!important;
+  }
+  html body .tools-added-card .tools-added-copy>div{
+    margin:3px 0!important;
+  }
+  html body .tools-added-card .tools-added-copy p{
+    margin:clamp(12px,1vw,18px) 0 0!important;
+    font-size:clamp(13px,.98vw,17px)!important;
+    line-height:1.6!important;
+    text-align:center!important;
   }
 }
 </style>
