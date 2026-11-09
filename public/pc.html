@@ -3965,5 +3965,11 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   }
 }
 </style>
+
+<style id="tato-pc-topbar-toolbar-layer-fix-20261109">
+/* PC: la cabecera fija debe permanecer por encima de la barra del editor al desplazarse. */
+.topbar{position:sticky!important;top:0!important;z-index:100!important}
+.editor-toolbar,.creator .editor-toolbar{position:relative!important;z-index:5!important}
+</style>
 </body>
 </html>
