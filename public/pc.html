@@ -4595,5 +4595,18 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 }
 </style>
 
+
+<style id="tato-pc-hide-standalone-trim-card-final">
+/* PC: ocultar siempre el recortador independiente. El recorte de clips permanece en Línea de tiempo. */
+@media (min-width:721px){
+  html body #app .creator .workspace-trim-card,
+  html body #app .creator .workspace-trim-card[hidden],
+  html body #app .creator .workspace-trim-card.is-hidden-by-tool{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+}
+</style>
 </body>
 </html>
