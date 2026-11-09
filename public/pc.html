@@ -3612,37 +3612,6 @@ html body #app .creator:not(:has(.editor-toolbar [data-pane="video"].active, .ed
   display:none!important;
 }
 </style>
-<script id="tato-trim-single-authority-20261108-duplicate-2">
-(()=>{
-  const creatorSelector='#app .creator';
-  const trimSelector='.workspace-switch-card.workspace-trim-card';
-  const activeVideoSelector='.editor-toolbar [data-pane="video"].active, .editor-bottom-toolbar [data-pane="video"].active';
-  const syncTrimVisibility=()=>{
-    const creator=document.querySelector(creatorSelector);
-    if(!creator)return;
-    const activeTab=creator.querySelector('.editor-toolbar [data-pane].active, .editor-bottom-toolbar [data-pane].active');
-    const show=!!activeTab && activeTab.dataset.pane==='video';
-    creator.querySelectorAll(trimSelector).forEach(card=>{
-      card.hidden=!show;
-      card.classList.toggle('is-hidden-by-tool',!show);
-      card.setAttribute('aria-hidden',String(!show));
-      card.style.setProperty('display',show?'block':'none','important');
-    });
-  };
-  document.addEventListener('click',event=>{
-    if(event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')) {
-      syncTrimVisibility();
-    }
-  });
-  const observer=new MutationObserver(syncTrimVisibility);
-  const observeRoot=document.querySelector(creatorSelector) || document.querySelector('#app') || document.documentElement;
-  observer.observe(observeRoot,{
-    subtree:true,childList:true,attributes:true,attributeFilter:['class','aria-pressed','hidden']
-  });
-  syncTrimVisibility();
-})();
-</script>
-
 <style id="tato-pc-strict-family-visibility-20261108">
 /* En PC, los selectores de cada familia prevalecen sobre reglas de layout anteriores. */
 .creator .editor-panel > .creation-modes-layout[hidden],
