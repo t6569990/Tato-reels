@@ -1377,7 +1377,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  display:block!important;font-size:12px!important;line-height:1.2!important;font-weight:800!important;
 }
 </style>
-</head>
+\n<style id="tato-mobile-native-video-picker-20261109">\n@media(max-width:720px){.creation-modes-layout .tato-mobile-video-picker{display:grid!important;place-items:center;position:relative;z-index:20;pointer-events:auto!important;cursor:pointer;min-height:44px;text-decoration:none;-webkit-tap-highlight-color:transparent}.creation-modes-layout .creation-mode-card{position:relative;z-index:2;pointer-events:auto!important}}\n</style>\n</head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
 <div id="app">
@@ -1459,7 +1459,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
           <div class="panel upload-zone creation-mode-card">
             <b>🎬 SOLO VIDEO</b>
             <span>Agrega un video desde tu dispositivo. Ideal para editar un solo clip.</span>
-            <button class="primary" id="uploadBtn" type="button">Elegir video</button>
+            <label class="primary tato-mobile-video-picker" id="uploadBtn" for="fileInput" role="button" tabindex="0">Elegir video</label>
             <input id="fileInput" type="file" accept="video/mp4,video/quicktime,video/webm,video/*" hidden>
           </div>
           <div class="panel upload-zone creation-mode-card">
