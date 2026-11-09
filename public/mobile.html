@@ -1885,7 +1885,7 @@ let filter = 'none';
 function refreshDraftCount(){ $('draftCount').textContent=drafts.length; }
 function toast(message) { const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>el.classList.remove('show'),2600); }
 function openVisualizerAfterVideoAdded(){const previewButton=document.querySelector('.workspace-switch-btn');if(previewButton)previewButton.click();}
-$('uploadBtn').addEventListener('click',()=>$('fileInput').click());
+// El label asociado a fileInput abre el selector nativo; no agregar otro click() para evitar doble activación.
 $('addClipsBtn').addEventListener('click',()=>$('clipsInput').click());
 // La carga de videos y fotos se gestiona en un único listener más abajo.
 function getMediaKind(file){const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();if(type.startsWith('image/')||/\.(jpe?g|png|webp)$/i.test(name))return 'image';if(type.startsWith('video/')||/\.(mp4|mov|webm|m4v|ogv)$/i.test(name))return 'video';return '';}
