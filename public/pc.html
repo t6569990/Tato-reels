@@ -4272,5 +4272,24 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 
 
 
+
+<style id="tato-explore-import-notice-full-width">
+/* Explorar: aviso de importación de lado a lado dentro del área central, respetando sus márgenes. */
+@media(min-width:721px){
+ .editor-tool-pane[data-pane="explore"].active>.explore-import-card{
+  grid-column:1/-1!important;
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+ }
+ .editor-tool-pane[data-pane="explore"].active>.explore-import-card>.file-note{
+  display:block!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+ }
+}
+</style>
+
 </body>
 </html>
