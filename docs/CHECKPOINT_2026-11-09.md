@@ -13,8 +13,12 @@
 - `ddae17c91443bc58762c5594c9963ce74bc1cece`: ajuste final de la cuadrícula de logos en móvil.
 - El usuario indicó que el detalle de los iconos es estético y no urgente. Su resultado visual en producción no se da por confirmado.
 
+## Decisión recuperada de conversaciones previas
+- El usuario aceptó el letrero discreto **UNDER CONSTRUCTION**, colocado entre “Tato Reels Creator” y el contador de monedas 🪙0, fuera del área de contenedores.
+- Cambio asociado al commit `e580a7e`; su publicación/verificación en Cloudflare queda pendiente. No asumir que ya está activo.
+
 ## Pendientes al retomar
-- El usuario informó que quedan dos cambios finales por realizar. Sus nombres/detalles no están especificados en este checkpoint; no adivinarlos ni ejecutarlos hasta recuperar la instrucción exacta.
+- El usuario informó que quedan dos cambios finales por realizar. Hay al menos un cambio previamente aprobado descrito arriba; recuperar del historial el segundo y confirmar el alcance antes de ejecutar.
 - Continuar después, sin prisa y cambio por cambio.
 
 ## Límites que se mantienen
@@ -26,8 +30,9 @@
 
 ## Estado de publicación
 - No se realizó despliegue como parte de este checkpoint.
-- La rama `main` ya contiene los tres commits recientes indicados arriba.
-- La publicación de esos cambios en Cloudflare y su verificación visual quedan pendientes.
+- La rama `main` observada en este corte estaba en `ddae17c91443bc58762c5594c9963ce74bc1cece`.
+- La publicación de los cambios recientes en Cloudflare y su verificación visual quedan pendientes.
+- En una conversación anterior se reportó el despliegue `e0ed2692` como Ready; es un dato histórico, no prueba del estado actual.
 
 ## Reanudación
-Partir de `main` en el commit `ddae17c91443bc58762c5594c9963ce74bc1cece`. La rama `backup/2026-11-09-checkpoint` queda como punto de restauración. Antes de trabajar, recuperar del historial del proyecto la descripción exacta de los dos cambios finales.
+Partir del punto preservado `ddae17c91443bc58762c5594c9963ce74bc1cece` y revisar el estado actual de `main) antes de cualquier edición. La rama `backup/2026-11-09-checkpoint` queda como punto de restauración. Recuperar del historial la descripción exacta del segundo cambio final antes de trabajar.
