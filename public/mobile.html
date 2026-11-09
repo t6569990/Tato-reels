@@ -1425,6 +1425,20 @@ p:not(.timeline-head p),
 .mobile-publish-explore-shortcut{grid-column:1/-1!important;width:100%!important;min-height:42px!important;margin:4px 0!important}
 @media(max-width:360px){.editor-toolbar.editor-toolbar-one-line{gap:5px!important}.editor-toolbar.editor-toolbar-one-line .editor-tool{font-size:10.5px!important;padding:6px 3px!important}}
 </style>
+
+<style id="tato-mobile-image-tools-web-sync-20261109">
+.editor-tool-pane[data-pane="image"] .image-visual-tools-container{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;width:100%!important;min-width:0!important}
+.editor-tool-pane[data-pane="image"] .image-filter-group-card,.editor-tool-pane[data-pane="image"] .image-scale-card{min-width:0!important;width:100%!important;box-sizing:border-box!important}
+.editor-tool-pane[data-pane="image"] .image-filter-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;width:100%!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card{min-width:0!important;padding:3px!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:100%!important;min-height:66px!important;padding:6px 3px!important;text-align:center!important;white-space:normal!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter-icon{font-size:17px!important;line-height:1}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter strong{font-size:10px!important;line-height:1.15}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter small{font-size:9px!important;line-height:1.1}
+.editor-tool-pane[data-pane="image"] .image-scale-card .photo-scale-field{margin:0!important}
+.editor-tool-pane[data-pane="image"] #applyImageChanges{width:100%!important;min-height:44px!important;margin-top:8px!important}
+@media(min-width:721px){.editor-tool-pane[data-pane="image"] .image-visual-tools-container{grid-template-columns:minmax(0,1.4fr) minmax(220px,.8fr)!important;gap:16px!important}}
+</style>
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1544,9 +1558,27 @@ p:not(.timeline-head p),
           <div class="field" style="margin-bottom:0"><label class="field-label" for="username">Nombre de creador</label><input type="text" id="username" value="@tato.reels"></div>
           <button class="secondary" id="clearReelVisualChanges" type="button" style="width:100%;min-height:44px;margin-top:9px">🧹 Borrar cambios del visualizador</button>
         </div>
-        <div class="panel">
-          <h3>🎨 Estilo de vista</h3>
-          <div class="image-filter-list"><div class="image-filter-card"><button class="filter active" data-filter="none" type="button">Original</button></div><div class="image-filter-card"><button class="filter" data-filter="nitido" type="button">HD / Nitidez</button></div><div class="image-filter-card"><button class="filter" data-filter="warm" type="button">Cálido</button></div><div class="image-filter-card"><button class="filter" data-filter="mono" type="button">B&amp;N</button></div><div class="image-filter-card"><button class="filter" data-filter="vintage" type="button">Vintage</button></div><div class="image-filter-card"><button class="filter" data-filter="cinema" type="button">Cine</button></div></div><div class="file-note">Elige un estilo. Se aplica a la vista previa y al Reel exportado.</div>
+        <div class="panel image-visual-tools-container">
+          <div class="image-filter-group-card">
+            <h3>🎨 Estilo de vista</h3>
+            <div class="image-filter-list">
+              <div class="image-filter-card"><button class="filter active" data-filter="none" type="button"><span class="filter-icon">🖼️</span><strong>Original</strong><small>Sin cambios</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="nitido" type="button"><span class="filter-icon">✨</span><strong>HD / Nitidez</strong><small>Más detalle</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="warm" type="button"><span class="filter-icon">🌅</span><strong>Cálido</strong><small>Luz dorada</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="mono" type="button"><span class="filter-icon">⚫</span><strong>B&amp;N</strong><small>Blanco y negro</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="vintage" type="button"><span class="filter-icon">📷</span><strong>Vintage</strong><small>Toque retro</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="cinema" type="button"><span class="filter-icon">🎬</span><strong>Cine</strong><small>Contraste intenso</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="bright" type="button"><span class="filter-icon">☀️</span><strong>Luminoso</strong><small>Más claridad</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="night" type="button"><span class="filter-icon">🌙</span><strong>Nocturno</strong><small>Sombras profundas</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="fade" type="button"><span class="filter-icon">🌫️</span><strong>Desvanecido</strong><small>Estilo suave</small></button></div>
+            </div>
+          </div>
+          <div class="image-scale-card">
+            <h3>📏 Escala de fotografías</h3>
+            <div class="field photo-scale-field"><label class="field-label" for="photoScale">Acercamiento <strong id="photoScaleValue">100%</strong></label><input id="photoScale" type="range" min="0.75" max="1.5" step="0.05" value="1" style="width:100%"><div class="file-note">Ajusta el encuadre de las fotos de tu secuencia.</div></div>
+            <button class="primary" id="applyImageChanges" type="button" style="width:100%">✓ Aplicar imagen al Reel</button>
+            <div class="file-note" id="imageApplyStatus">Los filtros se previsualizan; aplica la escala para incluirla al compilar.</div>
+          </div>
         </div>
         <div class="panel">
           <h3>📐 Formato</h3>
@@ -2004,9 +2036,13 @@ $('muteBtn').addEventListener('click',()=>{video.muted=!video.muted; $('muteBtn'
 function updateCaption(){ $('count').textContent=$('caption').value.length; $('overlayCaption').textContent=$('caption').value || 'Tu idea merece ser vista. ✨'; }
 $('caption').addEventListener('input',updateCaption);
 $('username').addEventListener('input',()=> $('overlayName').textContent=$('username').value || '@creador');
-const imageFilterStyles={none:'none',nitido:'contrast(1.14) saturate(1.08)',warm:'sepia(.22) saturate(1.18)',mono:'grayscale(1)',vintage:'sepia(.38) contrast(1.08) saturate(.82)',cinema:'contrast(1.18) saturate(1.12) brightness(.94)',sepia:'sepia(1)',cool:'saturate(1.08) hue-rotate(12deg)'};
+const imageFilterStyles={none:'none',nitido:'contrast(1.14) saturate(1.08)',warm:'sepia(.22) saturate(1.18)',mono:'grayscale(1)',vintage:'sepia(.38) contrast(1.08) saturate(.82)',cinema:'contrast(1.18) saturate(1.12) brightness(.94)',bright:'brightness(1.16) contrast(1.04) saturate(1.12)',night:'brightness(.82) contrast(1.22) saturate(.92)',fade:'contrast(.9) saturate(.78) brightness(1.06)',sepia:'sepia(1)',cool:'saturate(1.08) hue-rotate(12deg)'};
  function currentImageFilter(){return imageFilterStyles[filter]||'none';}
- document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filter=btn.dataset.filter;video.style.filter=currentImageFilter();$('sampleArt').style.filter=currentImageFilter();toast('Efecto aplicado: '+btn.textContent+'.');}));
+ let photoScale=1,photoScaleApplied=false;
+ document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filter=btn.dataset.filter;video.style.filter=currentImageFilter();$('sampleArt').style.filter=currentImageFilter();if(sequencePhoto)sequencePhoto.style.filter=currentImageFilter();toast('Efecto aplicado: '+(btn.querySelector('strong')?.textContent||btn.textContent.trim())+'.');}));
+ const photoScaleInput=$('photoScale');
+ if(photoScaleInput){photoScaleInput.addEventListener('input',()=>{photoScale=Number(photoScaleInput.value)||1;$('photoScaleValue').textContent=Math.round(photoScale*100)+'%';if(sequencePhoto&&sequencePhoto.style.display!=='none')sequencePhoto.style.transform='scale('+photoScale+')';});}
+ $('applyImageChanges')?.addEventListener('click',()=>{photoScaleApplied=true;if(sequencePhoto&&sequencePhoto.style.display!=='none')sequencePhoto.style.transform='scale('+photoScale+')';$('imageApplyStatus').textContent='✓ Escala aplicada a las fotografías al compilar el Reel.';toast('Ajustes de imagen aplicados.');});
 document.querySelectorAll('[data-ratio]').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('[data-ratio]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); $('videoFrame').style.aspectRatio=btn.dataset.ratio; toast('Formato de vista actualizado.');
 }));
@@ -2275,7 +2311,7 @@ $('timelineTrack').addEventListener('change',updateMobileTimelineTrim);
 
 $('applyTimelineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Agrega videos o fotos antes de aplicar la línea de tiempo.');return;}const invalid=timelineItems.find(item=>{const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);return duration<=0||end<=start||end>duration+.05;});if(invalid){toast('No se puede aplicar el recorte de '+invalid.name+'. Espera a que cargue su duración y revisa Inicio y Final.');$('timelineStatus').textContent='Revisa el recorte de '+invalid.name+'.';return;}editSequence=timelineItems.map(item=>({...item,start:Number(item.start)||0,end:item.end==null?(Number(item.duration)||(item.isImage?3:0)):Number(item.end)}));window.tatoCompiledReelBlob=null;syncExtraClipsFromTimeline();renderTimeline();renderSequenceMarkers(-1);$('timelineStatus').textContent='✓ Recortes, duración y orden aplicados a '+editSequence.length+' elemento(s).';finishFloatingUploadStatus('Cambios de la línea de tiempo aplicados',100,'done');$('sequenceNote').textContent='✓ Secuencia actualizada con los recortes aplicados.';toast('Cambios aplicados. La vista previa y la exportación usarán estos tiempos.');});
 $('resetTimelineBtn').addEventListener('click',()=>{timelineItems.forEach(item=>{item.start=0;item.end=item.duration||null;});editSequence=timelineItems.map(item=>({...item}));window.tatoCompiledReelBlob=null;renderTimeline();finishFloatingUploadStatus('Recortes restablecidos',100,'done');toast('Recortes de la línea de tiempo restablecidos.');});
-function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}return sequencePhoto;}
+function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}sequencePhoto.style.transform='scale('+photoScale+')';sequencePhoto.style.filter=currentImageFilter();return sequencePhoto;}
 function stopSequenceTimer(){if(sequenceTimer){clearTimeout(sequenceTimer);sequenceTimer=null;}}
 function finishSequence(){stopSequenceTimer();sequenceActive=false;sequencePaused=false;video.pause();$('videoStatus').textContent='Secuencia completa';$('playBtn').textContent='▶';finishFloatingUploadStatus('Vista previa de secuencia terminada');}
 function advanceSequence(){if(!sequenceActive)return;stopSequenceTimer();if(sequenceIndex>=editSequence.length-1){finishSequence();return;}sequenceIndex++;showSequenceItem();}
@@ -2286,7 +2322,7 @@ video.addEventListener('timeupdate',()=>{if(!sequenceActive||!editSequence.lengt
 $('combineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Carga y agrega clips en la línea de tiempo.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='Secuencia actualizada con videos, fotografías y recortes. Los archivos originales siguen separados.';$('combineBtn').textContent='Actualizar secuencia editable';startSequence();});
 // Exporta la secuencia completa dibujando cada clip y el título sobre un canvas.
 function waitForMedia(target,event){return new Promise((resolve,reject)=>{const ok=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(new Error('No se pudo leer uno de los videos.'));};const cleanup=()=>{target.removeEventListener(event,ok);target.removeEventListener('error',fail);};target.addEventListener(event,ok,{once:true});target.addEventListener('error',fail,{once:true});});}
-function drawCover(ctx,source,width,height){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const scale=Math.max(width/sw,height/sh),dw=sw*scale,dh=sh*scale;ctx.save();ctx.filter=currentImageFilter();ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);ctx.restore();}
+function drawCover(ctx,source,width,height){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const zoom=(source.tagName==='IMG'&&photoScaleApplied)?photoScale:1,scale=Math.max(width/sw,height/sh)*Math.max(.5,Number(zoom)||1),dw=sw*scale,dh=sh*scale;ctx.save();ctx.filter=currentImageFilter();ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);ctx.restore();}
 function drawExportBrandWatermark(ctx){ctx.save();ctx.globalAlpha=.78;ctx.font='800 22px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';const label='TATO REELS CREATOR',x=360,y=48,w=ctx.measureText(label).width+30,h=38;ctx.fillStyle='rgba(8,7,12,.34)';ctx.fillRect(x-w/2,y-h/2,w,h);ctx.strokeStyle='rgba(255,255,255,.24)';ctx.lineWidth=1;ctx.strokeRect(x-w/2,y-h/2,w,h);ctx.fillStyle='rgba(255,255,255,.88)';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=5;ctx.fillText(label,x,y);ctx.restore();}
 
 function drawExportCaption(ctx){
