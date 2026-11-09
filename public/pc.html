@@ -4339,20 +4339,22 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   }
   html body #app .editor-side-navigation{
     display:flex!important;flex-direction:column!important;align-items:flex-start!important;
-    gap:10px!important;margin-top:auto!important;padding:16px 0 4px!important;
-    position:sticky!important;bottom:18px!important;z-index:20!important;
+    gap:10px!important;margin:0!important;padding:0!important;
+    position:fixed!important;
+    left:calc((100vw - min(100vw,1320px))/2 + clamp(16px,3vw,42px))!important;
+    bottom:18px!important;top:auto!important;z-index:90!important;
   }
   html body #app .editor-side-nav-button{
     display:flex!important;flex-direction:column!important;align-items:center!important;
     justify-content:center!important;gap:1px!important;
-    width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;
-    padding:5px!important;border:1px solid #d39a16!important;border-radius:50%!important;
+    width:86px!important;height:58px!important;min-width:86px!important;min-height:58px!important;
+    padding:5px!important;border:1px solid #d39a16!important;border-radius:17px!important;
     background:linear-gradient(145deg,#ffe27a,#f4c542)!important;color:#241900!important;
     box-shadow:0 4px 10px #0003!important;cursor:pointer!important;
   }
   html body #app .editor-side-nav-arrow{font-size:27px!important;font-weight:900!important;line-height:1!important}
   html body #app .editor-side-nav-button{font-size:0!important;line-height:1!important}
-  html body #app .editor-side-nav-arrow{display:block!important;font-size:31px!important;font-weight:900!important;line-height:1!important}
+  html body #app .editor-side-nav-arrow{display:block!important;font-size:38px!important;font-weight:900!important;line-height:1!important}
   html body #app .editor-side-nav-button:disabled{opacity:.38!important;cursor:default!important;filter:grayscale(.25)}
   html body #app .editor-side-nav-button:not(:disabled):hover{transform:translateY(-2px)!important;box-shadow:0 6px 14px #0004!important}
 
