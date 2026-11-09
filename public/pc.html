@@ -2717,7 +2717,7 @@ $('exportBtn').addEventListener('click',async()=>{
  }
 });
 
-$('publishBtn').addEventListener('click',()=>{
+$('publishBtn')?.addEventListener('click',()=>{
  if(!video.src&&!timelineItems.length){toast('Agrega un video o una secuencia de fotos antes de preparar tu Reel.');return;}
  const mediaCount=timelineItems.length||1;
  $('postText').textContent=($('caption').value||'Sin descripción')+' '+$('hashtags').value+' · '+mediaCount+' elemento(s) preparado(s) localmente. Para publicarlo en Instagram, Facebook o TikTok hace falta conectar esas cuentas.';
