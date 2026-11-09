@@ -1646,6 +1646,14 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   }
 }
 </style>
+<style id="tato-explore-export-social-icons">
+.editor-tool-pane[data-pane="explore"].active .explore-export-networks{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:22px!important;flex-wrap:nowrap!important;margin:13px 0 16px!important;padding:2px 0!important}
+.editor-tool-pane[data-pane="explore"].active .explore-export-network{display:grid!important;place-items:center!important;flex:0 0 42px!important;width:42px!important;min-width:42px!important;height:42px!important;min-height:42px!important;padding:5px!important;margin:0!important;border:0!important;outline:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important;color:light-dark(#292333,#f5f1ff)!important;cursor:pointer!important;transition:transform .16s ease,color .16s ease!important}
+.editor-tool-pane[data-pane="explore"].active .explore-export-network:hover{transform:translateY(-2px) scale(1.08)!important;color:var(--site-primary)!important}
+.editor-tool-pane[data-pane="explore"].active .explore-export-network svg{display:block!important;width:30px!important;height:30px!important}
+.editor-tool-pane[data-pane="explore"].active .explore-export-network:focus-visible{outline:2px solid var(--site-primary)!important;outline-offset:4px!important}
+</style>
+
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -2060,6 +2068,20 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   });
   const referenceCard=makeCard('explore-reference-card');
   if(notes[1])referenceCard.append(notes[1]);
+  const exportNetworks=document.createElement('div');
+  exportNetworks.className='explore-export-networks';
+  exportNetworks.setAttribute('role','group');
+  exportNetworks.setAttribute('aria-label','Exportar Reel a redes sociales');
+  exportNetworks.innerHTML=
+   '<button type="button" class="explore-export-network" data-export-url="https://www.instagram.com/" aria-label="Abrir Instagram para subir tu Reel" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></button>'+
+   '<button type="button" class="explore-export-network" data-export-url="https://www.facebook.com/reels/create/" aria-label="Abrir Facebook Reels para subir tu video" title="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.1H7.3V13h2.8v8z"/></svg></button>'+
+   '<button type="button" class="explore-export-network" data-export-url="https://www.tiktok.com/upload" aria-label="Abrir TikTok para subir tu video" title="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.6 3c.3 2 1.4 3.3 3.4 3.5v3.2a8 8 0 0 1-3.4-1v6.8a6.3 6.3 0 1 1-6.3-6.3c.4 0 .8 0 1.2.1v3.4a3 3 0 1 0 1.7 2.8V3z"/></svg></button>'+
+   '<button type="button" class="explore-export-network" data-export-url="https://www.youtube.com/upload" aria-label="Abrir YouTube para subir tu video" title="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="m10 9 6 3-6 3z" fill="#fff"/></svg></button>';
+  exportNetworks.querySelectorAll('[data-export-url]').forEach(button=>button.addEventListener('click',()=>{
+   window.open(button.dataset.exportUrl,'_blank','noopener,noreferrer');
+   toast('Abre '+button.title+' y selecciona el Reel que exportaste desde Tato Reels.');
+  }));
+  referenceCard.append(exportNetworks);
   const urlInput=document.getElementById('inspirationUrl');
   const urlLabel=urlInput?.previousElementSibling;
   if(urlLabel?.tagName==='LABEL')referenceCard.append(urlLabel);
