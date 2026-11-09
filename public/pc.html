@@ -1781,13 +1781,13 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
             <b>📸 SOLO FOTOS</b>
             <span>Selecciona varias fotos JPG, PNG o WebP y crea un Reel fotográfico.</span>
             <button class="secondary" id="addPhotosBtn" type="button">Elegir fotos</button>
-            <input id="photosInput" class="tato-file-picker-input" type="file" accept="image/jpeg,image/png,image/webp" multiple tabindex="-1" aria-hidden="true">
+            <input id="photosInput" class="tato-file-picker-input" type="file" accept="image/*" multiple tabindex="-1" aria-hidden="true">
           </div>
           <div class="panel upload-zone creation-mode-card">
             <b>🎬＋📸 HÍBRIDO</b>
             <span>Mezcla videos y fotografías en una sola secuencia y ordénalos.</span>
             <button class="secondary" id="addClipsBtn" type="button">Elegir videos y fotos</button>
-            <input id="clipsInput" class="tato-file-picker-input" type="file" accept="video/*,image/jpeg,image/png,image/webp" multiple tabindex="-1" aria-hidden="true">
+            <input id="clipsInput" class="tato-file-picker-input" type="file" accept="video/*,image/*" multiple tabindex="-1" aria-hidden="true">
           </div>
         </div>
         <div class="panel sequence-items-panel">
@@ -2451,7 +2451,7 @@ function openLocalFilePicker(inputId){const input=$(inputId);if(!input){toast('N
 $('uploadBtn').addEventListener('click',()=>openLocalFilePicker('fileInput'));
 $('addClipsBtn').addEventListener('click',()=>openLocalFilePicker('clipsInput'));
 // La carga de videos y fotos se gestiona en un único listener más abajo.
-function getMediaKind(file){const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();if(type.startsWith('image/')||/\.(jpe?g|png|webp)$/i.test(name))return 'image';if(type.startsWith('video/')||/\.(mp4|mov|webm|m4v|ogv)$/i.test(name))return 'video';return '';}
+function getMediaKind(file){const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();if(type.startsWith('image/')||/\.(jpe?g|png|webp|avif|gif|bmp|heic|heif)$/i.test(name))return 'image';if(type.startsWith('video/')||/\.(mp4|mov|webm|m4v|ogv)$/i.test(name))return 'video';return '';}
 function showMediaInVisualizer(item){
  if(!item)return;
  sequenceActive=false;stopSequenceTimer();video.pause();
@@ -2786,9 +2786,9 @@ function renderTimeline(){const track=$('timelineTrack');if(!track)return;track.
 function syncExtraClipsFromTimeline(){extraClips=timelineItems.filter(item=>!item.isMain);}
  $('timelineTrack').addEventListener('click',event=>{if(event.target.closest('button,input'))return;const card=event.target.closest('.timeline-clip');if(!card)return;const item=timelineItems.find(entry=>entry.id===card.dataset.id);if(!item)return;selectedTimelineId=item.id;renderTimeline();});
 
-$('clipsInput').addEventListener('change',event=>{addMediaFiles(event.target.files,'hybrid');event.target.value='';});
+$('clipsInput').addEventListener('change',event=>{try{addMediaFiles(event.target.files,'hybrid');}catch(error){console.error('Error al cargar fotos y videos:',error);toast('No se pudieron agregar los archivos. Revisa el formato o la consola.');}finally{event.target.value='';}});
  $('addPhotosBtn').addEventListener('click',()=>openLocalFilePicker('photosInput'));
-  $('photosInput').addEventListener('change',event=>{addMediaFiles(event.target.files,'photos');event.target.value='';});
+  $('photosInput').addEventListener('change',event=>{try{addMediaFiles(event.target.files,'photos');}catch(error){console.error('Error al cargar fotografías:',error);toast('No se pudieron agregar las fotografías. Revisa el formato o la consola.');}finally{event.target.value='';}});
 $('timelineTrack').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const index=timelineItems.findIndex(item=>item.id===b.dataset.id);if(index<0)return;const item=timelineItems[index],action=b.dataset.action;if(action==='up'&&index>0){timelineItems.splice(index,1);timelineItems.splice(index-1,0,item);}else if(action==='down'&&index<timelineItems.length-1){timelineItems.splice(index,1);timelineItems.splice(index+1,0,item);}else if(action==='duplicate'){const copy={...item,id:'copy-'+Date.now(),name:item.name+' (copia)',start:item.start,end:item.end,isMain:false};timelineItems.splice(index+1,0,copy);}else if(action==='remove'){const removedUrl=item.url;timelineItems.splice(index,1);if(item.isMain){objectUrl=null;video.pause();video.removeAttribute('src');video.load();$('fileInput').value='';}else extraClips=extraClips.filter(clip=>clip.url!==removedUrl);if(removedUrl&&removedUrl!==objectUrl&&!timelineItems.some(clip=>clip.url===removedUrl)&&!extraClips.some(clip=>clip.url===removedUrl)&&!editSequence.some(clip=>clip.url===removedUrl))URL.revokeObjectURL(removedUrl);}selectedTimelineId=timelineItems[Math.min(index,timelineItems.length-1)]?.id||null;renderTimeline();syncExtraClipsFromTimeline();});
 
 $('timelineTrack').addEventListener('input',event=>{
@@ -2832,9 +2832,8 @@ $('timelineTrack').addEventListener('change',event=>{
  $('applyTimelineBtn').addEventListener('click',()=>{
   if(!timelineItems.length){toast('Agrega videos o fotos antes de aplicar la línea de tiempo.');return;}
   const invalid=timelineItems.find(item=>{
-   if(item.isImage)return Number(item.end??item.duration)<=Number(item.start||0);
-   const duration=Number(item.duration)||0,start=Number(item.start)||0,end=Number(item.end??duration);
-   return duration<=0||start<0||end<=start||end>duration+.05;
+   const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);
+   return duration<=0||end<=start||end>duration+.05;
   });
   if(invalid){toast('No se puede aplicar el recorte de '+invalid.name+'. Verifica que haya terminado de cargar y que el final sea posterior al inicio.');$('timelineStatus').textContent='Revisa el recorte de '+invalid.name+'.';return;}
   editSequence=timelineItems.map(item=>({...item}));
@@ -4420,6 +4419,49 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 @keyframes tatoUploadSweep{from{transform:translateX(0)}to{transform:translateX(180%)}}
 @media(max-width:620px){#tato-floating-upload-status{right:10px;bottom:10px;width:min(320px,calc(100vw - 20px));}}
 </style>
+
+<script id="tato-current-reel-autosave-pc">
+(()=>{
+ const CURRENT_ID='tato-current-reel-autosave';
+ let saveTimer=null,restoring=false,saveInProgress=false,saveAgain=false;
+ async function saveCurrentReel(){
+  if(restoring)return;
+  const media=timelineItems.filter(item=>item.file instanceof Blob);
+  if(!media.length)return;
+  if(saveInProgress){saveAgain=true;return;}
+  saveInProgress=true;
+  try{
+   const settings=typeof draftSettings==='function'?draftSettings():{};
+   const record={id:CURRENT_ID,savedAt:new Date().toISOString(),settings,media:media.map(item=>({id:item.id,name:item.name||item.file.name,type:item.file.type||'',isMain:!!item.isMain,isImage:!!item.isImage,start:Number(item.start)||0,end:item.end==null?null:Number(item.end),duration:Number(item.duration)||0,blob:item.file})),music:typeof musicFile!=='undefined'&&musicFile instanceof Blob?{name:musicFile.name,type:musicFile.type,blob:musicFile}:null};
+   await writeDraftMedia(record);
+   const status=document.getElementById('timelineStatus');
+   if(status)status.dataset.autosaved='true';
+  }catch(error){console.error('No se pudo conservar el Reel automáticamente:',error);}
+  finally{saveInProgress=false;if(saveAgain){saveAgain=false;scheduleSave(250);}}
+ }
+ function scheduleSave(delay=1100){if(restoring)return;clearTimeout(saveTimer);saveTimer=setTimeout(saveCurrentReel,delay);}
+ async function restoreCurrentReel(){
+  try{
+   const record=await readDraftMedia(CURRENT_ID);
+   if(!record||!Array.isArray(record.media)||!record.media.length)return;
+   if(timelineItems.length)return;
+   restoring=true;
+   await openDraft({mediaId:CURRENT_ID});
+  }catch(error){console.error('No se pudo recuperar el Reel anterior:',error);}
+  finally{restoring=false;}
+ }
+ ['fileInput','photosInput','clipsInput'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>scheduleSave(1800)));
+ const track=document.getElementById('timelineTrack');
+ track?.addEventListener('input',()=>scheduleSave(700));
+ track?.addEventListener('change',()=>scheduleSave(700));
+ track?.addEventListener('click',()=>scheduleSave(700));
+ document.getElementById('applyTimelineBtn')?.addEventListener('click',()=>scheduleSave(350));
+ document.getElementById('resetTimelineBtn')?.addEventListener('click',()=>scheduleSave(350));
+ document.getElementById('saveBtn')?.addEventListener('click',()=>scheduleSave(900));
+ window.addEventListener('pagehide',()=>{saveCurrentReel();});
+ setTimeout(restoreCurrentReel,450);
+})();
+</script>
 </body>
 </html>
 
