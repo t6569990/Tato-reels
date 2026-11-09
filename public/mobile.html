@@ -1616,7 +1616,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  if(clearVisualizerButton){
   clearVisualizerButton.type='button';
   clearVisualizerButton.style.cssText=clearButtonStyle;
-  const creatorNameField=panes.text?.querySelector('#username')?.closest('.field');
+  const creatorNameField=document.getElementById('username')?.closest('.field');
   if(creatorNameField&&clearVisualizerButton.parentElement!==creatorNameField.parentElement) creatorNameField.after(clearVisualizerButton);
  }
  if(clearVisualizerButton&&sidebar){
