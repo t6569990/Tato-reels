@@ -2002,21 +2002,29 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  // Se conserva el mismo botón y sus manejadores originales.
  const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
  const sidebar=document.querySelector('.sidebar');
- const sidebarCard=sidebar?.querySelector('.side-card');
  if(clearVisualizerButton){
+  clearVisualizerButton.type='button';
   clearVisualizerButton.style.cssText='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:12px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
-  const adjacentFormatCard=panes.format?.querySelector(':scope > .panel');
-  if(adjacentFormatCard) adjacentFormatCard.append(clearVisualizerButton);
+  const adjacentFormatCard=panes.format?.querySelector('#exportFormat')?.closest('.panel')
+   ||[...(panes.format?.querySelectorAll('.panel')||[])].find(card=>/Formato de descarga/i.test(card.querySelector('h3')?.textContent||''));
+  if(adjacentFormatCard&&clearVisualizerButton.parentElement!==adjacentFormatCard) adjacentFormatCard.append(clearVisualizerButton);
  }
- // Acceso adicional al borrado en la parte superior de la columna izquierda.
- if(clearVisualizerButton&&sidebarCard&&!sidebar.querySelector('#clearReelVisualChangesSidebar')){
-  const sidebarClear=clearVisualizerButton.cloneNode(true);
-  sidebarClear.id='clearReelVisualChangesSidebar';
+ // Acceso adicional de borrado al inicio de la columna izquierda.
+ if(clearVisualizerButton&&sidebar){
+  let sidebarClear=sidebar.querySelector('#clearReelVisualChangesSidebar');
+  if(!sidebarClear){
+   sidebarClear=clearVisualizerButton.cloneNode(true);
+   sidebarClear.id='clearReelVisualChangesSidebar';
+  }
   sidebarClear.type='button';
   sidebarClear.setAttribute('aria-label','Borrar cambios del visualizador');
   sidebarClear.style.cssText='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:0 0 12px!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
-  sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
-  sidebar.insertBefore(sidebarClear,sidebarCard);
+  if(!sidebarClear.dataset.boundToVisualizerClear){
+   sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
+   sidebarClear.dataset.boundToVisualizerClear='true';
+  }
+  const firstNavItem=sidebar.querySelector('.nav-label')?.nextElementSibling;
+  if(sidebarClear.parentElement!==sidebar||sidebarClear!==firstNavItem) sidebar.insertBefore(sidebarClear,firstNavItem||sidebar.firstChild);
  }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
@@ -2056,7 +2064,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   sidePrev.addEventListener('click',()=>moveTool(-1));
   sideNext.addEventListener('click',()=>moveTool(1));
   sideNav.append(sideHome,sidePrev,sideNext);
-  document.getElementById('app')?.append(sideNav);
+  sidebar.append(sideNav);
   window.tatoReelsRefreshToolSideNav=refreshSideNav;
   refreshSideNav();
  }
@@ -4539,6 +4547,51 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 }
 @media(max-width:720px){
   html body #app .editor-side-navigation{display:none!important;visibility:hidden!important}
+}
+</style>
+<style id="tato-pc-sidebar-navigation-and-trim-visual-only-20261108">
+/* Flechas integradas en la columna izquierda: al fondo de la columna, nunca flotantes. */
+@media(min-width:721px){
+ html body #app .layout>.sidebar{
+  display:flex!important;flex-direction:column!important;
+  min-height:calc(100vh - 104px)!important;height:auto!important;
+  align-self:stretch!important;position:relative!important;
+ }
+ html body #app .sidebar>.editor-side-navigation{
+  display:flex!important;position:static!important;inset:auto!important;
+  left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  flex-direction:column!important;align-items:stretch!important;justify-content:flex-end!important;
+  gap:9px!important;width:100%!important;margin-top:auto!important;
+  padding:16px 0 0!important;z-index:2!important;
+ }
+ html body #app .sidebar>.editor-side-navigation>.editor-side-nav-button{
+  display:flex!important;width:100%!important;min-width:100%!important;
+  height:58px!important;min-height:58px!important;max-height:58px!important;
+  flex:0 0 58px!important;align-items:center!important;justify-content:center!important;
+ }
+ /* Se retira solo la tarjeta visual de recorte; el recorte individual permanece en Línea de tiempo. */
+ html body #app .creator>.editor-panel>.workspace-trim-card{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;
+ }
+ /* Tipografía uniforme en las familias, sin tocar Línea de tiempo. */
+ html body #app .editor-tool-pane .panel:not(.timeline-panel){text-align:center!important}
+ html body #app .editor-tool-pane .panel:not(.timeline-panel) h2,
+ html body #app .editor-tool-pane .panel:not(.timeline-panel) h3,
+ html body #app .editor-tool-pane .panel:not(.timeline-panel) h4{
+  text-align:center!important;font-size:clamp(17px,1.15vw,21px)!important;line-height:1.35!important;
+ }
+ html body #app .editor-tool-pane .panel:not(.timeline-panel) p,
+ html body #app .editor-tool-pane .panel:not(.timeline-panel) .file-note,
+ html body #app .editor-tool-pane .panel:not(.timeline-panel) .field-help{
+  font-size:clamp(14px,1.02vw,17px)!important;line-height:1.6!important;
+  text-align:justify!important;text-justify:inter-word;overflow-wrap:anywhere!important;
+ }
+ html body #app .editor-tool-pane .panel:not(.timeline-panel) label{
+  font-size:clamp(13px,.96vw,16px)!important;line-height:1.4!important;text-align:center!important;
+ }
+ html body #app .editor-tool-pane .panel:not(.timeline-panel) button{
+  font-size:clamp(13px,.96vw,16px)!important;line-height:1.3!important;
+ }
 }
 </style>
 
