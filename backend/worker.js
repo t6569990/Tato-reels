@@ -169,7 +169,7 @@ async function handle(request, env) {
     if(String(data.website||"").trim())return json({ok:true},200,feedbackCorsHeaders);
     const rating=Number(data.rating),comment=String(data.comment||"").trim().slice(0,1000),liked=String(data.liked||"").trim().slice(0,300),improve=String(data.improve||"").trim().slice(0,500);
     if(!Number.isInteger(rating)||rating<1||rating>5)return json({error:"Selecciona una calificación de 1 a 5 estrellas."},400,feedbackCorsHeaders);
-    if(!comment&&!liked&&!improve)return json({error:"Cuéntanos brevemente cómo fue tu experiencia."},400,feedbackCorsHeaders);
+    if(!liked||!improve)return json({error:"Responde qué te gustó y qué podemos mejorar."},400,feedbackCorsHeaders);
     const details=[["Calificación",rating+"/5 estrellas"],["Lo que más gustó",liked||"Sin respuesta"],["Qué mejorar",improve||"Sin respuesta"],["Comentarios",comment||"Sin comentarios"],["Fecha",new Date().toISOString()]];
     const html="<div style=\"font-family:Arial,sans-serif;color:#201a2b\"><h2>Opinión nueva · Tato Reels Creator</h2>"+details.map(([label,value])=>"<p><strong>"+escapeHtml(label)+":</strong><br>"+escapeHtml(value).replace(/\\n/g,"<br>")+"</p>").join("")+"</div>";
     const response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{"Authorization":"Bearer "+env.RESEND_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({from:env.EMAIL_FROM||"Tato Reels <onboarding@resend.dev>",to:[env.FEEDBACK_TO],subject:"Opinión de usuario · Tato Reels Creator",html})});
