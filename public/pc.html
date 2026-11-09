@@ -1731,7 +1731,6 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
       <button class="editor-tool" data-pane="music"><span class="tool-icon">🎵</span><span class="tool-label">Música</span></button>
       <button class="editor-tool" data-pane="format"><span class="tool-icon">📐</span><span class="tool-label">Formato</span></button>
       <button class="editor-tool" data-pane="explore"><span class="tool-icon">🌐</span><span class="tool-label">Explorar</span></button>
-      <button class="editor-tool" data-pane="share"><span class="tool-icon">🔗</span><span class="tool-label">Compartir</span></button>
       <button class="editor-tool" data-pane="publish"><span class="tool-icon">📣</span><span class="tool-label">Publicar</span></button>
     </nav>
     <div class="creator">
@@ -1933,7 +1932,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);
  const dragHandle=document.createElement('button');dragHandle.type='button';dragHandle.className='preview-drag-handle';dragHandle.textContent='⠿ MOVER VISUALIZADOR';dragHandle.setAttribute('aria-label','Arrastrar visualizador a otra posición');preview.insertBefore(dragHandle,preview.firstChild);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
- const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
+ const paneNames=['video','text','music','image','format','explore','publish'],panes={};
  const paneWrap=document.createElement('div');paneWrap.className='editor-tool-panes';
  paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;p.setAttribute('aria-label',name);const meta={"video":["🎬","VIDEO","Carga, organiza y recorta tus clips."],"image":["🖼️","IMAGEN","Ajustes visuales y recursos gráficos."],"text":["✍️","TEXTO","Contenido, títulos y texto sobre el Reel."],"music":["🎵","MÚSICA","Biblioteca, selección y mezcla de audio."],"format":["📐","FORMATO","Proporción y formato de exportación."],"explore":["🌐","EXPLORAR","Inspiración y biblioteca de referencias."],"share":["🔗","COMPARTIR","Comparte Tato Reels."],"publish":["📣","PUBLICAR","Prepara tu salida a redes sociales."]}[name];const heading=document.createElement('header');heading.className='tool-pane-heading';const icon=document.createElement('span');icon.className='tool-pane-icon';icon.textContent=meta[0];const copy=document.createElement('div');const title=document.createElement('h2');title.textContent=meta[1];const description=document.createElement('p');description.textContent=meta[2];copy.append(title,description);heading.append(icon,copy);p.append(heading);panes[name]=p;paneWrap.append(p);});
  const timeline=editor.querySelector(':scope > .timeline-panel');
@@ -1947,8 +1946,8 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   else if(/Texto animado|Detalles del Reel/i.test(h))key='text';
   else if(/Formato de descarga|^📐\s*Formato/i.test(h))key='format';
   else if(/Explorar redes y biblioteca/i.test(h))key='explore';
-  else if(/Compartir Tato Reels/i.test(h))key='share';
   else if(/Salida a redes/i.test(h))key='publish';
+  if(/Compartir Tato Reels/i.test(h)){card.remove();return;}
   panes[key].append(card);
  });
  // Botón principal: debajo de "Nombre de creador" en "Detalles del Reel".
@@ -2137,28 +2136,6 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   publishPanel.replaceWith(...[infoCard,...networkCards,statusCard].filter(card=>card.children.length));
  }
 
- // COMPARTIR: convertir el texto y cada acción en tarjetas independientes, como Explorar.
- const sharePanel=[...panes.share.children].find(node=>node.classList?.contains('panel'));
- if(sharePanel){
-  const infoCard=document.createElement('section');
-  infoCard.className='panel share-tool-card share-info-card';
-  const intro=[...sharePanel.children].find(node=>node.classList?.contains('file-note'));
-  const heading=document.createElement('h3');heading.textContent='🔗 Comparte Tato Reels';
-  const description=document.createElement('p');
-  description.className='file-note';
-  description.textContent='Comparte el enlace de la aplicación para que otras personas puedan entrar.';
-  infoCard.append(heading,description);
-  const actionsCard=document.createElement('section');
-  actionsCard.className='panel share-tool-card share-actions-card';
-  const actionGrid=document.createElement('div');actionGrid.className='share-actions-grid';
-  const actions=[['shareWhatsApp','WhatsApp','Compartir por WhatsApp'],['shareFacebook','Facebook','Compartir en Facebook'],['copyAppLink','Copiar enlace','Copiar enlace de Tato Reels']];
-  actions.forEach(([id,label,text])=>{
-   const button=document.getElementById(id);
-   if(button){button.textContent=text;button.type='button';actionGrid.append(button);}
-  });
-  actionsCard.append(actionGrid);
-  sharePanel.replaceWith(infoCard,actionsCard);
- }
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline){panes.video.append(timeline);paneNames.forEach(name=>timeline.append(goTopButtons[name]));}
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
@@ -4291,5 +4268,14 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 }
 </style>
 
+
+<style id="tato-pc-remove-share-and-center-tool-icons">
+@media(min-width:721px){
+ html body #app .main .editor-toolbar.editor-toolbar-one-line{grid-template-columns:repeat(7,minmax(0,1fr))!important;justify-content:center!important;align-items:center!important}
+ html body #app .main .editor-toolbar.editor-toolbar-one-line>.editor-tool{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;gap:4px!important}
+ html body #app .main .editor-toolbar.editor-toolbar-one-line>.editor-tool .tool-icon{display:block!important;font-size:27px!important;line-height:1.1!important;width:100%!important;text-align:center!important}
+ html body #app .main .editor-toolbar.editor-toolbar-one-line>.editor-tool .tool-label{display:block!important;width:100%!important;text-align:center!important;font-size:11px!important;line-height:1.1!important}
+}
+</style>
 </body>
 </html>
