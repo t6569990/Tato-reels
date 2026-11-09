@@ -2083,7 +2083,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   const socialButtons=[...(grids[0]?.querySelectorAll('button[data-explore-url]')||[])];
   const makeCard=(extra='')=>{const card=document.createElement('section');card.className='panel explore-tool-card '+extra;return card;};
   const introCard=makeCard('explore-intro-card');
-  if(notes[0])introCard.append(notes[0]);
+  if(notes[0]){const introImage=document.createElement('img');introImage.className='explore-upload-instruction-image';introImage.src='https://scontent.fpbc1-2.fna.fbcdn.net/v/t39.30808-6/858596277_122096981877546740_5533725851924894964_n.jpg?stp=dst-jpg_tt6&cstp=mx1254x1254&ctp=s1254x1254&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f727a1&_nc_ohc=7M0blZ9FXgMQ7kNvwG2eHUk&_nc_oc=Adr6nZEbkJSJ6wp3akD4KK20eaPPHEQCHwK4AVgWph1RPJbVJOwuVcAhI5-88SU4X_GG0WBbc_Cqxh9eRe-BkfC2&_nc_zt=23&_nc_ht=scontent.fpbc1-2.fna&_nc_gid=yfSApyPQupXnoSlnym35EA&_nc_ss=7b2a8&oh=00_AQS6vZmLBQ_n54hVIwIeMC5U5OVKpUog42AHrHgd1_1SqQ&oe=6AF7432F';introImage.alt='Imagen informativa de Explorar redes y biblioteca';introImage.loading='lazy';introImage.style.cssText='display:block;width:100%;max-width:100%;height:auto;object-fit:contain;margin:0 auto;border-radius:12px';introCard.append(introImage);notes[0].remove();}
   const networkCards=socialButtons.map(button=>{
    const card=makeCard('explore-network-card');
    const label=document.createElement('div');label.className='explore-network-label';
@@ -2093,7 +2093,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
    return card;
   });
   const referenceCard=makeCard('explore-reference-card');
-  if(notes[1]){const instructionImage=document.createElement('img');instructionImage.className='explore-upload-instruction-image';instructionImage.src='https://scontent.fpbc1-2.fna.fbcdn.net/v/t39.30808-6/858596277_122096981877546740_5533725851924894964_n.jpg?stp=dst-jpg_tt6&cstp=mx1254x1254&ctp=s1254x1254&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f727a1&_nc_ohc=7M0blZ9FXgMQ7kNvwG2eHUk&_nc_oc=Adr6nZEbkJSJ6wp3akD4KK20eaPPHEQCHwK4AVgWph1RPJbVJOwuVcAhI5-88SU4X_GG0WBbc_Cqxh9eRe-BkfC2&_nc_zt=23&_nc_ht=scontent.fpbc1-2.fna&_nc_gid=yfSApyPQupXnoSlnym35EA&_nc_ss=7b2a8&oh=00_AQS6vZmLBQ_n54hVIwIeMC5U5OVKpUog42AHrHgd1_1SqQ&oe=6AF7432F';instructionImage.alt='Instrucciones para abrir una red social y cargar el Reel exportado desde el dispositivo';instructionImage.loading='lazy';instructionImage.style.cssText='display:block;width:100%;max-width:100%;height:auto;object-fit:contain;margin:0 auto;border-radius:12px';referenceCard.append(instructionImage);}
+  if(notes[1]){notes[1].textContent='Selecciona la red social que prefieras para abrirla y cargar directamente tu Reel. Después, selecciona y carga el Reel que exportaste a la carpeta de tu dispositivo.';referenceCard.append(notes[1]);}
   const exportNetworks=document.createElement('div');
   exportNetworks.className='explore-export-networks';
   exportNetworks.setAttribute('role','group');
