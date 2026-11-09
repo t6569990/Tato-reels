@@ -4334,3 +4334,19 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 </style>
 </body>
 </html>
+
+
+<style id="tato-pc-restore-preview-pointer-events-20261109">
+/* PC: reactivar exclusivamente los controles del visualizador; móvil permanece intacto. */
+@media (min-width:721px){
+  .creator > .floating-stage .preview-drag-handle,
+  .creator > .floating-stage .preview-resize-handle{
+    pointer-events:auto!important;
+    position:relative;
+    z-index:30!important;
+  }
+  .creator > .floating-stage > .preview-shell{
+    pointer-events:auto!important;
+  }
+}
+</style>
