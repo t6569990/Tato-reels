@@ -4113,11 +4113,13 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 /* Recortador compacto, alineado al ancho de la vista previa; sin alterar su lógica. */
 @media(min-width:721px){
   html body .creator>.floating-stage>.workspace-trim-card{
-    align-self:center!important;
-    width:min(100%,420px)!important;
-    max-width:420px!important;
-    margin:0 auto!important;
+    align-self:stretch!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    margin:0!important;
     padding:0!important;
+    box-sizing:border-box!important;
   }
   html body .creator>.floating-stage>.workspace-trim-card>.trim-panel{
     width:100%!important;
