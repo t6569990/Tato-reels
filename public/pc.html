@@ -4016,5 +4016,81 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   }
 }
 </style>
+
+<style id="tato-pc-visualizer-maximize-container-20261109">
+/* PC: visualizador grande, centrado y limitado al contenedor; recortador en flujo debajo. */
+@media(min-width:721px){
+  html body .creator>.floating-stage{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    width:100%!important;
+    min-width:0!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    contain:none!important;
+    box-sizing:border-box!important;
+    padding:48px 18px 18px!important;
+    gap:16px!important;
+  }
+  html body .creator>.floating-stage>.preview-shell,
+  html body .creator>.floating-stage .preview-shell{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    align-self:center!important;
+    width:min(100%,420px)!important;
+    max-width:420px!important;
+    min-width:0!important;
+    height:auto!important;
+    max-height:none!important;
+    margin:0 auto!important;
+    box-sizing:border-box!important;
+  }
+  html body .creator>.floating-stage>.preview-shell>.video-frame,
+  html body .creator>.floating-stage .preview-shell .video-frame{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    aspect-ratio:9/16!important;
+    box-sizing:border-box!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card{
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    order:2!important;
+    align-self:stretch!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card>.trim-panel{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+}
+</style>
 </body>
 </html>
