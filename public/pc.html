@@ -2979,7 +2979,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  const items=timelineItems.length?timelineItems.map(item=>({...item})):video.src?[{name:'Video principal',url:objectUrl,start:0,end:video.duration,duration:video.duration}]:[];
  if(!items.length){toast('Carga un video y agrega los clips que quieras incluir.');return;}
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast('Tu navegador no permite exportar el Reel completo. Prueba Chrome actualizado.');return;}
- const btn=$('exportSequenceBtn');window.tatoCompiledReelBlob=null;$('exportReelBtn').disabled=true;btn.disabled=true;btn.textContent='Compilando proyecto…';const progress=$('exportProgress'),progressFill=$('exportProgressFill'),progressPercent=$('exportProgressPercent'),progressLabel=$('exportProgressLabel');const totalDuration=items.reduce((sum,item)=>sum+Math.max(0,(Number(item.end)||item.duration)-(Number(item.start)||0)),0);let completedDuration=0;const updateProgress=value=>{const percent=Math.max(0,Math.min(100,Math.round(value)));progress.classList.add('visible');progressFill.style.width=percent+'%';progressPercent.textContent=percent+'%';setFloatingUploadStatus(progressLabel.textContent||'Compilando proyecto…',percent,'working');};progressLabel.textContent='Compilando proyecto…';updateProgress(0);let audioContext=null,music=null,musicSource=null,recorder=null,raf=0,stream=null,recorderStream=null,activeClip=null;
+ const btn=$('exportSequenceBtn');window.tatoCompiledReelBlob=null;$('exportReelBtn').disabled=true;btn.disabled=true;btn.textContent='Compilando proyecto…';const progress=$('exportProgress'),progressFill=$('exportProgressFill'),progressPercent=$('exportProgressPercent'),progressLabel=$('exportProgressLabel');const totalDuration=items.reduce((sum,item)=>sum+Math.max(0,(Number(item.end)||item.duration)-(Number(item.start)||0)),0);let completedDuration=0;const updateProgress=value=>{const percent=Math.max(0,Math.min(100,Math.round(value)));progress.classList.add('visible');progressFill.style.width=percent+'%';progressPercent.textContent=percent+'%';};document.getElementById('tato-floating-upload-status')?.classList.remove('visible');progressLabel.textContent='Compilando proyecto…';updateProgress(0);let audioContext=null,music=null,musicSource=null,recorder=null,raf=0,stream=null,recorderStream=null,activeClip=null;
  try{
   const canvas=document.createElement('canvas');canvas.width=720;canvas.height=1280;const ctx=canvas.getContext('2d');stream=canvas.captureStream(30);audioContext=new AudioContext();const audioOut=audioContext.createMediaStreamDestination();
   if(musicIntegrated&&musicUrl){const trim=getAudioTrim();if(!trim)throw new Error('Revisa el recorte de la música.');music=new Audio(musicUrl);music.preload='auto';music.loop=false;await new Promise((resolve,reject)=>{if(music.readyState>=1){resolve();return;}music.addEventListener('loadedmetadata',resolve,{once:true});music.addEventListener('error',()=>reject(new Error('No se pudo cargar la pista de música.')),{once:true});music.load();});const start=Math.min(trim.start,Math.max(0,music.duration-.05)),end=Math.min(trim.end,music.duration,start+totalDuration);if(end<=start)throw new Error('El recorte de música no es válido o supera la duración disponible del Reel.');music.currentTime=start;music.volume=Number($('musicVolume').value);musicSource=audioContext.createMediaElementSource(music);musicSource.connect(audioOut);music.addEventListener('timeupdate',()=>{if(music.currentTime>=end)music.pause();});}
@@ -2998,8 +2998,8 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
     activeClip.pause();activeClip.removeAttribute('src');activeClip.load();activeClip=null;
    }
    cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);
-  }  if(music)music.pause();playExportOutroSound(audioContext,audioOut);await playExportOutro(ctx);recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});window.tatoCompiledReelBlob=blob;$('exportReelBtn').disabled=false;awardTatoCoin('proyecto compilado');updateProgress(100);progressLabel.textContent='¡Proyecto compilado! Ya puedes exportar tu Reel.';finishFloatingUploadStatus('Proyecto compilado · listo para exportar');toast('Proyecto compilado. Pulsa Exportar Reel para guardarlo en tu dispositivo.');$('videoStatus').textContent='Proyecto compilado';
- }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();setFloatingUploadStatus(error.message||'No se pudo compilar el proyecto',0,'error');toast(error.message||'No se pudo exportar el Reel completo.');}
+  }  if(music)music.pause();playExportOutroSound(audioContext,audioOut);await playExportOutro(ctx);recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});window.tatoCompiledReelBlob=blob;$('exportReelBtn').disabled=false;awardTatoCoin('proyecto compilado');updateProgress(100);progressLabel.textContent='¡Proyecto compilado! Ya puedes exportar tu Reel.';toast('Proyecto compilado. Pulsa Exportar Reel para guardarlo en tu dispositivo.');$('videoStatus').textContent='Proyecto compilado';
+ }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();progress.classList.add('visible');progressLabel.textContent=error.message||'No se pudo compilar el proyecto';progressFill.style.width='0%';progressPercent.textContent='0%';toast(error.message||'No se pudo exportar el Reel completo.');}
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(activeClip){activeClip.pause();activeClip.removeAttribute('src');activeClip.load();}if(recorderStream)recorderStream.getTracks().forEach(track=>track.stop());if(stream)stream.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='⚙️ Compilar proyecto';}
 });
 
@@ -3050,6 +3050,26 @@ function restartCurrentReel(){
 $('restartReelBtn')?.addEventListener('click',restartCurrentReel);
 async function saveCompiledReel(blob,filename){
  if(!(blob instanceof Blob)||!blob.size){toast('El Reel no contiene datos exportables. Vuelve a compilar el proyecto.');return;}
+ // En Android, los enlaces blob: no activan de forma fiable las descargas del WebView.
+ // Guardar el archivo en caché nativa y abrir el selector de aplicaciones del sistema.
+ const capacitor=window.Capacitor;
+ if(capacitor&&(capacitor.isNativePlatform?.()||capacitor.getPlatform?.()==='android')){
+  try{
+   const filesystem=capacitor.Plugins?.Filesystem||(capacitor.registerPlugin?capacitor.registerPlugin('Filesystem'):null);
+   const share=capacitor.Plugins?.Share||(capacitor.registerPlugin?capacitor.registerPlugin('Share'):null);
+   if(!filesystem?.writeFile||!share?.share)throw new Error('No están disponibles los servicios nativos para exportar.');
+   const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||'').split(',')[1]||'');reader.onerror=()=>reject(reader.error||new Error('No se pudo preparar el video.'));reader.readAsDataURL(blob);});
+   if(!dataUrl)throw new Error('El video compilado está vacío. Vuelve a compilar el proyecto.');
+   const saved=await filesystem.writeFile({path:filename,data:dataUrl,directory:'CACHE',recursive:true});
+   if(!saved?.uri)throw new Error('Android no confirmó el archivo exportado.');
+   await share.share({title:'Mi Reel de Tato Reels Creator',text:'Creado con Tato Reels Creator',files:[saved.uri],dialogTitle:'Guardar o compartir tu Reel'});
+   toast('Reel listo. Elige dónde guardarlo o con qué aplicación compartirlo.');promptFeedbackAfterExport();return;
+  }catch(error){
+   if(error?.message==='Share canceled')return;
+   console.error('Exportación nativa de Tato Reels:',error);
+   toast(error?.message||'Android no pudo preparar el archivo para compartir.');return;
+  }
+ }
  const downloadBlob=()=>{
   const url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=filename;a.rel='noopener';a.style.display='none';
@@ -3210,6 +3230,8 @@ if(drafts.length&&!timelineItems.length){
  window.drawExportReelStickers=function(ctx){
   const list=getPlaced();list.forEach(item=>{const sticker=catalog.find(x=>x.id===item.id);if(!sticker)return;ctx.save();ctx.font='900 '+Math.round(item.size*2.1)+'px "Apple Color Emoji","Segoe UI Emoji",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=10;ctx.fillText(sticker.emoji,item.x/100*720,item.y/100*1280);ctx.restore();});
  };
+ // Recuperar en el visualizador las decoraciones guardadas en el dispositivo.
+ renderPlaced();
  function open(){const modal=document.getElementById('rewardsWindow');modal.classList.add('open');modal.setAttribute('aria-hidden','false');refreshWallet();renderWheel();renderShop();renderOwned();}
  function openWheelFromCaption(){open();const wheel=document.getElementById('spinWheel');if(wheel){const card=wheel.closest('.rewards-card');if(card)card.scrollIntoView({behavior:'smooth',block:'center'});}}
  document.getElementById('openWheelFromCaption').addEventListener('click',openWheelFromCaption);
