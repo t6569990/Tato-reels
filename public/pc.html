@@ -1654,6 +1654,15 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
 .editor-tool-pane[data-pane="explore"].active .explore-export-network:focus-visible{outline:2px solid var(--site-primary)!important;outline-offset:4px!important}
 </style>
 
+<style id="tato-sidebar-clear-button-white-text">
+#clearReelVisualChangesSidebar,
+#clearReelVisualChangesSidebar:hover,
+#clearReelVisualChangesSidebar:focus{
+ color:#fff!important;-webkit-text-fill-color:#fff!important;
+ font-weight:900!important;text-shadow:0 1px 2px #6b4b00!important;
+}
+</style>
+
 </head>
 <body class="device-desktop">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1942,7 +1951,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
    sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
    sidebarClear.dataset.boundToVisualizerClear='true';
   }
-  if(sidebarClear) sidebarClear.style.cssText=clearButtonStyle+'margin-top:10px!important;';
+  if(sidebarClear) sidebarClear.style.cssText=clearButtonStyle+'margin-top:10px!important;background:#f4c542!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:1px solid #d39a16!important;font-weight:900!important;text-shadow:0 1px 2px #6b4b00!important;';
  }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
