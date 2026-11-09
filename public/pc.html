@@ -1976,7 +1976,16 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   else if(/Formato de descarga|^📐\s*Formato/i.test(h))key='format';
   else if(/Explorar redes y biblioteca/i.test(h))key='explore';
   else if(/Salida a redes/i.test(h))key='publish';
-  if(/Compartir Tato Reels/i.test(h)){card.remove();return;}
+  if(/Compartir Tato Reels/i.test(h)){
+   card.classList.add('publish-share-card');
+   const whatsapp=card.querySelector('#shareWhatsApp'),facebook=card.querySelector('#shareFacebook'),copyLink=card.querySelector('#copyAppLink');
+   if(whatsapp&&facebook){
+    const actions=document.createElement('div');actions.className='publish-share-actions';
+    whatsapp.classList.add('publish-share-yellow');facebook.classList.add('publish-share-yellow');
+    actions.append(whatsapp,facebook);card.insertBefore(actions,copyLink||null);
+   }
+   panes.publish.append(card);return;
+  }
   panes[key].append(card);
  });
  // Botón principal: debajo de "Nombre de creador" en "Detalles del Reel".
@@ -2931,7 +2940,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  const items=timelineItems.length?timelineItems.map(item=>({...item})):video.src?[{name:'Video principal',url:objectUrl,start:0,end:video.duration,duration:video.duration}]:[];
  if(!items.length){toast('Carga un video y agrega los clips que quieras incluir.');return;}
  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast('Tu navegador no permite exportar el Reel completo. Prueba Chrome actualizado.');return;}
- const btn=$('exportSequenceBtn');window.tatoCompiledReelBlob=null;$('exportReelBtn').disabled=true;btn.disabled=true;btn.textContent='Compilando proyecto…';const progress=$('exportProgress'),progressFill=$('exportProgressFill'),progressPercent=$('exportProgressPercent'),progressLabel=$('exportProgressLabel');const totalDuration=items.reduce((sum,item)=>sum+Math.max(0,(Number(item.end)||item.duration)-(Number(item.start)||0)),0);let completedDuration=0;const updateProgress=value=>{const percent=Math.max(0,Math.min(100,Math.round(value)));progress.classList.add('visible');progressFill.style.width=percent+'%';progressPercent.textContent=percent+'%';};progressLabel.textContent='Compilando proyecto…';updateProgress(0);let audioContext=null,music=null,musicSource=null,recorder=null,raf=0,stream=null,recorderStream=null,activeClip=null;
+ const btn=$('exportSequenceBtn');window.tatoCompiledReelBlob=null;$('exportReelBtn').disabled=true;btn.disabled=true;btn.textContent='Compilando proyecto…';const progress=$('exportProgress'),progressFill=$('exportProgressFill'),progressPercent=$('exportProgressPercent'),progressLabel=$('exportProgressLabel');const totalDuration=items.reduce((sum,item)=>sum+Math.max(0,(Number(item.end)||item.duration)-(Number(item.start)||0)),0);let completedDuration=0;const updateProgress=value=>{const percent=Math.max(0,Math.min(100,Math.round(value)));progress.classList.add('visible');progressFill.style.width=percent+'%';progressPercent.textContent=percent+'%';setFloatingUploadStatus('Compilando proyecto…',percent,'working');};progressLabel.textContent='Compilando proyecto…';updateProgress(0);let audioContext=null,music=null,musicSource=null,recorder=null,raf=0,stream=null,recorderStream=null,activeClip=null;
  try{
   const canvas=document.createElement('canvas');canvas.width=720;canvas.height=1280;const ctx=canvas.getContext('2d');stream=canvas.captureStream(30);audioContext=new AudioContext();const audioOut=audioContext.createMediaStreamDestination();
   if(musicIntegrated&&musicUrl){const trim=getAudioTrim();if(!trim)throw new Error('Revisa el recorte de la música.');music=new Audio(musicUrl);music.preload='auto';music.loop=false;await new Promise((resolve,reject)=>{if(music.readyState>=1){resolve();return;}music.addEventListener('loadedmetadata',resolve,{once:true});music.addEventListener('error',()=>reject(new Error('No se pudo cargar la pista de música.')),{once:true});music.load();});const start=Math.min(trim.start,Math.max(0,music.duration-.05)),end=Math.min(trim.end,music.duration);if(end<=start)throw new Error('El recorte de música no es válido.');music.currentTime=start;music.volume=Number($('musicVolume').value);musicSource=audioContext.createMediaElementSource(music);musicSource.connect(audioOut);music.addEventListener('timeupdate',()=>{if(music.currentTime>=end)music.pause();});}
@@ -2950,8 +2959,8 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
     activeClip.pause();activeClip.removeAttribute('src');activeClip.load();activeClip=null;
    }
    cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);
-  }  await playExportOutro(ctx);recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});window.tatoCompiledReelBlob=blob;$('exportReelBtn').disabled=false;awardTatoCoin('proyecto compilado');updateProgress(100);progressLabel.textContent='¡Proyecto compilado! Ya puedes exportar tu Reel.';toast('Proyecto compilado. Pulsa Exportar Reel para guardarlo en tu dispositivo.');$('videoStatus').textContent='Proyecto compilado';
- }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();toast(error.message||'No se pudo exportar el Reel completo.');}
+  }  await playExportOutro(ctx);recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});window.tatoCompiledReelBlob=blob;$('exportReelBtn').disabled=false;awardTatoCoin('proyecto compilado');updateProgress(100);progressLabel.textContent='¡Proyecto compilado! Ya puedes exportar tu Reel.';finishFloatingUploadStatus('Proyecto compilado · listo para exportar');toast('Proyecto compilado. Pulsa Exportar Reel para guardarlo en tu dispositivo.');$('videoStatus').textContent='Proyecto compilado';
+ }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();setFloatingUploadStatus(error.message||'No se pudo compilar el proyecto',0,'error');toast(error.message||'No se pudo exportar el Reel completo.');}
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(activeClip){activeClip.pause();activeClip.removeAttribute('src');activeClip.load();}if(recorderStream)recorderStream.getTracks().forEach(track=>track.stop());if(stream)stream.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='⚙️ Compilar proyecto';}
 });
 async function saveCompiledReel(blob,filename){
@@ -4557,4 +4566,18 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 }
 /* No mostrar botones «Ir arriba» dentro de las herramientas. */
 .editor-go-top{display:none!important}
+</style>
+
+<style id="tato-pc-publish-share-yellow-buttons-20261109">
+/* Compartir Tato Reels también queda disponible en la última pestaña. */
+.editor-tool-pane[data-pane="publish"].active .publish-share-card{grid-column:1/-1!important;width:100%!important;}
+.editor-tool-pane[data-pane="publish"].active .publish-share-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;width:100%!important;margin:10px 0 8px!important;}
+.editor-tool-pane[data-pane="publish"].active .publish-share-yellow{display:block!important;width:100%!important;min-width:0!important;min-height:48px!important;margin:0!important;padding:10px 8px!important;border:1px solid #d39a16!important;border-radius:11px!important;background:#f4c542!important;color:#241900!important;-webkit-text-fill-color:#241900!important;font-weight:850!important;box-shadow:0 3px 10px #0003!important;white-space:normal!important;}
+.editor-tool-pane[data-pane="publish"].active .publish-share-copy{width:100%!important;margin-top:7px!important;}
+@media(max-width:440px){.editor-tool-pane[data-pane="publish"].active .publish-share-actions{gap:7px!important}.editor-tool-pane[data-pane="publish"].active .publish-share-yellow{font-size:11px!important;padding:9px 5px!important;}}
+</style>
+<style id="tato-pc-floating-compile-progress-20261109">
+/* La compilación reutiliza el indicador flotante global, visible desde cualquier pestaña. */
+#tato-floating-upload-status[data-state="working"] .tato-upload-status-track span{background:linear-gradient(90deg,#f4c542,#ffe58a)!important;}
+#tato-floating-upload-status[data-state="working"] .tato-upload-status-percent{color:#ffe58a!important;}
 </style>
