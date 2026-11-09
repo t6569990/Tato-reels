@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - "public/mobile.html"
+      - "public/pc.html"
       - "public/assets/**"
       - "package.json"
       - "capacitor.config.json"
