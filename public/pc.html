@@ -2435,7 +2435,7 @@ let textDecorationsApplied = false;
 function refreshDraftCount(){ $('draftCount').textContent=drafts.length; }
 function toast(message) { const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>el.classList.remove('show'),2600); }
 function openVisualizerAfterVideoAdded(){const previewButton=document.querySelector('.workspace-switch-btn');if(previewButton)previewButton.click();}
-function openLocalFilePicker(inputId){const input=$(inputId);if(!input){toast('No se encontró el selector de archivos. Recarga la página e inténtalo otra vez.');return;}input.value='';try{if(typeof input.showPicker==='function'){input.showPicker();return;}input.click();}catch(error){console.warn('showPicker no disponible; se intenta click nativo:',error);try{input.click();}catch(fallbackError){console.error('No se pudo abrir el selector local:',fallbackError);toast('El navegador bloqueó el selector de archivos. Haz clic de nuevo en Elegir video.');}}}
+function openLocalFilePicker(inputId){const input=$(inputId);if(!input){toast('No se encontró el selector de archivos. Recarga e inténtalo otra vez.');return;}input.value='';try{input.click();}catch(error){console.error('No se pudo abrir el selector local:',error);toast('El navegador bloqueó el selector de archivos. Revisa los permisos e inténtalo otra vez.');}}
 $('uploadBtn').addEventListener('click',()=>openLocalFilePicker('fileInput'));
 $('addClipsBtn').addEventListener('click',()=>openLocalFilePicker('clipsInput'));
 // La carga de videos y fotos se gestiona en un único listener más abajo.
@@ -4346,6 +4346,38 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
   }
   .creator > .floating-stage > .preview-shell{
     pointer-events:auto!important;
+  }
+}
+</style>
+
+
+<style id="tato-pc-restore-editor-clicks-20261109">
+/* PC: el editor y sus controles deben quedar por encima del área de vista previa. */
+@media (min-width:721px){
+  .creator>.editor-panel{
+    position:relative!important;
+    z-index:1000!important;
+    pointer-events:auto!important;
+  }
+  .creator>.editor-panel *,
+  .creator>.editor-panel button,
+  .creator>.editor-panel label,
+  .creator>.editor-panel input,
+  .creator>.editor-panel select,
+  .creator>.editor-panel textarea{
+    pointer-events:auto!important;
+  }
+  .creator>.editor-panel>.creation-modes-layout{
+    position:relative!important;
+    z-index:1001!important;
+  }
+  .creator>.editor-panel .creation-mode-card,
+  .creator>.editor-panel .creation-mode-card button{
+    position:relative!important;
+    z-index:1002!important;
+  }
+  .creator>.floating-stage{
+    z-index:1!important;
   }
 }
 </style>
