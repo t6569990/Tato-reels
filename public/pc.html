@@ -1961,8 +1961,6 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  const dragHandle=document.createElement('button');dragHandle.type='button';dragHandle.className='preview-drag-handle';dragHandle.textContent='⠿ MOVER VISUALIZADOR';dragHandle.setAttribute('aria-label','Arrastrar visualizador a otra posición');preview.insertBefore(dragHandle,preview.firstChild);
  const handle=document.createElement('button');handle.type='button';handle.className='preview-resize-handle';handle.textContent='↘';handle.setAttribute('aria-label','Cambiar tamaño de vista previa');preview.append(handle);
  const paneNames=['video','text','music','image','format','explore','publish'],panes={};
-  // Registro disponible antes de activar pestañas.
-  const goTopButtons=Object.create(null);
  const paneWrap=document.createElement('div');paneWrap.className='editor-tool-panes';
  paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;p.setAttribute('aria-label',name);const meta={"video":["🎬","VIDEO","Carga, organiza y recorta tus clips."],"image":["🖼️","IMAGEN","Ajustes visuales y recursos gráficos."],"text":["✍️","TEXTO","Contenido, títulos y texto sobre el Reel."],"music":["🎵","MÚSICA","Biblioteca, selección y mezcla de audio."],"format":["📐","FORMATO","Proporción y formato de exportación."],"explore":["📣","PUBLICAR","Inspiración y biblioteca de referencias."],"share":["🔗","COMPARTIR","Comparte Tato Reels."],"publish":["📣","PUBLICAR","Prepara tu salida a redes sociales."]}[name];const heading=document.createElement('header');heading.className='tool-pane-heading';const icon=document.createElement('span');icon.className='tool-pane-icon';icon.textContent=meta[0];const copy=document.createElement('div');const title=document.createElement('h2');title.textContent=meta[1];const description=document.createElement('p');description.textContent=meta[2];copy.append(title,description);heading.append(icon,copy);p.append(heading);panes[name]=p;paneWrap.append(p);});
  const timeline=editor.querySelector(':scope > .timeline-panel');
@@ -2179,12 +2177,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   const clipExportControl=document.getElementById('exportBtn');if(clipExportControl){const clipExportCard=document.createElement('section');clipExportCard.className='panel format-export-clip-card';const clipExportTitle=document.createElement('h3');clipExportTitle.textContent='🎞️ Exportar clip individual';const clipExportNote=document.createElement('p');clipExportNote.className='file-note';clipExportNote.textContent='Exporta el video principal con el recorte seleccionado.';clipExportControl.hidden=false;clipExportControl.className='secondary';clipExportControl.textContent='⬇ Exportar clip WebM / MP4';clipExportCard.append(clipExportTitle,clipExportNote,clipExportControl);panes.format.append(clipExportCard);} const publishControl=document.getElementById('publishBtn');const publishInfo=panes.publish.querySelector('.publish-info-card');if(publishControl&&publishInfo){publishControl.hidden=false;publishControl.className='primary publish-prepare-button';publishControl.textContent='📣 Preparar publicación';publishInfo.append(publishControl);}
   toolbar.parentNode.insertBefore(shortcuts,toolbar);actionRow.remove();
  }
- // Accesos inferiores: delegan en los controles originales y conservan sus funciones.
- // Sustituir las acciones y la barra duplicada inferior por un único acceso discreto.
- const makeGoTop=()=>{const goTop=document.createElement('button');goTop.type='button';goTop.className='editor-go-top';goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';goTop.addEventListener('click',()=>toolbar.scrollIntoView({behavior:'smooth',block:'start'}));return goTop;};
- paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-top-'+name);goTopButtons[name]=goTop;});
-  // Los accesos de retorno van dentro de cada herramienta; la Línea de tiempo queda intacta.
-  paneNames.forEach(name=>{if(panes[name])panes[name].append(goTopButtons[name]);});
+ // Se elimina el botón flotante «Ir arriba» que reaparecía en medio de las herramientas.
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
@@ -2194,7 +2187,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  previewCard.append(previewSwitch);addCard.append(addSwitch);switchBar.append(previewCard,addCard);toolbar.before(switchBar);
  const tabs=[...document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]')];
  const creationModesLayout=editor.querySelector(':scope > .creation-modes-layout');
- function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;p.setAttribute('aria-hidden',String(!active));});Object.entries(goTopButtons).forEach(([k,b])=>{b.hidden=k!==name;});const videoFamily=name==='video';if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',!videoFamily);creationModesLayout.hidden=!videoFamily;creationModesLayout.style.setProperty('display',videoFamily?'grid':'none','important');creationModesLayout.setAttribute('aria-hidden',String(!videoFamily));}}
+ function activate(name){tabs.forEach(b=>{const active=b.dataset.pane===name;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});Object.entries(panes).forEach(([k,p])=>{const active=k===name;p.classList.toggle('active',active);p.hidden=!active;p.setAttribute('aria-hidden',String(!active));});const videoFamily=name==='video';if(creationModesLayout){creationModesLayout.classList.toggle('is-hidden-by-tool',!videoFamily);creationModesLayout.hidden=!videoFamily;creationModesLayout.style.setProperty('display',videoFamily?'grid':'none','important');creationModesLayout.setAttribute('aria-hidden',String(!videoFamily));}}
  function setWorkspace(mode){
   const adding=mode==='add';
   creator.classList.toggle('workspace-mode-add',adding);
@@ -2507,7 +2500,14 @@ function addMediaFiles(fileList,mode){
 }
 function renderClips(){const list=$('clipList');list.innerHTML='';const main=timelineItems.find(item=>item.isMain);if(main){const row=document.createElement('div');row.className='clip-item main-clip-item';const name=document.createElement('strong');name.textContent='1. '+main.file.name+' · video principal';row.append(name);list.append(row);}if(!extraClips.length&&!main){list.innerHTML='<div class="file-note">Aún no agregas clips adicionales.</div>';return;}extraClips.forEach((clip,index)=>{const row=document.createElement('div');row.className='clip-item';const name=document.createElement('strong');name.textContent=(index+(main?2:1))+'. '+clip.file.name;row.append(name);[['↑','up'],['↓','down'],['×','remove']].forEach(([label,action])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.action=action;button.dataset.index=index;button.setAttribute('aria-label',action+' '+clip.file.name);row.append(button);});list.append(row);});}
 $('clipList').addEventListener('click',e=>{const button=e.target.closest('button[data-action]');if(!button)return;const index=Number(button.dataset.index);const action=button.dataset.action;if(action==='remove'){URL.revokeObjectURL(extraClips[index].url);extraClips.splice(index,1);}else{const next=index+(action==='up'?-1:1);if(next<0||next>=extraClips.length)return;[extraClips[index],extraClips[next]]=[extraClips[next],extraClips[index]];}renderClips();});
-$('fileInput').addEventListener('change',event=>{addMediaFiles(event.target.files,'video');event.target.value='';});
+const pcVideoPicker=$('fileInput');
+if(pcVideoPicker)pcVideoPicker.addEventListener('change',event=>{
+ const picker=event.currentTarget,files=picker?.files;
+ if(!files||!files.length)return;
+ try{addMediaFiles(files,'video');}
+ catch(error){console.error('Error al cargar el video en Tato Reels:',error);toast('No se pudo cargar el video. Revisa la consola del navegador para ver el error.');}
+ finally{picker.value='';}
+});
 video.addEventListener('ended',()=>{if(sequenceActive)advanceSequence();});
 $('playBtn').addEventListener('click',()=>{if(sequenceActive&&editSequence[sequenceIndex]?.isImage){if(sequencePaused){sequencePaused=false;sequencePhotoStartedAt=Date.now();sequenceTimer=setTimeout(advanceSequence,sequencePhotoRemaining);$('playBtn').textContent='Ⅱ';}else{sequencePaused=true;stopSequenceTimer();sequencePhotoRemaining=Math.max(0,sequencePhotoRemaining-(Date.now()-sequencePhotoStartedAt));$('playBtn').textContent='▶';}return;}if(!video.src){toast('Primero selecciona un video.');return;}if(video.paused)video.play().catch(()=>{});else video.pause();});
 video.addEventListener('play',()=>$('playBtn').textContent='Ⅱ'); video.addEventListener('pause',()=>$('playBtn').textContent='▶');
@@ -4397,7 +4397,6 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
   .creator>.editor-panel .creation-mode-card,
   .creator>.editor-panel .creation-mode-card button{z-index:22!important}
 }
-/* Los controles de retorno viven en sus paneles y no alteran la Línea de tiempo. */
-.editor-tool-pane>.editor-go-top{display:flex;position:relative;z-index:2;justify-self:center;align-self:center;margin:14px auto 4px}
-.editor-tool-pane>.editor-go-top[hidden]{display:none}
+/* No mostrar botones «Ir arriba» dentro de las herramientas. */
+.editor-go-top{display:none!important}
 </style>
