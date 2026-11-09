@@ -1998,25 +1998,25 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   else if(/Salida a redes/i.test(h))key='publish';
   panes[key].append(card);
  });
- // Ubicar la limpieza del visualizador debajo de "Nombre de creador"
- // dentro de Detalles del Reel, sin alterar su manejador ni sus funciones.
+ // Mover el botón original al contenedor contiguo de Formato de descarga.
+ // Se conserva el mismo botón y sus manejadores originales.
  const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
- if(clearVisualizerButton){
-  const creatorNameField=document.getElementById('username')?.closest('.field');
-  clearVisualizerButton.style.cssText='display:block!important;visibility:visible!important;width:100%;min-height:46px;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
-  if(creatorNameField) creatorNameField.insertAdjacentElement('afterend',clearVisualizerButton);
- }
- // Duplicado funcional del borrado, debajo de la tarjeta lateral "Tu creatividad, en corto".
  const sidebar=document.querySelector('.sidebar');
  const sidebarCard=sidebar?.querySelector('.side-card');
+ if(clearVisualizerButton){
+  clearVisualizerButton.style.cssText='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:12px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
+  const adjacentFormatCard=panes.format?.querySelector(':scope > .panel');
+  if(adjacentFormatCard) adjacentFormatCard.append(clearVisualizerButton);
+ }
+ // Acceso adicional al borrado en la parte superior de la columna izquierda.
  if(clearVisualizerButton&&sidebarCard&&!sidebar.querySelector('#clearReelVisualChangesSidebar')){
   const sidebarClear=clearVisualizerButton.cloneNode(true);
   sidebarClear.id='clearReelVisualChangesSidebar';
   sidebarClear.type='button';
   sidebarClear.setAttribute('aria-label','Borrar cambios del visualizador');
-  sidebarClear.style.cssText='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:12px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
+  sidebarClear.style.cssText='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:0 0 12px!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
   sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
-  sidebarCard.insertAdjacentElement('afterend',sidebarClear);
+  sidebar.insertBefore(sidebarClear,sidebarCard);
  }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
@@ -2056,7 +2056,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   sidePrev.addEventListener('click',()=>moveTool(-1));
   sideNext.addEventListener('click',()=>moveTool(1));
   sideNav.append(sideHome,sidePrev,sideNext);
-  document.body.append(sideNav);
+  document.getElementById('app')?.append(sideNav);
   window.tatoReelsRefreshToolSideNav=refreshSideNav;
   refreshSideNav();
  }
