@@ -2547,13 +2547,15 @@ async function readDraftMedia(id){const db=await openDraftDB();const value=await
 async function deleteDraftMedia(id){if(!id)return;const db=await openDraftDB();await new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();}
 function draftSettings(){const value=id=>$(id)?$(id).value:null;return {caption:value('caption'),hashtags:value('hashtags'),username:value('username'),animatedText:value('animatedText'),titleAnimation:value('titleAnimation'),titleSize:value('titleSize'),titleColor:value('titleColor'),titleFont:value('titleFont'),ratio:$('videoFrame')?.style.aspectRatio||'9/16',filter, audioStart:value('audioStart'),audioEnd:value('audioEnd'),musicVolume:value('musicVolume'),musicIntegrated:!!musicIntegrated,photoScale,photoScaleApplied,textDecorationsApplied,titleLeft:$('animatedTitle')?.style.left||'',titleTop:$('animatedTitle')?.style.top||''};}
 async function saveDraft(){
- setFloatingUploadStatus('Guardando borrador y archivos en este dispositivo…',null,'working');
- const media=timelineItems.filter(item=>item.file instanceof Blob);
- if(!media.length){toast('Primero agrega un video o fotos. El borrador guardará también esos archivos.');return;}
- const id='draft-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
- const settings=draftSettings();
- const record={id,savedAt:new Date().toISOString(),settings,media:media.map(item=>({id:item.id,name:item.name||item.file.name,type:item.file.type||'',isMain:!!item.isMain,isImage:!!item.isImage,start:Number(item.start)||0,end:item.end==null?null:Number(item.end),duration:Number(item.duration)||0,blob:item.file})),music:musicFile instanceof Blob?{name:musicFile.name,type:musicFile.type,blob:musicFile}:null};
+ const button=$('saveBtn');
  try{
+  if(button){button.disabled=true;button.textContent='Guardando…';}
+  setFloatingUploadStatus('Guardando borrador y archivos en este dispositivo…',null,'working');
+  const media=timelineItems.filter(item=>item.file instanceof Blob);
+  if(!media.length){setFloatingUploadStatus('No hay archivos para guardar',0,'error');toast('Primero agrega un video o fotografías.');return;}
+  const id='draft-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
+  const settings=draftSettings();
+  const record={id,savedAt:new Date().toISOString(),settings,media:media.map(item=>({id:item.id,name:item.name||item.file.name,type:item.file.type||'',isMain:!!item.isMain,isImage:!!item.isImage,start:Number(item.start)||0,end:item.end==null?null:Number(item.end),duration:Number(item.duration)||0,blob:item.file})),music:musicFile instanceof Blob?{name:musicFile.name,type:musicFile.type,blob:musicFile}:null};
   await writeDraftMedia(record);
   const main=media.find(item=>item.isMain)||media.find(item=>item.file.type.startsWith('video/'));
   drafts.unshift({id,mediaId:id,caption:settings.caption,hashtags:settings.hashtags,username:settings.username,videoName:main?.name||media[0].name,savedAt:record.savedAt,mediaCount:media.length});
@@ -2561,7 +2563,13 @@ async function saveDraft(){
   toast('Borrador completo guardado: '+media.length+' archivo(s) multimedia.');
   finishFloatingUploadStatus('Borrador guardado correctamente');
   const shelf=$('draftShelf');if(shelf&&!shelf.hidden)showDrafts(false);
- }catch(error){setFloatingUploadStatus('No se pudo guardar el borrador',null,'error');toast(error.message||'No se pudo guardar el borrador. Revisa el espacio disponible.');}
+ }catch(error){
+  setFloatingUploadStatus('No se pudo guardar el borrador',0,'error');
+  console.error('Error al guardar borrador:',error);
+  toast(error.message||'No se pudo guardar el borrador. Revisa el espacio disponible del navegador.');
+ }finally{
+  if(button){button.disabled=false;button.textContent='💾 Guardar borrador';}
+ }
 }
 $('saveBtn').addEventListener('click',saveDraft);
 function loadDrafts(){ if(!drafts.length){toast('Todavía no tienes borradores guardados.');return;} const item=drafts[0]; $('caption').value=item.caption||''; $('hashtags').value=item.hashtags||''; $('username').value=item.username||'@tato.reels';  updateCaption(); $('overlayName').textContent=$('username').value; toast('Se cargó el borrador más reciente. Vuelve a seleccionar su video para editarlo.'); }
@@ -2856,7 +2864,7 @@ video.addEventListener('timeupdate',()=>{if(!sequenceActive||!editSequence.lengt
 $('combineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Carga y agrega clips en la línea de tiempo.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='Secuencia actualizada con videos, fotografías y recortes. Los archivos originales siguen separados.';$('combineBtn').textContent='Actualizar secuencia editable';startSequence();});
 $('applyCreationModeBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Primero agrega videos o fotos con el modo que elegiste.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='✓ Modo aplicado. '+timelineItems.length+' elemento(s) listos para editar.';$('timelineStatus').textContent='✓ Cambios del modo de creación aplicados.';$('combineBtn').textContent='Actualizar secuencia editable';});
 // Exporta la secuencia completa dibujando cada clip y el título sobre un canvas.
-function waitForMedia(target,event){return new Promise((resolve,reject)=>{const ok=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(new Error('No se pudo leer uno de los videos.'));};const cleanup=()=>{target.removeEventListener(event,ok);target.removeEventListener('error',fail);};target.addEventListener(event,ok,{once:true});target.addEventListener('error',fail,{once:true});});}
+function waitForMedia(target,event,timeoutMs=15000){return new Promise((resolve,reject)=>{let timer=0;const ready=()=>event==='loadedmetadata'?target.readyState>=1:event==='loadeddata'?target.readyState>=2:event==='canplay'?target.readyState>=3:event==='seeked'?!target.seeking:false;const cleanup=()=>{clearTimeout(timer);target.removeEventListener(event,ok);target.removeEventListener('error',fail);};const ok=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(new Error('No se pudo leer uno de los videos.'));};if(ready()){resolve();return;}target.addEventListener(event,ok,{once:true});target.addEventListener('error',fail,{once:true});timer=setTimeout(()=>{cleanup();reject(new Error('El archivo tardó demasiado en prepararse. Revisa que el video sea compatible e inténtalo de nuevo.'));},timeoutMs);});}
 function drawCover(ctx,source,width,height,zoom=1){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const scale=Math.max(width/sw,height/sh)*Math.max(.5,Number(zoom)||1),dw=sw*scale,dh=sh*scale;ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);}
 function drawExportBrandWatermark(ctx){ctx.save();ctx.globalAlpha=.78;ctx.font='800 22px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';const label='TATO REELS CREATOR',x=360,y=48,w=ctx.measureText(label).width+30,h=38;ctx.fillStyle='rgba(8,7,12,.34)';ctx.fillRect(x-w/2,y-h/2,w,h);ctx.strokeStyle='rgba(255,255,255,.24)';ctx.lineWidth=1;ctx.strokeRect(x-w/2,y-h/2,w,h);ctx.fillStyle='rgba(255,255,255,.88)';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=5;ctx.fillText(label,x,y);ctx.restore();}
 
