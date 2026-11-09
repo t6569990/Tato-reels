@@ -1444,6 +1444,16 @@ p:not(.timeline-head p),
 .editor-tool-pane[data-pane="text"] #applyTextDecorations{width:100%!important;min-height:44px!important;margin-top:10px!important}
 .editor-tool-pane[data-pane="text"] #textApplyStatus{margin-top:7px!important}
 </style>
+
+<style id="tato-mobile-general-copy-web-sync-20261109">
+/* Texto explicativo móvil: misma legibilidad y justificación que la web, sin alterar títulos ni Línea de tiempo. */
+@media(max-width:720px){
+ #app p:not(.timeline-head p),#app .file-note,#app .trim-help,#app .upload-zone span,#app .login-note,#app .export-dest-card p,#app .post-card p,#app .tip span{
+  font-size:15px!important;line-height:1.55!important;text-align:justify!important;text-justify:inter-word!important;
+ }
+ #app .sub,#app .compact-note{font-size:14.5px!important;line-height:1.45!important;text-align:center!important}
+}
+</style>
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
