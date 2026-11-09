@@ -1758,6 +1758,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
           </div>
           <div class="field"><label class="field-label" for="hashtags">Hashtags</label><input type="text" id="hashtags" placeholder="#tendencia #creatividad"></div>
           <div class="field" style="margin-bottom:0"><label class="field-label" for="username">Nombre de creador</label><input type="text" id="username" value="@tato.reels"></div>
+          <button class="secondary" id="clearReelVisualChanges" type="button" style="width:100%;min-height:44px;margin-top:9px">🧹 Borrar cambios del visualizador</button>
         </div>
         <div class="panel">
           <h3>🎨 Estilo de vista</h3>
@@ -1808,7 +1809,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
           <div class="field title-color-field"><label class="field-label" for="titleColor">Color del texto</label><div class="title-color-picker"><input id="titleColor" class="title-hue-slider" type="range" min="0" max="360" value="0" step="1" aria-label="Desliza para elegir el color del texto"><span id="titleColorPreview" class="title-color-preview" aria-live="polite">Rojo</span></div><div class="file-note">Desliza sobre la paleta para elegir cualquier tono.</div></div><div class="field"><label class="field-label" for="titleFont">Tipografía</label><select id="titleFont" style="width:100%;padding:9px;border-radius:9px;background:light-dark(#FBFAFD,#100F17);color:inherit;border:1px solid light-dark(#E3DDEB,#373244)"><option value="Arial,sans-serif">Moderna</option><option value="Georgia,serif">Clásica</option><option value="Impact,sans-serif">Impacto</option><option value="Trebuchet MS,sans-serif">Redondeada</option><option value="'Courier New',monospace">Técnica</option></select></div><div class="file-note">Arrastra el texto directamente sobre el video para colocarlo donde quieras.</div>
           <div class="range-row"><label>Tamaño<input id="titleSize" type="range" min="16" max="44" value="28"></label><label>Duración (s)<input id="titleDuration" type="number" min="1" max="30" value="5" step="1"></label></div>
           <button class="secondary" id="clearAnimatedText" style="width:100%;margin-top:9px">Quitar texto</button>
-          <button class="secondary" id="clearReelVisualChanges" type="button" style="width:100%;min-height:44px;margin-top:9px">🧹 Borrar cambios del visualizador</button>
+          
           <button class="primary" id="applyTextDecorations" type="button" style="width:100%;min-height:42px;margin-top:10px">✓ Aplicar decoraciones al Reel</button><div class="file-note" id="textApplyStatus" role="status">Ajusta el texto y su posición; después pulsa Aplicar decoraciones.</div>
         </div>
         <div class="panel">
