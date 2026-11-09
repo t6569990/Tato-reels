@@ -3858,11 +3858,6 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 </style>
 
 
-<style id="tato-pc-trim-under-preview-20261108">
-/* El recortador permanece debajo de la vista previa, dentro del área visualizadora. */
-.floating-stage .workspace-trim-card{position:absolute!important;top:470px!important;left:50%!important;right:auto!important;bottom:auto!important;transform:translateX(-50%)!important;width:min(calc(100% - 32px),390px)!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;z-index:4!important}
-.floating-stage .workspace-trim-card .trim-panel{position:relative!important;inset:auto!important;transform:none!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important}
-
 <style id="tato-pc-social-duration-table-and-trim-layout-20261108">
 /* Tabla compacta de duraciones en el lateral derecho, solo PC. */
 .social-duration-card{padding:14px!important}
@@ -3878,50 +3873,7 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 .social-logo.tiktok{color:#fff;background:#111;font-size:19px;text-shadow:1px 1px #25F4EE,-1px -1px #FE2C55}
 .social-logo.youtube{color:#fff;background:#F00;font-size:13px}
 @media(max-width:1050px){.social-duration-card{display:none!important}}
-/* Corrección definitiva: el recortador ya no queda cortado por el área de vista previa. */
-@media(min-width:721px){
-  .creator>.floating-stage{
-    min-height:1000px!important;
-    height:auto!important;
-    overflow:visible!important;
-    contain:none!important;
-  }
-  .creator>.floating-stage>.preview-shell{
-    top:42px!important;
-    left:50%!important;
-    transform:translateX(-50%)!important;
-    width:min(100% - 28px,340px)!important;
-    max-width:340px!important;
-  }
-  .creator>.floating-stage>.preview-shell>.video-frame{
-    max-height:610px!important;
-    height:auto!important;
-    aspect-ratio:9/16!important;
-  }
-  .creator>.floating-stage>.workspace-trim-card{
-    position:absolute!important;
-    top:665px!important;
-    left:50%!important;
-    right:auto!important;
-    bottom:auto!important;
-    transform:translateX(-50%)!important;
-    width:min(calc(100% - 32px),390px)!important;
-    max-height:none!important;
-    overflow:visible!important;
-    margin:0!important;
-    z-index:4!important;
-  }
-  .creator>.floating-stage>.workspace-trim-card>.trim-panel{
-    position:relative!important;
-    inset:auto!important;
-    width:100%!important;
-    max-width:none!important;
-    max-height:none!important;
-    overflow:visible!important;
-    margin:0!important;
-  }
-}
-</style>
+/* Se elimina el posicionamiento absoluto antiguo del recortador. */</style>
 
 <style id="tato-pc-topbar-toolbar-layer-fix-20261109">
 /* PC: la cabecera fija debe permanecer por encima de la barra del editor al desplazarse. */
