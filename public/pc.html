@@ -2085,6 +2085,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   const introCard=makeCard('explore-intro-card');
   const introNote=notes.find(node=>node.textContent.trim().startsWith('Visita redes, descubre ideas y guarda referencias.'));
   if(introNote){const introImage=document.createElement('img');introImage.className='explore-upload-instruction-image';introImage.src='https://scontent.fpbc1-2.fna.fbcdn.net/v/t39.30808-6/858596277_122096981877546740_5533725851924894964_n.jpg?stp=dst-jpg_tt6&cstp=mx1254x1254&ctp=s1254x1254&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=f727a1&_nc_ohc=7M0blZ9FXgMQ7kNvwG2eHUk&_nc_oc=Adr6nZEbkJSJ6wp3akD4KK20eaPPHEQCHwK4AVgWph1RPJbVJOwuVcAhI5-88SU4X_GG0WBbc_Cqxh9eRe-BkfC2&_nc_zt=23&_nc_ht=scontent.fpbc1-2.fna&_nc_gid=yfSApyPQupXnoSlnym35EA&_nc_ss=7b2a8&oh=00_AQS6vZmLBQ_n54hVIwIeMC5U5OVKpUog42AHrHgd1_1SqQ&oe=6AF7432F';introImage.alt='Imagen que sustituye el texto «Visita redes, descubre ideas y guarda referencias»';introImage.loading='lazy';introImage.style.cssText='display:block;width:100%;max-width:100%;height:auto;object-fit:contain;margin:0 auto;border-radius:12px';introNote.replaceWith(introImage);introCard.append(introImage);}
+  const sessionNote=document.createElement('p');sessionNote.className='file-note explore-session-note';sessionNote.textContent='Antes de compartir, inicia sesión en Instagram, Facebook y TikTok en este mismo navegador. Al abrir cada red se aprovechará la sesión que ya tengas abierta. Tato Reels no solicita tus contraseñas ni publica sin tu confirmación.';sessionNote.style.cssText='margin:12px 0 0;';introCard.append(sessionNote);
   const networkCards=socialButtons.map(button=>{
    const card=makeCard('explore-network-card');
    const label=document.createElement('div');label.className='explore-network-label';
@@ -2131,7 +2132,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   const status=document.getElementById('socialStatus');
   const makeCard=cls=>{const card=document.createElement('section');card.className='panel publish-tool-card '+cls;return card;};
   const infoCard=makeCard('publish-info-card'),statusCard=makeCard('publish-status-card');
-  if(intro)infoCard.append(intro);
+  if(intro&&!intro.textContent.trim().startsWith('Antes de compartir, inicia sesión en Instagram, Facebook y TikTok en este mismo navegador.'))infoCard.append(intro);
   const networkCards=[];
   ['openInstagram','openFacebook','openTikTok'].forEach(id=>{const button=document.getElementById(id);if(button){const networkCard=makeCard('publish-network-card');networkCard.append(button);networkCards.push(networkCard);}});
   if(status)statusCard.append(status);
