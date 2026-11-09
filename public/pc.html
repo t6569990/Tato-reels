@@ -4377,6 +4377,11 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     grid-row:2!important;align-self:start!important;
   }
 }
+@media(min-width:721px) and (max-width:900px){
+  html body #app .editor-tool-pane[data-pane="music"].active>.music-source-card{grid-row:2!important}
+  html body #app .editor-tool-pane[data-pane="music"].active>.music-edit-card{grid-row:3!important}
+  html body #app .editor-tool-pane[data-pane="music"].active>.voice-studio-card{grid-row:4!important}
+}
 @media(max-width:720px){
   html body #app .editor-side-navigation{display:none!important}
 }
