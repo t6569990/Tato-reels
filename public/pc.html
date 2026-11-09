@@ -2921,7 +2921,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();toast(error.message||'No se pudo exportar el Reel completo.');}
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(activeClip){activeClip.pause();activeClip.removeAttribute('src');activeClip.load();}if(recorderStream)recorderStream.getTracks().forEach(track=>track.stop());if(stream)stream.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='⚙️ Compilar proyecto';}
 });
-async function saveCompiledReel(blob,filename){
+async async function saveCompiledReel(blob,filename){
  try{
   if(window.isSecureContext&&typeof window.showSaveFilePicker==='function'){
    const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Video WebM',accept:{'video/webm':['.webm']}}]});
