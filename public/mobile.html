@@ -1823,6 +1823,22 @@ form?.addEventListener('submit',event=>{
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
 $('exportFormat').addEventListener('change',refreshExportFormats);
+function showFeedbackSurvey(){
+ if(document.getElementById('tatoFeedbackModal'))return;
+ const backdrop=document.createElement('div');backdrop.id='tatoFeedbackModal';backdrop.style.cssText='position:fixed;inset:0;z-index:100500;background:rgba(8,5,18,.78);display:grid;place-items:center;padding:18px;overflow:auto';
+ const card=document.createElement('section');card.style.cssText='width:min(100%,520px);max-height:90vh;overflow:auto;background:#171322;color:#fff;border:1px solid #62517e;border-radius:18px;padding:22px;box-shadow:0 20px 70px #0009;font:14px/1.5 Arial,sans-serif';
+ card.innerHTML='<h2 style="margin:0 0 6px;color:#ffe36a">🎬 ¿Cómo fue tu experiencia?</h2><p style="margin:0 0 16px;color:#d7cfe4">Tu opinión nos ayuda a mejorar Tato Reels Creator. No necesitas compartir tu video.</p><form id="tatoFeedbackForm"><label style="display:block;font-weight:700;margin-bottom:8px">Califica tu experiencia</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">'+[1,2,3,4,5].map(n=>'<label style="display:flex;align-items:center;gap:4px;padding:8px 10px;background:#292238;border-radius:9px"><input type="radio" name="rating" value="'+n+'" required> '+n+' ★</label>').join('')+'</div><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackLiked">¿Qué fue lo que más te gustó?</label><textarea id="tatoFeedbackLiked" name="liked" maxlength="300" rows="2" style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackImprove">¿Qué podemos mejorar?</label><textarea id="tatoFeedbackImprove" name="improve" maxlength="500" rows="2" style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackComment">Comentarios adicionales</label><textarea id="tatoFeedbackComment" name="comment" maxlength="1000" rows="3" placeholder="Cuéntanos lo que quieras..." style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px"><p id="tatoFeedbackStatus" role="status" style="min-height:20px;color:#ffd96a"></p><div style="display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap"><button type="button" id="tatoFeedbackLater" style="padding:10px 16px;border-radius:9px;border:1px solid #716581;background:transparent;color:#fff">Ahora no</button><button type="submit" id="tatoFeedbackSend" style="padding:10px 16px;border-radius:9px;border:0;background:#ffdc58;color:#201800;font-weight:800">Enviar opinión</button></div></form>';
+ backdrop.append(card);document.body.append(backdrop);
+ const close=()=>backdrop.remove();card.querySelector('#tatoFeedbackLater').addEventListener('click',close);backdrop.addEventListener('click',event=>{if(event.target===backdrop)close();});
+ card.querySelector('#tatoFeedbackForm').addEventListener('submit',async event=>{
+  event.preventDefault();const values=new FormData(event.currentTarget),status=card.querySelector('#tatoFeedbackStatus'),send=card.querySelector('#tatoFeedbackSend'),rating=values.get('rating');
+  if(!rating){status.textContent='Selecciona una calificación.';return;}send.disabled=true;send.textContent='Enviando…';status.textContent='Enviando tu opinión…';
+  try{const response=await fetch('https://tato-reels.t6569990.workers.dev/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating:Number(rating),liked:values.get('liked'),improve:values.get('improve'),comment:values.get('comment'),website:values.get('website')})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'No se pudo enviar tu opinión.');status.textContent='✓ ¡Gracias! Recibimos tu opinión.';send.textContent='Enviada';setTimeout(close,1600);}
+  catch(error){status.textContent=error.message||'No se pudo enviar. Inténtalo más tarde.';send.disabled=false;send.textContent='Reintentar envío';}
+ });
+}
+function promptFeedbackAfterExport(){window.setTimeout(showFeedbackSurvey,650);}
+
 function showExportOptions(blob,filename){
  const old=document.getElementById('exportDestModal');if(old)old.remove();
  const backdrop=document.createElement('div');backdrop.id='exportDestModal';backdrop.className='export-dest-backdrop';
@@ -1850,10 +1866,10 @@ function showExportOptions(blob,filename){
    // en móviles sin esa API se utiliza la descarga estándar del navegador.
    downloadFile();
    toast('Descarga iniciada. Revisa la carpeta Descargas de tu dispositivo.');
-   backdrop.remove();
+   promptFeedbackAfterExport();backdrop.remove();
   }catch(error){
    if(error.name==='AbortError')return;
-   try{downloadFile();toast('El selector no está disponible. Descarga iniciada; revisa Descargas.');backdrop.remove();}
+   try{downloadFile();toast('El selector no está disponible. Descarga iniciada; revisa Descargas.');promptFeedbackAfterExport();backdrop.remove();}
    catch(fallbackError){toast('No se pudo iniciar la descarga. Revisa los permisos del navegador e inténtalo otra vez.');}
   }
  };
@@ -1863,14 +1879,14 @@ function showExportOptions(blob,filename){
   try{
    if(typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files:[file]})){
     await navigator.share({files:[file],title:'Mi Reel de Tato Reels',text:'Creado con Tato Reels'});
-    backdrop.remove();return;
+    promptFeedbackAfterExport();backdrop.remove();return;
    }
    downloadFile();
    toast('Este navegador no comparte videos directamente. Descargado: ahora adjúntalo desde la app que quieras.');
-   backdrop.remove();
+   promptFeedbackAfterExport();backdrop.remove();
   }catch(error){
    if(error.name==='AbortError')return;
-   try{downloadFile();toast('No se pudo abrir el menú compartir. El video se descargó para adjuntarlo manualmente.');backdrop.remove();}
+   try{downloadFile();toast('No se pudo abrir el menú compartir. El video se descargó para adjuntarlo manualmente.');promptFeedbackAfterExport();backdrop.remove();}
    catch(fallbackError){toast('No se pudo compartir ni descargar. Revisa los permisos del navegador.');}
   }
  });
