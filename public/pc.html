@@ -4156,5 +4156,63 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   }
 }
 </style>
+
+<style id="tato-pc-trim-compact-preview-footer-20261108">
+/* Recortador compacto, alineado al ancho de la vista previa; sin alterar su lógica. */
+@media(min-width:721px){
+  html body .creator>.floating-stage>.workspace-trim-card{
+    align-self:center!important;
+    width:min(100%,420px)!important;
+    max-width:420px!important;
+    margin:0 auto!important;
+    padding:0!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card>.trim-panel{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:7px 10px!important;
+    border-radius:10px!important;
+    max-height:none!important;
+    overflow:visible!important;
+    box-sizing:border-box!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel h2,
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel h3,
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel h4{
+    font-size:12px!important;
+    line-height:1.2!important;
+    margin:0 0 3px!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel p,
+  html body .creator>.floating-stage>.workspace-trim-card .trim-help{
+    font-size:10.5px!important;
+    line-height:1.3!important;
+    margin:0 0 5px!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel label,
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel small{
+    font-size:10px!important;
+    line-height:1.2!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel input,
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel select{
+    min-height:26px!important;
+    padding:3px 6px!important;
+    font-size:10.5px!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card .trim-actions{
+    gap:5px!important;
+    margin-top:5px!important;
+  }
+  html body .creator>.floating-stage>.workspace-trim-card .trim-actions button,
+  html body .creator>.floating-stage>.workspace-trim-card .trim-panel button{
+    min-height:27px!important;
+    padding:4px 7px!important;
+    font-size:10.5px!important;
+    line-height:1.2!important;
+  }
+}
+</style>
 </body>
 </html>
