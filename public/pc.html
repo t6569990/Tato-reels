@@ -1860,11 +1860,19 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
           <h3>🌐 Explorar redes y biblioteca</h3>
           <div class="file-note">Visita redes, descubre ideas y guarda referencias. Si descargas un video por medios permitidos o tienes autorización para usarlo, impórtalo a tu biblioteca privada de Tato Reels.</div>
           <section class="explore-social-links-container" aria-label="Accesos a redes sociales">
-            <div class="explore-social-grid">
-              <button class="secondary" type="button" data-explore-url="https://www.instagram.com/">📸 Instagram</button>
-              <button class="secondary" type="button" data-explore-url="https://www.facebook.com/">🔵 Facebook</button>
-              <button class="secondary" type="button" data-explore-url="https://www.tiktok.com/">🎵 TikTok</button>
-              <button class="secondary" type="button" data-explore-url="https://www.youtube.com/">▶️ YouTube</button>
+            <div class="explore-social-grid explore-official-social-grid">
+              <button class="secondary" type="button" data-explore-url="https://www.instagram.com/" aria-label="Abrir Instagram">
+                <img src="https://cdn.simpleicons.org/instagram/E4405F" alt="" aria-hidden="true"><span>Instagram</span>
+              </button>
+              <button class="secondary" type="button" data-explore-url="https://www.facebook.com/" aria-label="Abrir Facebook">
+                <img src="https://cdn.simpleicons.org/facebook/0866FF" alt="" aria-hidden="true"><span>Facebook</span>
+              </button>
+              <button class="secondary" type="button" data-explore-url="https://www.tiktok.com/" aria-label="Abrir TikTok">
+                <img src="https://cdn.simpleicons.org/tiktok/FFFFFF" alt="" aria-hidden="true"><span>TikTok</span>
+              </button>
+              <button class="secondary" type="button" data-explore-url="https://www.youtube.com/" aria-label="Abrir YouTube">
+                <img src="https://cdn.simpleicons.org/youtube/FF0033" alt="" aria-hidden="true"><span>YouTube</span>
+              </button>
             </div>
           </section>
           <div class="file-note" style="margin-top:12px">Guardar una referencia conserva el enlace, no descarga el video. Para importar un archivo, usa un video propio, descargado con permiso o autorizado por su creador.</div>
@@ -4278,6 +4286,29 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
  html body #app .main .editor-toolbar.editor-toolbar-one-line>.editor-tool{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;gap:4px!important}
  html body #app .main .editor-toolbar.editor-toolbar-one-line>.editor-tool .tool-icon{display:block!important;font-size:27px!important;line-height:1.1!important;width:100%!important;text-align:center!important}
  html body #app .main .editor-toolbar.editor-toolbar-one-line>.editor-tool .tool-label{display:block!important;width:100%!important;text-align:center!important;font-size:11px!important;line-height:1.1!important}
+}
+</style>
+
+<style id="tato-pc-publish-official-social-logos-20261108">
+/* PUBLICAR: cuatro logotipos de marca en pares, con el nombre debajo. */
+.editor-tool-pane[data-pane="explore"].active .explore-social-links-container .explore-official-social-grid{
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:12px!important;width:100%!important;align-items:stretch!important;
+}
+.editor-tool-pane[data-pane="explore"].active .explore-social-links-container .explore-official-social-grid button{
+ display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ gap:8px!important;min-width:0!important;width:100%!important;min-height:112px!important;height:auto!important;
+ padding:12px 8px!important;text-align:center!important;font-size:13px!important;line-height:1.2!important;
+}
+.editor-tool-pane[data-pane="explore"].active .explore-social-links-container .explore-official-social-grid button img{
+ display:block!important;width:42px!important;height:42px!important;max-width:42px!important;object-fit:contain!important;
+}
+.editor-tool-pane[data-pane="explore"].active .explore-social-links-container .explore-official-social-grid button span{
+ display:block!important;font-weight:700!important;white-space:nowrap!important;
+}
+@media(max-width:620px){
+ .editor-tool-pane[data-pane="explore"].active .explore-social-links-container .explore-official-social-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .editor-tool-pane[data-pane="explore"].active .explore-social-links-container .explore-official-social-grid button{min-height:100px!important}
 }
 </style>
 </body>
