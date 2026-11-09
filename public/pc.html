@@ -1685,6 +1685,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
     <div class="nav-label" style="margin-top:28px">TU ESPACIO</div>
     <button class="nav-item" id="profileNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mi perfil</button>
     <div class="side-card"><strong>✨ Tu creatividad, en corto</strong><p>Prepara videos verticales, agrega tu texto y deja listo tu próximo Reel.</p><button class="secondary" id="tipsBtn">Ver consejos</button></div>
+    <button class="secondary" id="clearReelVisualChangesSidebar" type="button" aria-label="Borrar cambios del visualizador" style="display:block;width:100%;min-height:46px;margin:10px 0 0;position:relative;z-index:5;box-sizing:border-box;background:#f4c542;border:1px solid #d39a16;color:#241900;font-weight:800;box-shadow:0 2px 8px #0002">🧹 Borrar cambios del visualizador</button>
   </aside>
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
@@ -1928,20 +1929,12 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  }
  if(clearVisualizerButton&&sidebar){
   const creativityCard=sidebar.querySelector('.side-card');
-  let sidebarClear=sidebar.querySelector('#clearReelVisualChangesSidebar');
-  if(!sidebarClear){
-   sidebarClear=clearVisualizerButton.cloneNode(true);
-   sidebarClear.id='clearReelVisualChangesSidebar';
-  }
-  sidebarClear.type='button';
-  sidebarClear.setAttribute('aria-label','Borrar cambios del visualizador');
-  sidebarClear.style.cssText=clearButtonStyle+'margin-top:10px!important;';
-  if(!sidebarClear.dataset.boundToVisualizerClear){
+  const sidebarClear=sidebar.querySelector('#clearReelVisualChangesSidebar');
+  if(sidebarClear&&!sidebarClear.dataset.boundToVisualizerClear){
    sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
    sidebarClear.dataset.boundToVisualizerClear='true';
   }
-  if(creativityCard&&sidebarClear.parentElement!==sidebar) creativityCard.after(sidebarClear);
-  else if(creativityCard&&sidebarClear.previousElementSibling!==creativityCard) creativityCard.after(sidebarClear);
+  if(sidebarClear) sidebarClear.style.cssText=clearButtonStyle+'margin-top:10px!important;';
  }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
