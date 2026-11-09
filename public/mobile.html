@@ -1466,13 +1466,13 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
             <b>📸 SOLO FOTOS</b>
             <span>Selecciona varias fotos JPG, PNG o WebP y crea un Reel fotográfico.</span>
             <button class="secondary" id="addPhotosBtn" type="button">Elegir fotos</button>
-            <input id="photosInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            <input id="photosInput" type="file" accept="image/*" multiple hidden>
           </div>
           <div class="panel upload-zone creation-mode-card">
             <b>🎬＋📸 HÍBRIDO</b>
             <span>Mezcla videos y fotografías en una sola secuencia y ordénalos.</span>
             <button class="secondary" id="addClipsBtn" type="button">Elegir videos y fotos</button>
-            <input id="clipsInput" type="file" accept="video/*,image/jpeg,image/png,image/webp" multiple hidden>
+            <input id="clipsInput" type="file" accept="video/*,image/*" multiple hidden>
           </div>
         </div>
         <div class="panel sequence-items-panel">
@@ -1888,7 +1888,7 @@ function openVisualizerAfterVideoAdded(){const previewButton=document.querySelec
 // El label asociado a fileInput abre el selector nativo; no agregar otro click() para evitar doble activación.
 $('addClipsBtn').addEventListener('click',()=>$('clipsInput').click());
 // La carga de videos y fotos se gestiona en un único listener más abajo.
-function getMediaKind(file){const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();if(type.startsWith('image/')||/\.(jpe?g|png|webp)$/i.test(name))return 'image';if(type.startsWith('video/')||/\.(mp4|mov|webm|m4v|ogv)$/i.test(name))return 'video';return '';}
+function getMediaKind(file){const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();if(type.startsWith('image/')||/\.(jpe?g|png|webp|avif|gif|bmp|heic|heif)$/i.test(name))return 'image';if(type.startsWith('video/')||/\.(mp4|mov|webm|m4v|ogv)$/i.test(name))return 'video';return '';}
 function renderClips(){const list=$('clipList');list.innerHTML='';if(!extraClips.length){list.innerHTML='<div class="file-note">Aún no agregas clips adicionales.</div>';return;}extraClips.forEach((clip,index)=>{const row=document.createElement('div');row.className='clip-item';const name=document.createElement('strong');name.textContent=(index+2)+'. '+clip.file.name;row.append(name);[['↑','up'],['↓','down'],['×','remove']].forEach(([label,action])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.action=action;button.dataset.index=index;button.setAttribute('aria-label',action+' '+clip.file.name);row.append(button);});list.append(row);});}
 $('clipList').addEventListener('click',e=>{const button=e.target.closest('button[data-action]');if(!button)return;const index=Number(button.dataset.index);const action=button.dataset.action;if(action==='remove'){URL.revokeObjectURL(extraClips[index].url);extraClips.splice(index,1);}else{const next=index+(action==='up'?-1:1);if(next<0||next>=extraClips.length)return;[extraClips[index],extraClips[next]]=[extraClips[next],extraClips[index]];}renderClips();});
 $('fileInput').addEventListener('change',e=>{
@@ -2150,9 +2150,9 @@ $('clipsInput').addEventListener('change',event=>{try{addMobileMediaFiles(event.
 $('addPhotosBtn').addEventListener('click',()=>{const picker=$('photosInput');if(picker){picker.value='';picker.click();}});
 $('photosInput').addEventListener('change',event=>{try{addMobileMediaFiles(event.target.files,'photos');}catch(error){console.error('Error al cargar fotografías:',error);toast('No se pudieron agregar las fotografías. Revisa el formato e inténtalo otra vez.');}finally{event.target.value='';}});
 $('timelineTrack').addEventListener('click',e=>{const b=e.target.closest('button[data-action]');if(!b)return;const index=timelineItems.findIndex(item=>item.id===b.dataset.id);if(index<0)return;const item=timelineItems[index],action=b.dataset.action;if(action==='up'&&index>0){timelineItems.splice(index,1);timelineItems.splice(index-1,0,item);}else if(action==='down'&&index<timelineItems.length-1){timelineItems.splice(index,1);timelineItems.splice(index+1,0,item);}else if(action==='duplicate'){const copy={...item,id:'copy-'+Date.now(),name:item.name+' (copia)',start:item.start,end:item.end,isMain:false};timelineItems.splice(index+1,0,copy);}else if(action==='remove'){const removedUrl=item.url;timelineItems.splice(index,1);if(item.isMain){objectUrl=null;video.pause();video.removeAttribute('src');video.load();$('fileInput').value='';}else extraClips=extraClips.filter(clip=>clip.url!==removedUrl);if(removedUrl&&removedUrl!==objectUrl&&!timelineItems.some(clip=>clip.url===removedUrl)&&!extraClips.some(clip=>clip.url===removedUrl)&&!editSequence.some(clip=>clip.url===removedUrl))URL.revokeObjectURL(removedUrl);}selectedTimelineId=timelineItems[Math.min(index,timelineItems.length-1)]?.id||null;renderTimeline();syncExtraClipsFromTimeline();});
-$('timelineTrack').addEventListener('change',e=>{const input=e.target.closest('input[data-trim]');if(!input)return;const item=timelineItems.find(x=>x.id===input.dataset.id);if(!item)return;const value=Math.max(0,Number(input.value)||0);if(input.dataset.trim==='start')item.start=Math.min(value,(item.end??item.duration)-0.1);else item.end=Math.min(item.duration||value,Math.max(value,(item.start||0)+0.1));if(item.end!=null&&item.end<=(item.start||0)){toast('El final debe ser posterior al inicio.');return;}renderTimeline();});
+
  $('timelineTrack').addEventListener('change',event=>{const input=event.target.closest('input[data-trim]');if(!input)return;const item=timelineItems.find(entry=>entry.id===input.dataset.id);if(!item)return;selectedTimelineId=item.id;syncTrimControlsToSelection();});
-$('applyTimelineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Agrega al menos un video o una foto a la línea de tiempo.');return;}for(const item of timelineItems){const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);if(duration>0&&(end<=start||end>duration)){toast('Revisa el inicio y el final de '+(item.name||'un elemento')+'.');return;}}editSequence=timelineItems.map(item=>({...item}));syncExtraClipsFromTimeline();renderTimeline();$('timelineStatus').textContent='✓ Cambios aplicados a '+timelineItems.length+' elemento(s). La vista previa y la exportación usarán estos tiempos.';toast('Cambios de la línea de tiempo aplicados.');});
+$('applyTimelineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Agrega videos o fotos antes de aplicar la línea de tiempo.');return;}const invalid=timelineItems.find(item=>{const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);return duration<=0||end<=start||end>duration+.05;});if(invalid){toast('No se puede aplicar el recorte de '+invalid.name+'. Espera a que cargue su duración y revisa Inicio y Final.');$('timelineStatus').textContent='Revisa el recorte de '+invalid.name+'.';return;}editSequence=timelineItems.map(item=>({...item,start:Number(item.start)||0,end:item.end==null?(Number(item.duration)||(item.isImage?3:0)):Number(item.end)}));syncExtraClipsFromTimeline();renderTimeline();renderSequenceMarkers(-1);$('timelineStatus').textContent='✓ Recortes, duración y orden aplicados a '+editSequence.length+' elemento(s).';$('sequenceNote').textContent='✓ Secuencia actualizada con los recortes aplicados.';toast('Cambios aplicados. La vista previa y la exportación usarán estos tiempos.');});
 $('resetTimelineBtn').addEventListener('click',()=>{timelineItems.forEach(item=>{item.start=0;item.end=item.duration||null;});renderTimeline();toast('Recortes de la línea de tiempo restablecidos.');});
 function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}return sequencePhoto;}
 function stopSequenceTimer(){if(sequenceTimer){clearTimeout(sequenceTimer);sequenceTimer=null;}}
@@ -2627,6 +2627,49 @@ renderTimeline();
 .creator .reel-sticker-item{pointer-events:auto!important}
 </style>
 
+
+<script id="tato-current-reel-autosave-mobile">
+(()=>{
+ const CURRENT_ID='tato-current-reel-autosave';
+ let saveTimer=null,restoring=false,saveInProgress=false,saveAgain=false;
+ async function saveCurrentReel(){
+  if(restoring)return;
+  const media=timelineItems.filter(item=>item.file instanceof Blob);
+  if(!media.length)return;
+  if(saveInProgress){saveAgain=true;return;}
+  saveInProgress=true;
+  try{
+   const settings=typeof draftSettings==='function'?draftSettings():{};
+   const record={id:CURRENT_ID,savedAt:new Date().toISOString(),settings,media:media.map(item=>({id:item.id,name:item.name||item.file.name,type:item.file.type||'',isMain:!!item.isMain,isImage:!!item.isImage,start:Number(item.start)||0,end:item.end==null?null:Number(item.end),duration:Number(item.duration)||0,blob:item.file})),music:typeof musicFile!=='undefined'&&musicFile instanceof Blob?{name:musicFile.name,type:musicFile.type,blob:musicFile}:null};
+   await writeDraftMedia(record);
+   const status=document.getElementById('timelineStatus');
+   if(status)status.dataset.autosaved='true';
+  }catch(error){console.error('No se pudo conservar el Reel automáticamente:',error);}
+  finally{saveInProgress=false;if(saveAgain){saveAgain=false;scheduleSave(250);}}
+ }
+ function scheduleSave(delay=1100){if(restoring)return;clearTimeout(saveTimer);saveTimer=setTimeout(saveCurrentReel,delay);}
+ async function restoreCurrentReel(){
+  try{
+   const record=await readDraftMedia(CURRENT_ID);
+   if(!record||!Array.isArray(record.media)||!record.media.length)return;
+   if(timelineItems.length)return;
+   restoring=true;
+   await openDraft({mediaId:CURRENT_ID});
+  }catch(error){console.error('No se pudo recuperar el Reel anterior:',error);}
+  finally{restoring=false;}
+ }
+ ['fileInput','photosInput','clipsInput'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>scheduleSave(1800)));
+ const track=document.getElementById('timelineTrack');
+ track?.addEventListener('input',()=>scheduleSave(700));
+ track?.addEventListener('change',()=>scheduleSave(700));
+ track?.addEventListener('click',()=>scheduleSave(700));
+ document.getElementById('applyTimelineBtn')?.addEventListener('click',()=>scheduleSave(350));
+ document.getElementById('resetTimelineBtn')?.addEventListener('click',()=>scheduleSave(350));
+ document.getElementById('saveBtn')?.addEventListener('click',()=>scheduleSave(900));
+ window.addEventListener('pagehide',()=>{saveCurrentReel();});
+ setTimeout(restoreCurrentReel,450);
+})();
+</script>
 </body>
 </html>
 
