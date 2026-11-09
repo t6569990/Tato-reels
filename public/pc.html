@@ -2019,7 +2019,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   sidebarCard.insertAdjacentElement('afterend',sidebarClear);
  }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
- if(sidebar&&!sidebar.querySelector('.editor-side-navigation')){
+ if(sidebar&&!document.querySelector('.editor-side-navigation')){
   const sideNav=document.createElement('div');
   sideNav.className='editor-side-navigation';
   sideNav.setAttribute('role','group');
@@ -2056,7 +2056,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   sidePrev.addEventListener('click',()=>moveTool(-1));
   sideNext.addEventListener('click',()=>moveTool(1));
   sideNav.append(sideHome,sidePrev,sideNext);
-  sidebar.append(sideNav);
+  document.body.append(sideNav);
   window.tatoReelsRefreshToolSideNav=refreshSideNav;
   refreshSideNav();
  }
@@ -4339,14 +4339,14 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     display:flex!important;flex-direction:column!important;
     min-height:max(650px,calc(100vh - 112px))!important;align-self:stretch!important;
   }
-  html body #app .editor-side-navigation{
+  html body .editor-side-navigation{
     display:flex!important;flex-direction:column!important;align-items:flex-start!important;
     gap:10px!important;margin:0!important;padding:0!important;
     position:fixed!important;
     left:calc((100vw - min(100vw,1320px))/2 + clamp(16px,3vw,42px))!important;
     bottom:18px!important;top:auto!important;z-index:90!important;
   }
-  html body #app .editor-side-nav-button{
+  html body .editor-side-nav-button{
     display:flex!important;flex-direction:column!important;align-items:center!important;
     justify-content:center!important;gap:1px!important;
     width:86px!important;height:58px!important;min-width:86px!important;min-height:58px!important;
@@ -4354,11 +4354,11 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     background:linear-gradient(145deg,#ffe27a,#f4c542)!important;color:#241900!important;
     box-shadow:0 4px 10px #0003!important;cursor:pointer!important;
   }
-  html body #app .editor-side-nav-arrow{font-size:27px!important;font-weight:900!important;line-height:1!important}
-  html body #app .editor-side-nav-button{font-size:0!important;line-height:1!important}
-  html body #app .editor-side-nav-arrow{display:block!important;font-size:38px!important;font-weight:900!important;line-height:1!important}
-  html body #app .editor-side-nav-button:disabled{opacity:.38!important;cursor:default!important;filter:grayscale(.25)}
-  html body #app .editor-side-nav-button:not(:disabled):hover{transform:translateY(-2px)!important;box-shadow:0 6px 14px #0004!important}
+  html body .editor-side-nav-arrow{font-size:27px!important;font-weight:900!important;line-height:1!important}
+  html body .editor-side-nav-button{font-size:0!important;line-height:1!important}
+  html body .editor-side-nav-arrow{display:block!important;font-size:38px!important;font-weight:900!important;line-height:1!important}
+  html body .editor-side-nav-button:disabled{opacity:.38!important;cursor:default!important;filter:grayscale(.25)}
+  html body .editor-side-nav-button:not(:disabled):hover{transform:translateY(-2px)!important;box-shadow:0 6px 14px #0004!important}
 
   html body #app .editor-tool-pane[data-pane="image"]>.image-filter-group-card{
     grid-column:1/-1!important;width:100%!important;max-width:none!important;
@@ -4401,7 +4401,7 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   html body #app .editor-tool-pane[data-pane="music"].active>.voice-studio-card{grid-row:4!important}
 }
 @media(max-width:720px){
-  html body #app .editor-side-navigation{display:none!important}
+  html body .editor-side-navigation{display:none!important}
 }
 </style>
 <style id="tato-pc-image-filters-and-scale-shared-container-20261108">
