@@ -1625,24 +1625,26 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  .creator>.floating-stage>.preview-shell>.video-frame{max-height:460px!important}
 }
 
+</style>
+
 <style id="tato-pc-preview-height-aligned-tools-20261108">
-/* PC: compactar el contenedor padre de vista previa tomando como referencia el inicio de Herramientas añadidas. */
+/* PC: altura fija real del contenedor padre de Vista previa. */
 @media(min-width:721px){
-  .creator>.floating-stage.tato-preview-container-locked{
+  .creator>.floating-stage{
+    box-sizing:border-box!important;
     height:560px!important;
     min-height:560px!important;
     max-height:560px!important;
     overflow:hidden!important;
   }
-  .creator>.floating-stage.tato-preview-container-locked>.preview-shell{
+  .creator>.floating-stage>.preview-shell{
     width:min(100%,310px)!important;
     max-width:310px!important;
   }
-  .creator>.floating-stage.tato-preview-container-locked>.preview-shell>.video-frame{
+  .creator>.floating-stage>.preview-shell>.video-frame{
     max-height:450px!important;
   }
 }
-</style>
 </style>
 </head>
 <body class="device-desktop">
