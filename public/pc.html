@@ -2004,6 +2004,59 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   clearVisualizerButton.style.cssText='display:block!important;visibility:visible!important;width:100%;min-height:46px;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
   if(creatorNameField) creatorNameField.insertAdjacentElement('afterend',clearVisualizerButton);
  }
+ // Duplicado funcional del borrado, debajo de la tarjeta lateral "Tu creatividad, en corto".
+ const sidebar=document.querySelector('.sidebar');
+ const sidebarCard=sidebar?.querySelector('.side-card');
+ if(clearVisualizerButton&&sidebarCard&&!sidebar.querySelector('#clearReelVisualChangesSidebar')){
+  const sidebarClear=clearVisualizerButton.cloneNode(true);
+  sidebarClear.id='clearReelVisualChangesSidebar';
+  sidebarClear.type='button';
+  sidebarClear.setAttribute('aria-label','Borrar cambios del visualizador');
+  sidebarClear.style.cssText='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:12px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
+  sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
+  sidebarCard.insertAdjacentElement('afterend',sidebarClear);
+ }
+ // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
+ if(sidebar&&!sidebar.querySelector('.editor-side-navigation')){
+  const sideNav=document.createElement('div');
+  sideNav.className='editor-side-navigation';
+  sideNav.setAttribute('role','group');
+  sideNav.setAttribute('aria-label','Navegación entre herramientas');
+  const makeSideNavButton=(arrow,label,aria)=>{
+   const button=document.createElement('button');
+   button.type='button';
+   button.className='editor-side-nav-button';
+   button.setAttribute('aria-label',aria);
+   button.title=aria;
+   const glyph=document.createElement('span');glyph.className='editor-side-nav-arrow';glyph.textContent=arrow;
+   const caption=document.createElement('small');caption.textContent=label;
+   button.append(glyph,caption);
+   return button;
+  };
+  const sidePrev=makeSideNavButton('←','ANTERIOR','Ir a la herramienta anterior');
+  const sideNext=makeSideNavButton('→','SIGUIENTE','Ir a la herramienta siguiente');
+  const refreshSideNav=()=>{
+   const order=[...toolbar.querySelectorAll('.editor-tool[data-pane]')].map(button=>button.dataset.pane);
+   const current=toolbar.querySelector('.editor-tool.active')?.dataset.pane||'video';
+   const index=order.indexOf(current);
+   sidePrev.disabled=index<=0;
+   sideNext.disabled=index<0||index>=order.length-1;
+  };
+  const moveTool=delta=>{
+   const order=[...toolbar.querySelectorAll('.editor-tool[data-pane]')].map(button=>button.dataset.pane);
+   const current=toolbar.querySelector('.editor-tool.active')?.dataset.pane||'video';
+   const next=order[order.indexOf(current)+delta];
+   if(!next)return;
+   const target=[...toolbar.querySelectorAll('.editor-tool[data-pane]')].find(button=>button.dataset.pane===next);
+   target?.click();
+  };
+  sidePrev.addEventListener('click',()=>moveTool(-1));
+  sideNext.addEventListener('click',()=>moveTool(1));
+  sideNav.append(sidePrev,sideNext);
+  sidebar.append(sideNav);
+  window.tatoReelsRefreshToolSideNav=refreshSideNav;
+  refreshSideNav();
+ }
  // Música: eliminar el contenedor general y convertir Biblioteca y Edición en tarjetas hermanas independientes.
  const musicPanel=panes.music.querySelector(':scope > .music-panel');
  if(musicPanel){
@@ -2037,7 +2090,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   <div class="voice-recorder-actions"><button type="button" class="primary" id="startVoiceRecording">⏺ Grabar voz</button><button type="button" class="secondary" id="stopVoiceRecording" disabled>⏹ Detener</button></div>
   <audio id="voiceRecordingPreview" controls hidden></audio><div class="file-note" id="voiceRecordingStatus" role="status">Listo para grabar. El navegador solicitará permiso para usar el micrófono.</div>
   <button type="button" class="secondary" id="saveVoiceRecording" disabled>＋ Guardar voz en Biblioteca de música</button>`;
-  sourceCard.insertAdjacentElement('afterend',voiceCard);
+  editCard.insertAdjacentElement('afterend',voiceCard);
  }
  // IMAGEN: convertir el panel general en tarjetas hermanas, sin marco exterior.
  const imagePanel=[...panes.image.children].find(node=>node.classList?.contains('panel'));
@@ -4241,6 +4294,7 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   if(modes){modes.hidden=!videoFamily;modes.classList.toggle('is-hidden-by-tool',!videoFamily);modes.style.setProperty('display',videoFamily?'grid':'none','important');modes.setAttribute('aria-hidden',String(!videoFamily));}
   const trimCards=creator?.querySelectorAll('.workspace-trim-card')||[];
   trimCards.forEach(trim=>{trim.hidden=!videoFamily;trim.classList.toggle('is-hidden-by-tool',!videoFamily);trim.style.setProperty('display',videoFamily?'block':'none','important');trim.setAttribute('aria-hidden',String(!videoFamily));});
+  window.tatoReelsRefreshToolSideNav?.();
   return true;
  };
  document.addEventListener('click',event=>{const button=event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]');if(!button)return;if(activate(button.dataset.pane))event.preventDefault();},true);
@@ -4262,6 +4316,69 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 .voice-effect.active{border-color:#8b5cf6!important;background:light-dark(#eee7ff,#30234b)!important;box-shadow:0 0 0 1px #8b5cf6!important}
 .voice-recorder-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin:10px 0!important}
 .voice-studio-card audio{display:block;width:100%;margin:10px 0}.voice-studio-card #saveVoiceRecording{width:100%!important;margin-top:8px!important}
+}
+</style>
+<style id="tato-pc-final-navigation-filters-music-20261108">
+@media(min-width:721px){
+  html body #app .sidebar{
+    display:flex!important;flex-direction:column!important;
+    min-height:max(650px,calc(100vh - 112px))!important;align-self:stretch!important;
+  }
+  html body #app .editor-side-navigation{
+    display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+    gap:10px!important;margin-top:auto!important;padding:16px 0 4px!important;
+    position:sticky!important;bottom:18px!important;z-index:20!important;
+  }
+  html body #app .editor-side-nav-button{
+    display:flex!important;flex-direction:column!important;align-items:center!important;
+    justify-content:center!important;gap:1px!important;
+    width:58px!important;height:58px!important;min-width:58px!important;min-height:58px!important;
+    padding:5px!important;border:1px solid #d39a16!important;border-radius:50%!important;
+    background:linear-gradient(145deg,#ffe27a,#f4c542)!important;color:#241900!important;
+    box-shadow:0 4px 10px #0003!important;cursor:pointer!important;
+  }
+  html body #app .editor-side-nav-arrow{font-size:27px!important;font-weight:900!important;line-height:1!important}
+  html body #app .editor-side-nav-button small{font-size:7.5px!important;font-weight:900!important;letter-spacing:.35px!important;line-height:1.1!important}
+  html body #app .editor-side-nav-button:disabled{opacity:.38!important;cursor:default!important;filter:grayscale(.25)}
+  html body #app .editor-side-nav-button:not(:disabled):hover{transform:translateY(-2px)!important;box-shadow:0 6px 14px #0004!important}
+
+  html body #app .editor-tool-pane[data-pane="image"]>.image-filter-group-card{
+    grid-column:1/-1!important;width:100%!important;max-width:none!important;
+    margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+    background:transparent!important;box-shadow:none!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-filter-list{
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:14px 12px!important;width:100%!important;margin:0!important;padding:0!important;
+    border:0!important;background:transparent!important;box-shadow:none!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-filter-card{
+    display:block!important;min-width:0!important;margin:0!important;padding:0!important;
+    border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-filter-card .filter{
+    display:flex!important;flex-direction:column!important;align-items:center!important;
+    justify-content:center!important;gap:5px!important;width:100%!important;
+    min-height:112px!important;height:100%!important;margin:0!important;padding:10px 5px!important;
+    border:0!important;border-radius:10px!important;outline:0!important;
+    background:transparent!important;box-shadow:none!important;text-align:center!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-filter-card .filter.active{
+    border:0!important;outline:0!important;box-shadow:none!important;
+    background:light-dark(#f1edf8,#211c2c)!important;
+  }
+
+  html body #app .editor-tool-pane[data-pane="music"].active>.voice-studio-card{
+    grid-column:1!important;grid-row:auto!important;align-self:start!important;
+    width:100%!important;max-width:100%!important;
+  }
+  html body #app .editor-tool-pane[data-pane="music"].active>.music-source-card,
+  html body #app .editor-tool-pane[data-pane="music"].active>.music-edit-card{
+    grid-row:1!important;align-self:start!important;
+  }
+}
+@media(max-width:720px){
+  html body #app .editor-side-navigation{display:none!important}
 }
 </style>
 </body>
