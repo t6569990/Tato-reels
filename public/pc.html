@@ -2870,7 +2870,7 @@ $('timelineTrack').addEventListener('change',event=>{
  $('resetTimelineBtn').addEventListener('click',()=>{timelineItems.forEach(item=>{item.start=0;item.end=item.duration||null;});editSequence=timelineItems.map(item=>({...item}));window.tatoCompiledReelBlob=null;renderTimeline();finishFloatingUploadStatus('Recortes restablecidos',100,'done');toast('Recortes de la línea de tiempo restablecidos.');});
 function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}return sequencePhoto;}
 function stopSequenceTimer(){if(sequenceTimer){clearTimeout(sequenceTimer);sequenceTimer=null;}}
-function finishSequence(){stopSequenceTimer();sequenceActive=false;sequencePaused=false;video.pause();$('videoStatus').textContent='Secuencia completa';$('playBtn').textContent='▶';finishFloatingUploadStatus('Vista previa de secuencia terminada');}
+function finishSequence(){stopSequenceTimer();sequenceActive=false;sequencePaused=false;sequenceIndex=0;sequenceAdvancedFromIndex=-1;video.pause();const first=editSequence[0];if(first){selectedTimelineId=first.id;showMediaInVisualizer(first);if(!first.isImage){const resetToStart=()=>{if(video.src===first.url&&Number.isFinite(video.duration)){try{video.currentTime=Math.min(Math.max(0,Number(first.start)||0),Math.max(0,video.duration-.05));}catch(_){}}};if(video.readyState>=1)resetToStart();else video.addEventListener('loadedmetadata',resetToStart,{once:true});}}$('videoStatus').textContent='Vista previa terminada · lista desde el inicio';$('playBtn').textContent='▶';finishFloatingUploadStatus('Vista previa terminada · Reel listo desde el inicio');}
 function advanceSequence(){if(!sequenceActive||sequenceAdvancedFromIndex===sequenceIndex)return;sequenceAdvancedFromIndex=sequenceIndex;stopSequenceTimer();if(sequenceIndex>=editSequence.length-1){finishSequence();return;}sequenceIndex++;showSequenceItem();}
 async function showSequenceItem(){if(!sequenceActive||!editSequence.length)return;stopSequenceTimer();const index=sequenceIndex,item=editSequence[index];$('videoStatus').textContent='Vista previa · clip '+(index+1)+' de '+editSequence.length;setFloatingUploadStatus('Vista previa: clip '+(index+1)+' de '+editSequence.length,Math.round((index+1)/editSequence.length*100),'working');if(item.isImage){video.pause();video.style.display='none';const photo=ensureSequencePhoto();photo.src=item.url;photo.style.display='block';photo.style.transform='scale('+photoScale+')';sequencePhotoRemaining=Math.max(100,((Number(item.end)||Number(item.duration)||3)-(Number(item.start)||0))*1000);sequencePhotoStartedAt=Date.now();sequencePaused=false;$('playBtn').textContent='Ⅱ';sequenceTimer=setTimeout(advanceSequence,sequencePhotoRemaining);return;}if(sequencePhoto)sequencePhoto.style.display='none';$('sampleArt').style.display='none';video.style.display='block';video.classList.add('show');try{if(video.src!==item.url){video.src=item.url;video.load();}await waitForMedia(video,'loadedmetadata');if(!sequenceActive||sequenceIndex!==index)return;const target=Math.min(Number(item.start)||0,Math.max(0,video.duration-.05));if(Math.abs(video.currentTime-target)>.05){video.currentTime=target;await waitForMedia(video,'seeked');}await waitForMedia(video,'canplay');if(!sequenceActive||sequenceIndex!==index)return;try{await video.play();$('playBtn').textContent='Ⅱ';}catch(_){$('videoStatus').textContent='Secuencia lista · pulsa reproducir para continuar · clip '+(index+1);$('playBtn').textContent='▶';}}catch(error){if(!sequenceActive||sequenceIndex!==index)return;$('videoStatus').textContent='No se pudo mostrar el clip '+(index+1)+': '+(error.message||'error de reproducción');$('playBtn').textContent='▶';toast('No se pudo preparar '+item.name+' en el visualizador. Revisa que el video sea compatible.');}}
 function startSequence(){const source=editSequence.length===timelineItems.length&&editSequence.length&&editSequence.every((item,index)=>item.id===timelineItems[index].id)?editSequence:timelineItems;if(!source.length){toast('Carga al menos un clip.');return;}const invalid=source.find(item=>!item.isImage&&(!(Number(item.end)>Number(item.start||0))));if(invalid){toast('Revisa el inicio y final de '+invalid.name+' antes de reproducir.');return;}stopSequenceTimer();editSequence=source.map(item=>({...item}));sequenceIndex=0;sequenceAdvancedFromIndex=-1;sequenceActive=true;sequencePaused=false;video.pause();setFloatingUploadStatus('Preparando vista previa de la secuencia…',0,'working');showSequenceItem();toast('Vista previa de videos y fotografías iniciada.');}
@@ -2882,18 +2882,19 @@ $('videoMasterSaveBtn').addEventListener('click',async()=>{
  if(!timelineItems.length){toast('Primero agrega uno o más videos.');status.textContent='No hay elementos para procesar.';return;}
  const original=button.textContent;button.disabled=true;button.textContent='PROCESANDO…';status.textContent='1/4 · Preparando archivos y leyendo sus duraciones…';
  try{
+  setFloatingUploadStatus('1/4 · Preparando archivos y leyendo duraciones…',15,'working');
   await ensureTimelineMediaReady();
   const invalid=timelineItems.find(item=>{const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);return duration<=0||end<=start||end>duration+.05;});
   if(invalid)throw new Error('Revisa el inicio y final de '+invalid.name+'.');
-  status.textContent='2/4 · Creando la secuencia…';editSequence=timelineItems.map(item=>({...item}));
-  status.textContent='3/4 · Aplicando tiempos, recortes y orden…';window.tatoCompiledReelBlob=null;syncExtraClipsFromTimeline();
+  status.textContent='2/4 · Creando la secuencia…';setFloatingUploadStatus('2/4 · Creando la secuencia…',40,'working');editSequence=timelineItems.map(item=>({...item}));
+  status.textContent='3/4 · Aplicando tiempos, recortes y orden…';setFloatingUploadStatus('3/4 · Aplicando tiempos, recortes y orden…',65,'working');window.tatoCompiledReelBlob=null;syncExtraClipsFromTimeline();
   const main=timelineItems.find(item=>item.isMain&&!item.isImage);if(main&&video.src===main.url){const start=Math.max(0,Number(main.start)||0);try{video.currentTime=start;}catch(_){}}
   $('sequenceNote').textContent='✓ Secuencia actualizada con '+timelineItems.length+' elemento(s), tiempos, recortes y orden.';
   $('timelineStatus').textContent='✓ Tiempos, recortes, duración de fotografías e inicio aplicados.';
-  startSequence();status.textContent='4/4 · Guardando borrador y archivos en este dispositivo…';
+  startSequence();status.textContent='4/4 · Guardando borrador y archivos en este dispositivo…';setFloatingUploadStatus('4/4 · Guardando borrador y archivos en este dispositivo…',80,'working');
   const saved=await saveDraft();if(!saved)throw new Error('No se pudo guardar el borrador. Revisa el espacio disponible e inténtalo de nuevo.');
-  status.textContent='✓ Secuencia creada, cambios aplicados y borrador guardado correctamente.';button.textContent='✓ CAMBIOS GUARDADOS';
- }catch(error){status.textContent=error.message||'No se pudieron completar todos los pasos.';toast(error.message||'No se pudieron guardar los cambios.');button.textContent=original;}
+  status.textContent='✓ Secuencia creada, cambios aplicados y borrador guardado correctamente.';button.textContent='✓ CAMBIOS GUARDADOS';finishFloatingUploadStatus('Proyecto guardado · '+timelineItems.length+' elemento(s) listos');
+ }catch(error){status.textContent=error.message||'No se pudieron completar todos los pasos.';setFloatingUploadStatus(error.message||'No se pudieron completar los cambios',0,'error');toast(error.message||'No se pudieron guardar los cambios.');button.textContent=original;}
  finally{button.disabled=false;}
 });
 
@@ -3000,6 +3001,13 @@ document.querySelectorAll('.editor-toolbar [data-pane="explore"], .editor-bottom
 
 renderTimeline();
 
+// Recuperación del último borrador local después de actualizar o reabrir el navegador.
+if(drafts.length&&!timelineItems.length){
+ const latestDraft=drafts[0];
+ window.setTimeout(()=>{
+  if(confirm('Hay un proyecto guardado en este dispositivo ('+(latestDraft.videoName||'Mi Reel')+'). ¿Deseas recuperarlo ahora?'))openDraft(latestDraft);
+ },350);
+}
 
 })();
 </script>
