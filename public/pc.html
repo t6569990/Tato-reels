@@ -2480,7 +2480,7 @@ function activateMusicFile(file,id=null){musicIntegrated=false;$('integrateMusic
 $('musicBtn').addEventListener('click',()=>$('musicInput').click());
 $('musicInput').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;activateMusicFile(file);try{activeMusicId=await saveAudioTrack(file);await renderMusicLibrary();toast('Audio guardado en Mi biblioteca.');}catch(err){toast('Se cargó, pero no se pudo guardar. Descárgalo para conservarlo.');}e.target.value='';});
 async function renderMusicLibrary(){const shelf=$('musicLibrary');shelf.innerHTML='';try{const tracks=await getSavedAudio();if(!tracks.length){shelf.textContent='Tu biblioteca está vacía. Los audios que agregues quedarán guardados en este dispositivo.';return;}for(const track of tracks){const row=document.createElement('div');row.className='library-track';const name=document.createElement('span');name.textContent='♫ '+track.name;const use=document.createElement('button');use.textContent=activeMusicId===track.id?'En uso':'Usar';use.addEventListener('click',()=>{activateMusicFile(track.blob,track.id);toast('Pista lista para tu Reel.');});const dl=document.createElement('button');dl.textContent='↓';dl.title='Descargar audio';dl.addEventListener('click',()=>{const url=URL.createObjectURL(track.blob),a=document.createElement('a');a.href=url;a.download=track.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);});const del=document.createElement('button');del.textContent='×';del.title='Eliminar pista';del.addEventListener('click',()=>{if(confirm('¿Eliminar '+track.name+' de la biblioteca?'))deleteSavedAudio(track.id);});row.append(name,use,dl,del);shelf.append(row);}}catch(err){shelf.textContent='No se pudo abrir la biblioteca en este navegador.';}}
-renderMusicLibrary();
+document.querySelectorAll('.editor-toolbar [data-pane="music"], .editor-bottom-toolbar [data-pane="music"]').forEach(button=>button.addEventListener('click',()=>renderMusicLibrary(),{once:true}));
 
 function getAudioTrim(){const duration=musicAudio?.duration||0;const start=Math.max(0,Number($('audioStart').value)||0);const end=Math.min(duration,Number($('audioEnd').value)||duration);if(!musicAudio||!Number.isFinite(duration)||end<=start){toast('Revisa el inicio y el final del recorte.');return null;}return {start,end,duration};}
 async function startTrimmedExportMusic(context,destination){if(!musicUrl||!musicAudio)return null;const trim=getAudioTrim();if(!trim)throw new Error('Revisa el inicio y el final de la música.');const track=new Audio(musicUrl);track.preload='auto';track.loop=false;await new Promise((resolve,reject)=>{if(track.readyState>=1){resolve();return;}const loaded=()=>{cleanup();resolve();};const failed=()=>{cleanup();reject(new Error('No se pudo cargar la pista de música.'));};const cleanup=()=>{track.removeEventListener('loadedmetadata',loaded);track.removeEventListener('error',failed);};track.addEventListener('loadedmetadata',loaded,{once:true});track.addEventListener('error',failed,{once:true});track.load();});const start=Math.min(trim.start,Math.max(0,track.duration-.05)),end=Math.min(trim.end,track.duration);if(end<=start)throw new Error('El recorte de música no es válido.');if(start>0){await new Promise((resolve,reject)=>{const seeked=()=>{cleanup();resolve();};const failed=()=>{cleanup();reject(new Error('No se pudo posicionar el inicio de la música.'));};const cleanup=()=>{track.removeEventListener('seeked',seeked);track.removeEventListener('error',failed);};track.addEventListener('seeked',seeked,{once:true});track.addEventListener('error',failed,{once:true});track.currentTime=start;});}track.volume=Number($('musicVolume').value);const source=context.createMediaElementSource(track);source.connect(destination);track.addEventListener('timeupdate',()=>{if(track.currentTime>=end)track.pause();});await context.resume();await track.play();return track;}
@@ -2756,7 +2756,7 @@ document.querySelectorAll('[data-explore-url]').forEach(button=>button.addEventL
 $('saveInspiration').addEventListener('click',()=>{const raw=$('inspirationUrl').value.trim();let url;try{url=new URL(raw);if(!['http:','https:'].includes(url.protocol))throw new Error();}catch(_){toast('Escribe un enlace válido que comience con https://');return;}const refs=getInspirationRefs();if(refs.some(item=>item.url===url.href)){toast('Ese enlace ya está en tu biblioteca.');return;}refs.unshift({url:url.href,platform:$('inspirationPlatform').value,addedAt:Date.now()});localStorage.setItem('tatoReelsInspirationRefs',JSON.stringify(refs));$('inspirationUrl').value='';renderInspirationLibrary();toast('Referencia guardada.');});
 $('importInspirationFiles').addEventListener('click',()=>$('inspirationFiles').click());
 $('inspirationFiles').addEventListener('change',async event=>{const files=Array.from(event.target.files||[]).filter(file=>file.type.startsWith('video/'));if(!files.length){event.target.value='';return;}try{for(const file of files){const id=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'video-'+Date.now()+'-'+Math.random().toString(36).slice(2);await inspirationDB('put',{id,name:file.name,type:file.type,size:file.size,blob:file,addedAt:Date.now()});}toast(files.length+' video(s) guardado(s) en Mi biblioteca.');$('inspirationStatus').textContent='Archivos guardados localmente. Pulsa “Usar en editor” para incorporarlos como clips.';renderInspirationLibrary();}catch(error){toast(error.message||'No se pudieron guardar los videos.');$('inspirationStatus').textContent='No se pudo guardar en este navegador. Revisa el espacio disponible.';}finally{event.target.value='';}});
-renderInspirationLibrary();
+document.querySelectorAll('.editor-toolbar [data-pane="inspiration"], .editor-bottom-toolbar [data-pane="inspiration"]').forEach(button=>button.addEventListener('click',()=>renderInspirationLibrary(),{once:true}));
 
 renderTimeline();
 
@@ -3612,7 +3612,7 @@ html body #app .creator:not(:has(.editor-toolbar [data-pane="video"].active, .ed
   display:none!important;
 }
 </style>
-<script id="tato-trim-single-authority-20261108">
+<script id="tato-trim-single-authority-20261108-duplicate-2">
 (()=>{
   const creatorSelector='#app .creator';
   const trimSelector='.workspace-switch-card.workspace-trim-card';
@@ -3642,8 +3642,6 @@ html body #app .creator:not(:has(.editor-toolbar [data-pane="video"].active, .ed
   syncTrimVisibility();
 })();
 </script>
-
-</body>
 
 <style id="tato-pc-strict-family-visibility-20261108">
 /* En PC, los selectores de cada familia prevalecen sobre reglas de layout anteriores. */
@@ -3735,7 +3733,7 @@ html body #app .creator .editor-tool-pane:not([data-pane="video"]) > .timeline-p
   display:none!important;
 }
 </style>
-</html>
+
 
 <style id="tato-trim-card-only-in-video-tab">
 /* El atributo hidden del cambio de herramienta debe prevalecer sobre los estilos generales del recorte. */
@@ -3791,7 +3789,7 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   display: block !important;
 }
 </style>
-<script id="tato-trim-final-authority-fix-20261108">
+<script id="tato-trim-final-authority-fix-20261108-duplicate-2">
 (()=>{
   const creator=document.querySelector('#app .creator');
   if(!creator)return;
@@ -3836,3 +3834,6 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   sync();
 })();
 </script>
+
+</body>
+</html>
