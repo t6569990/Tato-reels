@@ -4527,5 +4527,20 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   }
 }
 </style>
+<style id="tato-pc-side-navigation-auth-visibility-20261108">
+/* Las flechas de navegación solo se muestran después de entrar al editor. */
+@media(min-width:721px){
+  html body #app:not(.authenticated) .editor-side-navigation{
+    display:none!important;visibility:hidden!important;pointer-events:none!important;
+  }
+  html body #app.authenticated .editor-side-navigation{
+    display:flex!important;visibility:visible!important;pointer-events:auto!important;
+  }
+}
+@media(max-width:720px){
+  html body #app .editor-side-navigation{display:none!important;visibility:hidden!important}
+}
+</style>
+
 </body>
 </html>
