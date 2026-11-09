@@ -1845,7 +1845,16 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
         </div>
         <div class="panel">
           <h3>🎨 Estilo de vista</h3>
-          <div class="image-filter-list"><div class="image-filter-card"><button class="filter active" data-filter="none" type="button">Original</button></div><div class="image-filter-card"><button class="filter" data-filter="nitido" type="button">HD / Nitidez</button></div><div class="image-filter-card"><button class="filter" data-filter="warm" type="button">Cálido</button></div><div class="image-filter-card"><button class="filter" data-filter="mono" type="button">B&amp;N</button></div><div class="image-filter-card"><button class="filter" data-filter="vintage" type="button">Vintage</button></div><div class="image-filter-card"><button class="filter" data-filter="cinema" type="button">Cine</button></div></div>
+          <div class="image-filter-list">
+<div class="image-filter-card"><button class="filter active" data-filter="none" type="button"><span class="filter-icon">🖼️</span><strong>Original</strong><small>Sin cambios</small></button></div>
+<div class="image-filter-card"><button class="filter" data-filter="nitido" type="button"><span class="filter-icon">✨</span><strong>HD / Nitidez</strong><small>Más detalle</small></button></div>
+<div class="image-filter-card"><button class="filter" data-filter="warm" type="button"><span class="filter-icon">🌅</span><strong>Cálido</strong><small>Luz dorada</small></button></div>
+<div class="image-filter-card"><button class="filter" data-filter="mono" type="button"><span class="filter-icon">⚫</span><strong>B&amp;N</strong><small>Blanco y negro</small></button></div>
+<div class="image-filter-card"><button class="filter" data-filter="vintage" type="button"><span class="filter-icon">📷</span><strong>Vintage</strong><small>Toque retro</small></button></div>
+<div class="image-filter-card"><button class="filter" data-filter="cinema" type="button"><span class="filter-icon">🎬</span><strong>Cine</strong><small>Contraste intenso</small></button></div>
+<div class="image-filter-card"><button class="filter" data-filter="bright" type="button"><span class="filter-icon">☀️</span><strong>Luminoso</strong><small>Más claridad</small></button></div>
+<div class="image-filter-card"><button class="filter" data-filter="night" type="button"><span class="filter-icon">🌙</span><strong>Nocturno</strong><small>Sombras profundas</small></button></div>
+<div class="image-filter-card"><button class="filter" data-filter="fade" type="button"><span class="filter-icon">🌫️</span><strong>Desvanecido</strong><small>Estilo suave</small></button></div></div>
           <div class="field photo-scale-field"><label class="field-label" for="photoScale">Escala de fotografías <strong id="photoScaleValue">100%</strong></label><input id="photoScale" type="range" min="0.75" max="1.5" step="0.05" value="1" style="width:100%"><div class="file-note">Ajusta el acercamiento de las fotos de tu secuencia.</div></div>
           <button class="primary" id="applyImageChanges" type="button" style="width:100%">✓ Aplicar imagen al Reel</button><div class="file-note" id="imageApplyStatus">Los filtros se previsualizan; aplica la escala para incluirla al compilar.</div>
         </div>
@@ -1992,7 +2001,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
  if(clearVisualizerButton){
   const creatorNameField=document.getElementById('username')?.closest('.field');
-  clearVisualizerButton.style.cssText='display:block!important;visibility:visible!important;width:100%;min-height:46px;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;';
+  clearVisualizerButton.style.cssText='display:block!important;visibility:visible!important;width:100%;min-height:46px;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
   if(creatorNameField) creatorNameField.insertAdjacentElement('afterend',clearVisualizerButton);
  }
  // Música: eliminar el contenedor general y convertir Biblioteca y Edición en tarjetas hermanas independientes.
@@ -2013,6 +2022,22 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   if(source)sourceCard.append(...Array.from(source.childNodes));
   if(edit)editCard.append(...Array.from(edit.childNodes));
   musicPanel.replaceWith(sourceCard,editCard);
+  const voiceCard=document.createElement('section');voiceCard.className='panel music-panel voice-studio-card';
+  voiceCard.innerHTML=`<h3>🎙️ Estudio de grabación de voz</h3><p class="file-note">Graba tu narración con el micrófono de este dispositivo. Elige un efecto antes de grabar.</p>
+  <div class="voice-effects-grid" id="voiceEffectsGrid">
+  <button type="button" class="voice-effect active" data-voice-effect="original"><span>🎙️</span><strong>Original</strong><small>Voz natural</small></button>
+  <button type="button" class="voice-effect" data-voice-effect="studio"><span>🎚️</span><strong>Estudio</strong><small>Voz equilibrada</small></button>
+  <button type="button" class="voice-effect" data-voice-effect="warm"><span>🧡</span><strong>Cálida</strong><small>Tono suave</small></button>
+  <button type="button" class="voice-effect" data-voice-effect="bright"><span>💎</span><strong>Brillante</strong><small>Más presencia</small></button>
+  <button type="button" class="voice-effect" data-voice-effect="deep"><span>🎧</span><strong>Grave</strong><small>Voz profunda</small></button>
+  <button type="button" class="voice-effect" data-voice-effect="radio"><span>📻</span><strong>Radio</strong><small>Sonido de locutor</small></button>
+  <button type="button" class="voice-effect" data-voice-effect="phone"><span>☎️</span><strong>Teléfono</strong><small>Banda estrecha</small></button>
+  <button type="button" class="voice-effect" data-voice-effect="echo"><span>🔁</span><strong>Eco</strong><small>Repetición ligera</small></button>
+  <button type="button" class="voice-effect" data-voice-effect="reverb"><span>🏛️</span><strong>Reverb</strong><small>Sala amplia</small></button></div>
+  <div class="voice-recorder-actions"><button type="button" class="primary" id="startVoiceRecording">⏺ Grabar voz</button><button type="button" class="secondary" id="stopVoiceRecording" disabled>⏹ Detener</button></div>
+  <audio id="voiceRecordingPreview" controls hidden></audio><div class="file-note" id="voiceRecordingStatus" role="status">Listo para grabar. El navegador solicitará permiso para usar el micrófono.</div>
+  <button type="button" class="secondary" id="saveVoiceRecording" disabled>＋ Guardar voz en Biblioteca de música</button>`;
+  sourceCard.insertAdjacentElement('afterend',voiceCard);
  }
  // IMAGEN: convertir el panel general en tarjetas hermanas, sin marco exterior.
  const imagePanel=[...panes.image.children].find(node=>node.classList?.contains('panel'));
@@ -2448,7 +2473,7 @@ $('caption').addEventListener('input',updateCaption);
 $('username').addEventListener('input',()=> $('overlayName').textContent=$('username').value || '@creador');
 document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); filter=btn.dataset.filter;
- const imageFilterStyles={none:'none',nitido:'contrast(1.14) saturate(1.08)',warm:'sepia(.22) saturate(1.18)',mono:'grayscale(1)',vintage:'sepia(.38) contrast(1.08) saturate(.82)',cinema:'contrast(1.18) saturate(1.12) brightness(.94)'}; video.style.filter=imageFilterStyles[filter]||'none'; $('sampleArt').style.filter=video.style.filter; toast('Estilo de vista: '+btn.textContent+'.');
+ const imageFilterStyles={none:'none',nitido:'contrast(1.14) saturate(1.08)',warm:'sepia(.22) saturate(1.18)',mono:'grayscale(1)',vintage:'sepia(.38) contrast(1.08) saturate(.82)',cinema:'contrast(1.18) saturate(1.12) brightness(.94)',bright:'brightness(1.16) contrast(1.04) saturate(1.12)',night:'brightness(.82) contrast(1.22) saturate(.92)',fade:'contrast(.9) saturate(.78) brightness(1.06)'}; video.style.filter=imageFilterStyles[filter]||'none'; $('sampleArt').style.filter=video.style.filter; toast('Estilo de vista: '+btn.textContent+'.');
 }));
 document.querySelectorAll('[data-ratio]').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('[data-ratio]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); $('videoFrame').style.aspectRatio=btn.dataset.ratio; toast('Formato de vista actualizado.');
@@ -2496,6 +2521,41 @@ $('musicBtn').addEventListener('click',()=>$('musicInput').click());
 $('musicInput').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;activateMusicFile(file);try{activeMusicId=await saveAudioTrack(file);await renderMusicLibrary();toast('Audio guardado en Mi biblioteca.');}catch(err){toast('Se cargó, pero no se pudo guardar. Descárgalo para conservarlo.');}e.target.value='';});
 async function renderMusicLibrary(){const shelf=$('musicLibrary');shelf.innerHTML='';try{const tracks=await getSavedAudio();if(!tracks.length){shelf.textContent='Tu biblioteca está vacía. Los audios que agregues quedarán guardados en este dispositivo.';return;}for(const track of tracks){const row=document.createElement('div');row.className='library-track';const name=document.createElement('span');name.textContent='♫ '+track.name;const use=document.createElement('button');use.textContent=activeMusicId===track.id?'En uso':'Usar';use.addEventListener('click',()=>{activateMusicFile(track.blob,track.id);toast('Pista lista para tu Reel.');});const dl=document.createElement('button');dl.textContent='↓';dl.title='Descargar audio';dl.addEventListener('click',()=>{const url=URL.createObjectURL(track.blob),a=document.createElement('a');a.href=url;a.download=track.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);});const del=document.createElement('button');del.textContent='×';del.title='Eliminar pista';del.addEventListener('click',()=>{if(confirm('¿Eliminar '+track.name+' de la biblioteca?'))deleteSavedAudio(track.id);});row.append(name,use,dl,del);shelf.append(row);}}catch(err){shelf.textContent='No se pudo abrir la biblioteca en este navegador.';}}
 document.querySelectorAll('.editor-toolbar [data-pane="music"], .editor-bottom-toolbar [data-pane="music"]').forEach(button=>button.addEventListener('click',()=>renderMusicLibrary(),{once:true}));
+
+ // Estudio de voz: captura local y procesamiento mediante Web Audio.
+ let selectedVoiceEffect='original',voiceRecorder=null,voiceStream=null,voiceContext=null,voiceChunks=[],voiceBlob=null,voiceObjectUrl=null;
+ const voiceStatus=$('voiceRecordingStatus'),voicePreview=$('voiceRecordingPreview'),startVoice=$('startVoiceRecording'),stopVoice=$('stopVoiceRecording'),saveVoice=$('saveVoiceRecording');
+ document.querySelectorAll('.voice-effect').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.voice-effect').forEach(item=>item.classList.toggle('active',item===button));selectedVoiceEffect=button.dataset.voiceEffect;voiceStatus.textContent='Efecto seleccionado: '+button.querySelector('strong').textContent+'. Se aplicará a la siguiente grabación.';}));
+ function makeVoiceImpulse(context){const length=Math.floor(context.sampleRate*1.6),buffer=context.createBuffer(2,length,context.sampleRate);for(let c=0;c<2;c++){const data=buffer.getChannelData(c);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,2.4);}return buffer;}
+ startVoice?.addEventListener('click',async()=>{
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){voiceStatus.textContent='Este navegador no permite grabar desde el micrófono.';return;}
+  startVoice.disabled=true;
+  try{
+   voiceStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+   voiceContext=new (window.AudioContext||window.webkitAudioContext)();await voiceContext.resume();
+   const source=voiceContext.createMediaStreamSource(voiceStream),filterNode=voiceContext.createBiquadFilter(),compressor=voiceContext.createDynamicsCompressor(),destination=voiceContext.createMediaStreamDestination();
+   filterNode.type='peaking';filterNode.frequency.value=1800;filterNode.Q.value=.8;filterNode.gain.value=0;
+   compressor.threshold.value=-22;compressor.knee.value=18;compressor.ratio.value=3;compressor.attack.value=.004;compressor.release.value=.22;
+   source.connect(filterNode);filterNode.connect(compressor);
+   if(selectedVoiceEffect==='studio'){filterNode.frequency.value=2600;filterNode.gain.value=2.5;}
+   if(selectedVoiceEffect==='warm'){filterNode.frequency.value=280;filterNode.gain.value=3;}
+   if(selectedVoiceEffect==='bright'){filterNode.frequency.value=4200;filterNode.gain.value=4;}
+   if(selectedVoiceEffect==='deep'){filterNode.type='lowshelf';filterNode.frequency.value=220;filterNode.gain.value=5;}
+   if(selectedVoiceEffect==='radio'||selectedVoiceEffect==='phone'){filterNode.type='bandpass';filterNode.frequency.value=selectedVoiceEffect==='radio'?1500:1700;filterNode.Q.value=selectedVoiceEffect==='radio'?.75:1.1;}
+   if(selectedVoiceEffect==='echo'||selectedVoiceEffect==='reverb'){
+    const wet=voiceContext.createGain(),dry=voiceContext.createGain();wet.gain.value=selectedVoiceEffect==='echo'?.32:.38;dry.gain.value=.86;compressor.connect(dry);dry.connect(destination);
+    if(selectedVoiceEffect==='reverb'){const convolver=voiceContext.createConvolver();convolver.buffer=makeVoiceImpulse(voiceContext);compressor.connect(convolver);convolver.connect(wet);wet.connect(destination);}
+    else{const delay=voiceContext.createDelay(1.2),feedback=voiceContext.createGain();delay.delayTime.value=.28;feedback.gain.value=.28;compressor.connect(delay);delay.connect(feedback);feedback.connect(delay);delay.connect(wet);wet.connect(destination);}
+   }else compressor.connect(destination);
+   const mime=['audio/webm;codecs=opus','audio/webm'].find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error('Este navegador no permite guardar grabaciones WebM.');
+   voiceRecorder=new MediaRecorder(destination.stream,{mimeType:mime});voiceChunks=[];voiceRecorder.ondataavailable=event=>{if(event.data.size)voiceChunks.push(event.data);};
+   voiceRecorder.onstop=()=>{voiceBlob=new Blob(voiceChunks,{type:mime});if(voiceObjectUrl)URL.revokeObjectURL(voiceObjectUrl);voiceObjectUrl=URL.createObjectURL(voiceBlob);voicePreview.src=voiceObjectUrl;voicePreview.hidden=false;saveVoice.disabled=false;voiceStatus.textContent='Grabación lista ('+(voiceBlob.size/1024).toFixed(0)+' KB). Escúchala y guárdala en tu biblioteca.';if(voiceStream)voiceStream.getTracks().forEach(track=>track.stop());voiceStream=null;if(voiceContext)voiceContext.close().catch(()=>{});voiceContext=null;startVoice.disabled=false;stopVoice.disabled=true;};
+   voiceRecorder.start(200);stopVoice.disabled=false;voiceStatus.textContent='🔴 Grabando voz con efecto '+document.querySelector('.voice-effect.active strong').textContent+'…';
+  }catch(error){if(voiceStream)voiceStream.getTracks().forEach(track=>track.stop());voiceStream=null;if(voiceContext)voiceContext.close().catch(()=>{});voiceContext=null;startVoice.disabled=false;stopVoice.disabled=true;voiceStatus.textContent=error.message||'No se pudo iniciar la grabación. Revisa el permiso del micrófono.';}
+ });
+ stopVoice?.addEventListener('click',()=>{if(voiceRecorder&&voiceRecorder.state!=='inactive')voiceRecorder.stop();});
+ saveVoice?.addEventListener('click',async()=>{if(!voiceBlob)return;saveVoice.disabled=true;try{const file=new File([voiceBlob],'voz-tato-'+new Date().toISOString().replace(/[:.]/g,'-')+'.webm',{type:voiceBlob.type});activeMusicId=await saveAudioTrack(file);await renderMusicLibrary();activateMusicFile(file,activeMusicId);voiceStatus.textContent='✓ Voz guardada en Biblioteca de música y lista para integrarse al Reel.';toast('Grabación de voz guardada en tu biblioteca local.');}catch(error){voiceStatus.textContent='No se pudo guardar la grabación en la biblioteca.';saveVoice.disabled=false;}});
+
 
 function getAudioTrim(){const duration=musicAudio?.duration||0;const start=Math.max(0,Number($('audioStart').value)||0);const end=Math.min(duration,Number($('audioEnd').value)||duration);if(!musicAudio||!Number.isFinite(duration)||end<=start){toast('Revisa el inicio y el final del recorte.');return null;}return {start,end,duration};}
 async function startTrimmedExportMusic(context,destination){if(!musicUrl||!musicAudio)return null;const trim=getAudioTrim();if(!trim)throw new Error('Revisa el inicio y el final de la música.');const track=new Audio(musicUrl);track.preload='auto';track.loop=false;await new Promise((resolve,reject)=>{if(track.readyState>=1){resolve();return;}const loaded=()=>{cleanup();resolve();};const failed=()=>{cleanup();reject(new Error('No se pudo cargar la pista de música.'));};const cleanup=()=>{track.removeEventListener('loadedmetadata',loaded);track.removeEventListener('error',failed);};track.addEventListener('loadedmetadata',loaded,{once:true});track.addEventListener('error',failed,{once:true});track.load();});const start=Math.min(trim.start,Math.max(0,track.duration-.05)),end=Math.min(trim.end,track.duration);if(end<=start)throw new Error('El recorte de música no es válido.');if(start>0){await new Promise((resolve,reject)=>{const seeked=()=>{cleanup();resolve();};const failed=()=>{cleanup();reject(new Error('No se pudo posicionar el inicio de la música.'));};const cleanup=()=>{track.removeEventListener('seeked',seeked);track.removeEventListener('error',failed);};track.addEventListener('seeked',seeked,{once:true});track.addEventListener('error',failed,{once:true});track.currentTime=start;});}track.volume=Number($('musicVolume').value);const source=context.createMediaElementSource(track);source.connect(destination);track.addEventListener('timeupdate',()=>{if(track.currentTime>=end)track.pause();});await context.resume();await track.play();return track;}
@@ -4187,5 +4247,22 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
  const current=document.querySelector('.editor-toolbar [data-pane].active')?.dataset.pane||'video';activate(current);
 })();
 </script>
+<style id="tato-pc-image-filter-and-voice-studio-20261109">
+@media(min-width:721px){
+.editor-tool-pane[data-pane="image"] .image-filter-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card{display:block!important;min-width:0!important;padding:6px!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;min-height:112px!important;height:100%!important;padding:9px 5px!important;text-align:center!important;white-space:normal!important}
+.editor-tool-pane[data-pane="image"] .filter-icon{font-size:25px!important;line-height:1.15!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter strong{font-size:13px!important;line-height:1.2!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter small{display:block!important;font-size:10.5px!important;line-height:1.25!important;font-weight:500!important;opacity:.78!important}
+.voice-studio-card{grid-column:1/-1!important}
+.voice-effects-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important;margin:12px 0!important}
+.voice-effect{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;min-width:0!important;min-height:92px!important;padding:9px 5px!important;border:1px solid light-dark(#e5deed,#40364f)!important;border-radius:11px!important;background:light-dark(#faf8ff,#191522)!important;color:inherit!important}
+.voice-effect>span{font-size:23px!important;line-height:1.1!important}.voice-effect strong{font-size:12px!important}.voice-effect small{font-size:10px!important;line-height:1.25!important;opacity:.75!important}
+.voice-effect.active{border-color:#8b5cf6!important;background:light-dark(#eee7ff,#30234b)!important;box-shadow:0 0 0 1px #8b5cf6!important}
+.voice-recorder-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin:10px 0!important}
+.voice-studio-card audio{display:block;width:100%;margin:10px 0}.voice-studio-card #saveVoiceRecording{width:100%!important;margin-top:8px!important}
+}
+</style>
 </body>
 </html>
