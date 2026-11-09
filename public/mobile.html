@@ -1377,7 +1377,21 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  display:block!important;font-size:12px!important;line-height:1.2!important;font-weight:800!important;
 }
 </style>
-\n<style id="tato-mobile-native-video-picker-20261109">\n@media(max-width:720px){.creation-modes-layout .tato-mobile-video-picker{display:grid!important;place-items:center;position:relative;z-index:20;pointer-events:auto!important;cursor:pointer;min-height:44px;text-decoration:none;-webkit-tap-highlight-color:transparent}.creation-modes-layout .creation-mode-card{position:relative;z-index:2;pointer-events:auto!important}}\n</style>\n</head>
+\n<style id="tato-mobile-native-video-picker-20261109">\n@media(max-width:720px){.creation-modes-layout .tato-mobile-video-picker{display:grid!important;place-items:center;position:relative;z-index:20;pointer-events:auto!important;cursor:pointer;min-height:44px;text-decoration:none;-webkit-tap-highlight-color:transparent}.creation-modes-layout .creation-mode-card{position:relative;z-index:2;pointer-events:auto!important}}\n</style>\n<style id="tato-floating-upload-status-style">
+#tato-floating-upload-status{position:fixed;top:12px;left:50%;transform:translate(-50%,-14px);width:min(440px,calc(100vw - 24px));padding:10px 13px;border:1px solid rgba(255,255,255,.18);border-radius:13px;background:rgba(20,18,29,.96);color:#fff;box-shadow:0 8px 28px rgba(0,0,0,.28);z-index:99999;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+#tato-floating-upload-status.visible{opacity:1;visibility:visible;transform:translate(-50%,0)}
+#tato-floating-upload-status .tato-upload-status-top{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.3}
+#tato-floating-upload-status .tato-upload-status-message{flex:1;min-width:0}
+#tato-floating-upload-status .tato-upload-status-percent{font-variant-numeric:tabular-nums;white-space:nowrap;opacity:.85}
+#tato-floating-upload-status .tato-upload-status-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#a78bfa}
+#tato-floating-upload-status[data-state="done"] .tato-upload-status-dot{background:#34d399}
+#tato-floating-upload-status[data-state="error"] .tato-upload-status-dot{background:#fb7185}
+#tato-floating-upload-status .tato-upload-status-track{height:5px;margin-top:8px;overflow:hidden;border-radius:99px;background:rgba(255,255,255,.16)}
+#tato-floating-upload-status .tato-upload-status-track span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#8b5cf6,#38bdf8);transition:width .16s ease}
+#tato-floating-upload-status .tato-upload-status-track span.indeterminate{width:35%;animation:tatoUploadIndeterminate 1.15s ease-in-out infinite alternate}
+@keyframes tatoUploadIndeterminate{from{transform:translateX(0)}to{transform:translateX(180%)}}
+</style>
+</head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
 <div id="app">
@@ -1883,6 +1897,17 @@ let sequencePaused=false;
 let drafts = JSON.parse(localStorage.getItem('tatoReelsDrafts') || '[]');
 let filter = 'none';
 function refreshDraftCount(){ $('draftCount').textContent=drafts.length; }
+function setFloatingUploadStatus(message,percent=null,state='working'){
+ let bar=document.getElementById('tato-floating-upload-status');
+ if(!bar){bar=document.createElement('section');bar.id='tato-floating-upload-status';bar.setAttribute('role','status');bar.setAttribute('aria-live','polite');bar.innerHTML='<div class="tato-upload-status-top"><span class="tato-upload-status-dot"></span><strong class="tato-upload-status-message"></strong><span class="tato-upload-status-percent"></span></div><div class="tato-upload-status-track"><span></span></div>';document.body.append(bar);}
+ bar.dataset.state=state;bar.querySelector('.tato-upload-status-message').textContent=message;
+ const fill=bar.querySelector('.tato-upload-status-track span'),label=bar.querySelector('.tato-upload-status-percent');
+ if(percent===null){fill.style.width='35%';fill.classList.add('indeterminate');label.textContent='En proceso';}
+ else{const value=Math.max(0,Math.min(100,Number(percent)||0));fill.classList.remove('indeterminate');fill.style.width=value+'%';label.textContent=value+'%';}
+ bar.classList.add('visible');
+ if(state==='done'||state==='error'){clearTimeout(window.tatoUploadStatusTimer);window.tatoUploadStatusTimer=setTimeout(()=>bar.classList.remove('visible'),4200);}
+}
+function finishFloatingUploadStatus(message='Proceso terminado'){setFloatingUploadStatus(message,100,'done');}
 function toast(message) { const el=$('toast'); el.textContent=message; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>el.classList.remove('show'),2600); }
 function openVisualizerAfterVideoAdded(){const previewButton=document.querySelector('.workspace-switch-btn');if(previewButton)previewButton.click();}
 // El label asociado a fileInput abre el selector nativo; no agregar otro click() para evitar doble activación.
