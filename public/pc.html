@@ -4316,7 +4316,7 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   const modes=creator?.querySelector('.editor-panel > .creation-modes-layout');
   if(modes){modes.hidden=!videoFamily;modes.classList.toggle('is-hidden-by-tool',!videoFamily);modes.style.setProperty('display',videoFamily?'grid':'none','important');modes.setAttribute('aria-hidden',String(!videoFamily));}
   const trimCards=creator?.querySelectorAll('.workspace-trim-card')||[];
-  trimCards.forEach(trim=>{trim.hidden=!videoFamily;trim.classList.toggle('is-hidden-by-tool',!videoFamily);trim.style.setProperty('display',videoFamily?'block':'none','important');trim.setAttribute('aria-hidden',String(!videoFamily));});
+  trimCards.forEach(trim=>{trim.hidden=true;trim.classList.add('is-hidden-by-tool');trim.style.setProperty('display','none','important');trim.setAttribute('aria-hidden','true');});
   window.tatoReelsRefreshToolSideNav?.();
   return true;
  };
