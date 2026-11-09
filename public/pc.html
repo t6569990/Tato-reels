@@ -1914,19 +1914,19 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   else if(/Salida a redes/i.test(h))key='publish';
   panes[key].append(card);
  });
- // Mover el botón original al contenedor contiguo de Formato de descarga.
- // Se conserva el mismo botón y sus manejadores originales.
+ // Botón principal: debajo de "Nombre de creador" en "Detalles del Reel".
+ // La segunda copia queda inmediatamente debajo de "Tu creatividad, en corto".
  const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
  const sidebar=document.querySelector('.sidebar');
+ const clearButtonStyle='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
  if(clearVisualizerButton){
   clearVisualizerButton.type='button';
-  clearVisualizerButton.style.cssText='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:12px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
-  const adjacentFormatCard=panes.format?.querySelector('#exportFormat')?.closest('.panel')
-   ||[...(panes.format?.querySelectorAll('.panel')||[])].find(card=>/Formato de descarga/i.test(card.querySelector('h3')?.textContent||''));
-  if(adjacentFormatCard&&clearVisualizerButton.parentElement!==adjacentFormatCard) adjacentFormatCard.append(clearVisualizerButton);
+  clearVisualizerButton.style.cssText=clearButtonStyle;
+  const creatorNameField=panes.text?.querySelector('#username')?.closest('.field');
+  if(creatorNameField&&clearVisualizerButton.parentElement!==creatorNameField.parentElement) creatorNameField.after(clearVisualizerButton);
  }
- // Acceso adicional de borrado al inicio de la columna izquierda.
  if(clearVisualizerButton&&sidebar){
+  const creativityCard=sidebar.querySelector('.side-card');
   let sidebarClear=sidebar.querySelector('#clearReelVisualChangesSidebar');
   if(!sidebarClear){
    sidebarClear=clearVisualizerButton.cloneNode(true);
@@ -1934,13 +1934,13 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   }
   sidebarClear.type='button';
   sidebarClear.setAttribute('aria-label','Borrar cambios del visualizador');
-  sidebarClear.style.cssText='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:0 0 12px!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
+  sidebarClear.style.cssText=clearButtonStyle+'margin-top:10px!important;';
   if(!sidebarClear.dataset.boundToVisualizerClear){
    sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
    sidebarClear.dataset.boundToVisualizerClear='true';
   }
-  const firstNavItem=sidebar.querySelector('.nav-label')?.nextElementSibling;
-  if(sidebarClear.parentElement!==sidebar||sidebarClear!==firstNavItem) sidebar.insertBefore(sidebarClear,firstNavItem||sidebar.firstChild);
+  if(creativityCard&&sidebarClear.parentElement!==sidebar) creativityCard.after(sidebarClear);
+  else if(creativityCard&&sidebarClear.previousElementSibling!==creativityCard) creativityCard.after(sidebarClear);
  }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
