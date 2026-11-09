@@ -4167,5 +4167,25 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 }
 </style>
 
+<script id="tato-editor-navigation-recovery-20261107">
+(()=> {
+ const activate = name => {
+  const panes=[...document.querySelectorAll('.editor-tool-pane[data-pane]')];
+  if(!panes.some(p=>p.dataset.pane===name)) return false;
+  panes.forEach(p=>{const active=p.dataset.pane===name;p.hidden=!active;p.classList.toggle('active',active);p.setAttribute('aria-hidden',String(!active));});
+  document.querySelectorAll('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]').forEach(button=>{const active=button.dataset.pane===name;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});
+  const videoFamily=name==='video';
+  const creator=document.querySelector('.creator');
+  if(creator){creator.classList.toggle('workspace-mode-add',videoFamily);creator.classList.toggle('workspace-mode-preview',!videoFamily);}
+  const modes=creator?.querySelector('.editor-panel > .creation-modes-layout');
+  if(modes){modes.hidden=!videoFamily;modes.classList.toggle('is-hidden-by-tool',!videoFamily);modes.style.setProperty('display',videoFamily?'grid':'none','important');modes.setAttribute('aria-hidden',String(!videoFamily));}
+  const trimCards=creator?.querySelectorAll('.workspace-trim-card')||[];
+  trimCards.forEach(trim=>{trim.hidden=!videoFamily;trim.classList.toggle('is-hidden-by-tool',!videoFamily);trim.style.setProperty('display',videoFamily?'block':'none','important');trim.setAttribute('aria-hidden',String(!videoFamily));});
+  return true;
+ };
+ document.addEventListener('click',event=>{const button=event.target.closest('.editor-toolbar [data-pane],.editor-bottom-toolbar [data-pane]');if(!button)return;if(activate(button.dataset.pane))event.preventDefault();},true);
+ const current=document.querySelector('.editor-toolbar [data-pane].active')?.dataset.pane||'video';activate(current);
+})();
+</script>
 </body>
 </html>
