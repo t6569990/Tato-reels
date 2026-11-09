@@ -2882,18 +2882,19 @@ $('videoMasterSaveBtn').addEventListener('click',async()=>{
  if(!timelineItems.length){toast('Primero agrega uno o más videos.');status.textContent='No hay elementos para procesar.';return;}
  const original=button.textContent;button.disabled=true;button.textContent='PROCESANDO…';status.textContent='1/4 · Preparando archivos y leyendo sus duraciones…';
  try{
+  setFloatingUploadStatus('1/4 · Preparando archivos y leyendo duraciones…',15,'working');
   await ensureTimelineMediaReady();
   const invalid=timelineItems.find(item=>{const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);return duration<=0||end<=start||end>duration+.05;});
   if(invalid)throw new Error('Revisa el inicio y final de '+invalid.name+'.');
-  status.textContent='2/4 · Creando la secuencia…';editSequence=timelineItems.map(item=>({...item}));
-  status.textContent='3/4 · Aplicando tiempos, recortes y orden…';window.tatoCompiledReelBlob=null;syncExtraClipsFromTimeline();
+  status.textContent='2/4 · Creando la secuencia…';setFloatingUploadStatus('2/4 · Creando la secuencia…',40,'working');editSequence=timelineItems.map(item=>({...item}));
+  status.textContent='3/4 · Aplicando tiempos, recortes y orden…';setFloatingUploadStatus('3/4 · Aplicando tiempos, recortes y orden…',65,'working');window.tatoCompiledReelBlob=null;syncExtraClipsFromTimeline();
   const main=timelineItems.find(item=>item.isMain&&!item.isImage);if(main&&video.src===main.url){const start=Math.max(0,Number(main.start)||0);try{video.currentTime=start;}catch(_){}}
   $('sequenceNote').textContent='✓ Secuencia actualizada con '+timelineItems.length+' elemento(s), tiempos, recortes y orden.';
   $('timelineStatus').textContent='✓ Tiempos, recortes, duración de fotografías e inicio aplicados.';
-  startSequence();status.textContent='4/4 · Guardando borrador y archivos en este dispositivo…';
+  startSequence();status.textContent='4/4 · Guardando borrador y archivos en este dispositivo…';setFloatingUploadStatus('4/4 · Guardando borrador y archivos en este dispositivo…',80,'working');
   const saved=await saveDraft();if(!saved)throw new Error('No se pudo guardar el borrador. Revisa el espacio disponible e inténtalo de nuevo.');
-  status.textContent='✓ Secuencia creada, cambios aplicados y borrador guardado correctamente.';button.textContent='✓ CAMBIOS GUARDADOS';
- }catch(error){status.textContent=error.message||'No se pudieron completar todos los pasos.';toast(error.message||'No se pudieron guardar los cambios.');button.textContent=original;}
+  status.textContent='✓ Secuencia creada, cambios aplicados y borrador guardado correctamente.';button.textContent='✓ CAMBIOS GUARDADOS';finishFloatingUploadStatus('Proyecto guardado · '+timelineItems.length+' elemento(s) listos');
+ }catch(error){status.textContent=error.message||'No se pudieron completar todos los pasos.';setFloatingUploadStatus(error.message||'No se pudieron completar los cambios',0,'error');toast(error.message||'No se pudieron guardar los cambios.');button.textContent=original;}
  finally{button.disabled=false;}
 });
 
