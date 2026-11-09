@@ -2092,20 +2092,32 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   <button type="button" class="secondary" id="saveVoiceRecording" disabled>＋ Guardar voz en Biblioteca de música</button>`;
   editCard.insertAdjacentElement('afterend',voiceCard);
  }
- // IMAGEN: convertir el panel general en tarjetas hermanas, sin marco exterior.
+ // IMAGEN: un contenedor común con filtros y escala en dos columnas.
  const imagePanel=[...panes.image.children].find(node=>node.classList?.contains('panel'));
  if(imagePanel){
   const filter=imagePanel.querySelector('.image-filter-list,.filter-row');
   const scale=imagePanel.querySelector('.photo-scale-field');
   const apply=imagePanel.querySelector('#applyImageChanges');
   const status=imagePanel.querySelector('#imageApplyStatus');
-  const makeCard=cls=>{const card=document.createElement('section');card.className='panel image-tool-card '+cls;return card;};
-  const filterCard=makeCard('image-filter-group-card'),scaleCard=makeCard('image-scale-card');
+  const originalHeading=imagePanel.querySelector(':scope > h3');
+  const visualTools=document.createElement('section');
+  visualTools.className='panel image-visual-tools-container';
+  const filterCard=document.createElement('section');
+  filterCard.className='image-filter-group-card';
+  const scaleCard=document.createElement('section');
+  scaleCard.className='image-scale-card';
+  if(originalHeading)filterCard.append(originalHeading);
   if(filter)filterCard.append(filter);
-  if(scale){const scaleHeading=document.createElement('h3');scaleHeading.className='image-scale-heading';scaleHeading.textContent='📷 Escala y acercamiento de fotografías';scaleCard.append(scaleHeading,scale);}
+  if(scale){
+   const scaleHeading=document.createElement('h3');
+   scaleHeading.className='image-scale-heading';
+   scaleHeading.textContent='📷 Escala y acercamiento de fotografías';
+   scaleCard.append(scaleHeading,scale);
+  }
   if(apply)scaleCard.append(apply);
   if(status)scaleCard.append(status);
-  imagePanel.replaceWith(...[filterCard,scaleCard].filter(card=>card.children.length));
+  visualTools.append(filterCard,scaleCard);
+  imagePanel.replaceWith(visualTools);
  }
  // EXPLORAR: una tarjeta independiente por red y por herramienta de biblioteca.
  const explorePanel=panes.explore.querySelector(':scope > .panel');
@@ -4384,6 +4396,52 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 }
 @media(max-width:720px){
   html body #app .editor-side-navigation{display:none!important}
+}
+</style>
+<style id="tato-pc-image-filters-and-scale-shared-container-20261108">
+@media(min-width:721px){
+  html body #app .editor-tool-pane[data-pane="image"].active>.image-visual-tools-container{
+    display:grid!important;
+    grid-column:1/-1!important;
+    grid-template-columns:minmax(0,1.4fr) minmax(220px,.8fr)!important;
+    align-items:start!important;
+    gap:20px!important;
+    width:100%!important;max-width:none!important;min-width:0!important;
+    margin:0!important;padding:16px!important;box-sizing:border-box!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-filter-group-card,
+  html body #app .editor-tool-pane[data-pane="image"] .image-scale-card{
+    display:flex!important;flex-direction:column!important;align-items:stretch!important;
+    justify-content:flex-start!important;gap:12px!important;
+    width:100%!important;max-width:100%!important;min-width:0!important;
+    margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+    background:transparent!important;box-shadow:none!important;box-sizing:border-box!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-filter-group-card>h3,
+  html body #app .editor-tool-pane[data-pane="image"] .image-scale-card>h3{
+    margin:0 0 4px!important;text-align:center!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-filter-group-card .image-filter-list{
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:10px!important;width:100%!important;min-width:0!important;margin:0!important;padding:0!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-filter-group-card .image-filter-card{
+    display:block!important;min-width:0!important;margin:0!important;padding:0!important;
+    border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-scale-card .photo-scale-field{
+    width:100%!important;margin:0!important;padding:12px!important;
+    box-sizing:border-box!important;
+  }
+  html body #app .editor-tool-pane[data-pane="image"] .image-scale-card #applyImageChanges,
+  html body #app .editor-tool-pane[data-pane="image"] .image-scale-card #imageApplyStatus{
+    width:100%!important;max-width:100%!important;box-sizing:border-box!important;
+  }
+}
+@media(max-width:720px){
+  html body #app .editor-tool-pane[data-pane="image"]>.image-visual-tools-container{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
 }
 </style>
 </body>
