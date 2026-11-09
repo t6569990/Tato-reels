@@ -1907,12 +1907,14 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
         <div class="panel">
           <h3>🌐 Explorar redes y biblioteca</h3>
           <div class="file-note">Visita redes, descubre ideas y guarda referencias. Si descargas un video por medios permitidos o tienes autorización para usarlo, impórtalo a tu biblioteca privada de Tato Reels.</div>
-          <div class="explore-social-grid">
-            <button class="secondary" type="button" data-explore-url="https://www.instagram.com/">📸 Instagram</button>
-            <button class="secondary" type="button" data-explore-url="https://www.facebook.com/">🔵 Facebook</button>
-            <button class="secondary" type="button" data-explore-url="https://www.tiktok.com/">🎵 TikTok</button>
-            <button class="secondary" type="button" data-explore-url="https://www.youtube.com/">▶️ YouTube</button>
-          </div>
+          <section class="explore-social-links-container" aria-label="Accesos a redes sociales">
+            <div class="explore-social-grid">
+              <button class="secondary" type="button" data-explore-url="https://www.instagram.com/">📸 Instagram</button>
+              <button class="secondary" type="button" data-explore-url="https://www.facebook.com/">🔵 Facebook</button>
+              <button class="secondary" type="button" data-explore-url="https://www.tiktok.com/">🎵 TikTok</button>
+              <button class="secondary" type="button" data-explore-url="https://www.youtube.com/">▶️ YouTube</button>
+            </div>
+          </section>
           <div class="file-note" style="margin-top:12px">Guardar una referencia conserva el enlace, no descarga el video. Para importar un archivo, usa un video propio, descargado con permiso o autorizado por su creador.</div>
           <label class="field-label" for="inspirationUrl" style="margin-top:12px">Enlace de inspiración</label>
           <input id="inspirationUrl" type="url" placeholder="https://..." autocomplete="url">
@@ -4456,6 +4458,20 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     width:100%!important;max-width:none!important;min-width:0!important;
     justify-self:stretch!important;box-sizing:border-box!important;
   }
+}
+</style>
+
+<style id="tato-pc-explore-social-links-single-container-20261108">
+@media(min-width:721px){
+ html body #app .editor-tool-pane[data-pane="explore"].active .explore-social-links-container{
+  display:block!important;width:100%!important;min-width:0!important;box-sizing:border-box!important;
+  margin:12px 0 16px!important;padding:14px!important;border:1px solid #493442!important;
+  border-radius:13px!important;background:light-dark(#151019,#151019)!important;
+ }
+ html body #app .editor-tool-pane[data-pane="explore"].active .explore-social-links-container .explore-social-grid{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important;margin:0!important;
+ }
+ html body #app .editor-tool-pane[data-pane="explore"].active .explore-social-links-container button{width:100%!important;min-height:44px!important;}
 }
 </style>
 </body>
