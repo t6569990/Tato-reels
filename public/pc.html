@@ -1923,7 +1923,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
           <button class="secondary" id="openTikTok" style="width:100%;margin-top:7px">Abrir TikTok</button>
           <div class="file-note" id="socialStatus">Inicia sesión previamente en tus redes desde este navegador. Después podrás abrir cada red y elegir el Reel exportado para publicarlo.</div>
         </div>
-        <div style="grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap"><button class="primary" id="exportSequenceBtn" style="flex:1">⚙️ Compilar proyecto</button><button class="primary" id="exportReelBtn" style="flex:1" disabled>🎬 Exportar Reel</button><button class="secondary" id="exportBtn" type="button" hidden>Exportar clip</button><button class="secondary" id="publishBtn" type="button" hidden>Preparar publicación</button></div>
+        <div style="grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap"><button class="secondary" id="restartReelBtn" type="button">↻ Volver a empezar</button><button class="primary" id="exportSequenceBtn" style="flex:1">⚙️ Compilar proyecto</button><button class="primary" id="exportReelBtn" style="flex:1" disabled>🎬 Exportar Reel</button><button class="secondary" id="exportBtn" type="button" hidden>Exportar clip</button><button class="secondary" id="publishBtn" type="button" hidden>Preparar publicación</button></div>
         <div class="export-progress" id="exportProgress" role="status" aria-live="polite"><div class="export-progress-head"><span id="exportProgressLabel">Preparando Reel completo…</span><strong id="exportProgressPercent">0%</strong></div><div class="export-progress-track"><div class="export-progress-fill" id="exportProgressFill"></div></div></div>
       </section>
     </div>
@@ -2977,6 +2977,43 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
  }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();setFloatingUploadStatus(error.message||'No se pudo compilar el proyecto',0,'error');toast(error.message||'No se pudo exportar el Reel completo.');}
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(activeClip){activeClip.pause();activeClip.removeAttribute('src');activeClip.load();}if(recorderStream)recorderStream.getTracks().forEach(track=>track.stop());if(stream)stream.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='⚙️ Compilar proyecto';}
 });
+
+function showFeedbackSurvey(){
+ if(document.getElementById('tatoFeedbackModal'))return;
+ const backdrop=document.createElement('div');backdrop.id='tatoFeedbackModal';backdrop.style.cssText='position:fixed;inset:0;z-index:100500;background:rgba(8,5,18,.78);display:grid;place-items:center;padding:18px;overflow:auto';
+ const card=document.createElement('section');card.style.cssText='width:min(100%,520px);max-height:90vh;overflow:auto;background:#171322;color:#fff;border:1px solid #62517e;border-radius:18px;padding:22px;box-shadow:0 20px 70px #0009;font:14px/1.5 Arial,sans-serif';
+ card.innerHTML='<h2 style="margin:0 0 6px;color:#ffe36a">🎬 ¿Cómo fue tu experiencia?</h2><p style="margin:0 0 16px;color:#d7cfe4">Tu opinión nos ayuda a mejorar Tato Reels Creator. No necesitas compartir tu video.</p><form id="tatoFeedbackForm"><label style="display:block;font-weight:700;margin-bottom:8px">Califica tu experiencia</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">'+[1,2,3,4,5].map(n=>'<label style="display:flex;align-items:center;gap:4px;padding:8px 10px;background:#292238;border-radius:9px"><input type="radio" name="rating" value="'+n+'" required> '+n+' ★</label>').join('')+'</div><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackLiked">¿Qué fue lo que más te gustó?</label><textarea id="tatoFeedbackLiked" name="liked" maxlength="300" rows="2" style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackImprove">¿Qué podemos mejorar?</label><textarea id="tatoFeedbackImprove" name="improve" maxlength="500" rows="2" style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackComment">Comentarios adicionales</label><textarea id="tatoFeedbackComment" name="comment" maxlength="1000" rows="3" placeholder="Cuéntanos lo que quieras..." style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px"><p id="tatoFeedbackStatus" role="status" style="min-height:20px;color:#ffd96a"></p><div style="display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap"><button type="button" id="tatoFeedbackLater" style="padding:10px 16px;border-radius:9px;border:1px solid #716581;background:transparent;color:#fff">Ahora no</button><button type="submit" id="tatoFeedbackSend" style="padding:10px 16px;border-radius:9px;border:0;background:#ffdc58;color:#201800;font-weight:800">Enviar opinión</button></div></form>';
+ backdrop.append(card);document.body.append(backdrop);
+ const close=()=>backdrop.remove();card.querySelector('#tatoFeedbackLater').addEventListener('click',close);backdrop.addEventListener('click',event=>{if(event.target===backdrop)close();});
+ card.querySelector('#tatoFeedbackForm').addEventListener('submit',async event=>{
+  event.preventDefault();const values=new FormData(event.currentTarget),status=card.querySelector('#tatoFeedbackStatus'),send=card.querySelector('#tatoFeedbackSend'),rating=values.get('rating');
+  if(!rating){status.textContent='Selecciona una calificación.';return;}send.disabled=true;send.textContent='Enviando…';status.textContent='Enviando tu opinión…';
+  try{const response=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating:Number(rating),liked:values.get('liked'),improve:values.get('improve'),comment:values.get('comment'),website:values.get('website')})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'No se pudo enviar tu opinión.');status.textContent='✓ ¡Gracias! Recibimos tu opinión.';send.textContent='Enviada';setTimeout(close,1600);}
+  catch(error){status.textContent=error.message||'No se pudo enviar. Inténtalo más tarde.';send.disabled=false;send.textContent='Reintentar envío';}
+ });
+}
+function promptFeedbackAfterExport(){window.setTimeout(showFeedbackSurvey,650);}
+function restartCurrentReel(){
+ if(!confirm('¿Volver a empezar? Se quitarán del editor los videos, fotos y ajustes del Reel actual. Tus borradores, bibliotecas, monedas y archivos ya descargados se conservarán.'))return;
+ try{
+  sequenceActive=false;sequencePaused=false;if(sequenceTimer)clearTimeout(sequenceTimer);sequenceTimer=null;video.pause();
+  const urls=new Set(timelineItems.map(item=>item.url).filter(Boolean));if(objectUrl)urls.add(objectUrl);urls.forEach(url=>{try{URL.revokeObjectURL(url);}catch(_){}});
+  timelineItems=[];extraClips=[];editSequence=[];selectedTimelineId=null;timelineDragId=null;sequenceIndex=0;sequenceAdvancedFromIndex=-1;objectUrl=null;window.tatoCompiledReelBlob=null;
+  video.pause();video.removeAttribute('src');video.load();video.style.display='';video.style.filter='none';video.classList.remove('show');
+  if(sequencePhoto){sequencePhoto.removeAttribute('src');sequencePhoto.style.display='none';sequencePhoto.style.transform='scale(1)';sequencePhoto.style.filter='none';}
+  $('sampleArt').style.display='';$('sampleArt').style.filter='none';$('videoStatus').textContent='Listo para crear un nuevo Reel';$('playBtn').textContent='▶';
+  ['fileInput','photosInput','clipsInput'].forEach(id=>{if($(id))$(id).value='';});renderClips();renderTimeline();$('sequenceNote').textContent='Aquí aparecerán tus videos y fotografías para organizarlos en la línea de tiempo.';
+  $('caption').value='Tu idea merece ser vista. ✨';$('hashtags').value='';updateCaption();$('animatedText').value='';const title=$('animatedTitle');if(title){title.style.left='';title.style.top='';title.style.transform='';}updateAnimatedTitle();
+  filter='none';document.querySelectorAll('[data-filter]').forEach(button=>button.classList.toggle('active',button.dataset.filter==='none'));photoScale=1;photoScaleApplied=false;textDecorationsApplied=false;$('photoScale').value='1';$('photoScaleValue').textContent='100%';
+  $('titleSize').value='28';$('titleColor').value='0';$('titleFont').value='Arial,sans-serif';$('titleAnimation').value='pop';$('titleDuration').value='5';updateAnimatedTitle();
+  document.querySelectorAll('[data-ratio]').forEach(button=>button.classList.toggle('active',button.dataset.ratio==='9/16'));$('videoFrame').style.aspectRatio='9/16';
+  $('textApplyStatus').textContent='Ajusta el texto y su posición; después pulsa Aplicar decoraciones.';$('imageApplyStatus').textContent='Los filtros se previsualizan; aplica la escala para incluirla al compilar.';
+  $('clearMusic').click();$('exportReelBtn').disabled=true;$('exportProgress').classList.remove('visible');$('exportProgressFill').style.width='0%';$('exportProgressPercent').textContent='0%';$('exportProgressLabel').textContent='Preparando Reel completo…';
+  $('timelineStatus').textContent='Cada clip conserva su propio recorte en esta sesión.';try{window.clearPlacedReelStickers?.();}catch(_){}const stickerLayer=document.getElementById('reelStickerLayer');if(stickerLayer)stickerLayer.replaceChildren();
+  finishFloatingUploadStatus('Editor listo para un nuevo Reel');toast('Listo. Puedes comenzar un nuevo Reel; tus borradores y bibliotecas siguen guardados.');
+ }catch(error){console.error('No se pudo reiniciar el Reel:',error);toast('No se pudo reiniciar por completo. Revisa la consola.');}
+}
+$('restartReelBtn')?.addEventListener('click',restartCurrentReel);
 async function saveCompiledReel(blob,filename){
  if(!(blob instanceof Blob)||!blob.size){toast('El Reel no contiene datos exportables. Vuelve a compilar el proyecto.');return;}
  const downloadBlob=()=>{
@@ -2984,13 +3021,13 @@ async function saveCompiledReel(blob,filename){
   a.href=url;a.download=filename;a.rel='noopener';a.style.display='none';
   document.body.append(a);a.click();a.remove();
   window.setTimeout(()=>URL.revokeObjectURL(url),120000);
-  toast('Descarga iniciada. Revisa la carpeta Descargas.');
+  toast('Descarga iniciada. Revisa la carpeta Descargas.');promptFeedbackAfterExport();
  };
  if(window.isSecureContext&&typeof window.showSaveFilePicker==='function'){
   try{
    const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Video WebM',accept:{'video/webm':['.webm']}}]});
    const writable=await handle.createWritable();await writable.write(blob);await writable.close();
-   toast('Reel guardado en la carpeta que elegiste.');return;
+   toast('Reel guardado en la carpeta que elegiste.');promptFeedbackAfterExport();return;
   }catch(error){
    if(error&&error.name==='AbortError')return;
    console.error('No se pudo usar el selector de archivos; se intentará descarga directa:',error);
