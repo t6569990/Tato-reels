@@ -1726,7 +1726,8 @@ body.settings-large-text .settings-window{font-size:1.12em}body.settings-high-co
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
 <div id="app">
 <header class="topbar">
-  <div class="brand"><img src="assets/tato-reels-icon.svg" alt="Icono de Tato Reels Creator" style="width:42px;height:42px;border-radius:12px;object-fit:cover">Tato <span style="color:#A98AEF">Reels</span> Creator <span class="construction-sign" aria-label="Under construction">UNDER CONSTRUCTION</span></div>
+  <div class="brand"><img src="assets/tato-reels-icon.svg" alt="Icono de Tato Reels Creator" style="width:42px;height:42px;border-radius:12px;object-fit:cover">Tato <span style="color:#A98AEF">Reels</span> Creator</div>
+  <span class="construction-sign" aria-label="Under construction">UNDER CONSTRUCTION</span>
   <div class="top-actions"><button class="coin-wallet-trigger" id="openRewards" type="button" aria-label="Abrir Reel Coins"><span>🪙</span><b id="coinBalance">0</b></button><button class="pill" id="helpBtn">Centro de ayuda</button><button class="pill" id="topDraftsBtn">Borradores</button><button class="settings-open" id="openSettings" type="button" aria-label="Abrir ajustes" title="Ajustes">⚙️</button><div class="avatar">T</div></div>
 </header>
 
@@ -3864,12 +3865,12 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 
 
 <style id="tato-construction-sign-20261108">
-.topbar .brand .construction-sign{
+.topbar>.construction-sign{
   display:inline-flex;
   align-items:center;
   justify-content:center;
   flex:0 0 auto;
-  margin-left:5px;
+  margin:0 10px 0 auto;
   padding:2px 7px;
   min-height:17px;
   border:1px solid rgba(222,169,65,.48);
@@ -3883,7 +3884,7 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
   white-space:nowrap;
 }
 @media(max-width:720px){
-  .topbar .brand .construction-sign{font-size:7px;padding:2px 5px;min-height:15px;margin-left:2px}
+  .topbar>.construction-sign{font-size:7px;padding:2px 5px;min-height:15px;margin:0 5px 0 auto}
 }
 </style>
 
