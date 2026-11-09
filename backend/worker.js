@@ -152,6 +152,23 @@ async function handle(request, env) {
     return json({ ok: true, message: "Contraseña actualizada. Ya puedes iniciar sesión." });
   }
 
+  if (request.method === "POST" && url.pathname === "/api/feedback") {
+    const origin=request.headers.get("Origin");
+    if(origin&&origin!==url.origin)return json({error:"Origen no permitido."},403);
+    if(Number(request.headers.get("Content-Length")||0)>12000)return json({error:"La opinión es demasiado larga."},413);
+    if(!env.RESEND_API_KEY||!env.FEEDBACK_TO)return json({error:"El buzón de opiniones aún no está configurado."},503);
+    const data=await body(request);
+    if(String(data.website||"").trim())return json({ok:true});
+    const rating=Number(data.rating),comment=String(data.comment||"").trim().slice(0,1000),liked=String(data.liked||"").trim().slice(0,300),improve=String(data.improve||"").trim().slice(0,500);
+    if(!Number.isInteger(rating)||rating<1||rating>5)return json({error:"Selecciona una calificación de 1 a 5 estrellas."},400);
+    if(!comment&&!liked&&!improve)return json({error:"Cuéntanos brevemente cómo fue tu experiencia."},400);
+    const details=[["Calificación",rating+"/5 estrellas"],["Lo que más gustó",liked||"Sin respuesta"],["Qué mejorar",improve||"Sin respuesta"],["Comentarios",comment||"Sin comentarios"],["Fecha",new Date().toISOString()]];
+    const html="<div style=\"font-family:Arial,sans-serif;color:#201a2b\"><h2>Opinión nueva · Tato Reels Creator</h2>"+details.map(([label,value])=>"<p><strong>"+escapeHtml(label)+":</strong><br>"+escapeHtml(value).replace(/\\n/g,"<br>")+"</p>").join("")+"</div>";
+    const response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{"Authorization":"Bearer "+env.RESEND_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({from:env.EMAIL_FROM||"Tato Reels <onboarding@resend.dev>",to:[env.FEEDBACK_TO],subject:"Opinión de usuario · Tato Reels Creator",html})});
+    if(!response.ok){console.error("Feedback email error",response.status,(await response.text()).slice(0,500));return json({error:"No se pudo enviar la opinión. Inténtalo más tarde."},502);}
+    return json({ok:true,message:"¡Gracias por compartir tu experiencia!"});
+  }
+
   if (request.method === "GET" && url.pathname === "/api/admin/stats") {
     const user = await currentUser(request, env);
     if (!user || !env.ADMIN_USER_ID || user.id !== env.ADMIN_USER_ID) return json({ error: "No autorizado." }, 403);
