@@ -1943,6 +1943,17 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
       <div class="tip"><div class="tip-icon">▣</div><div><b>Formato vertical</b><span>Graba en 9:16 para aprovechar toda la pantalla.</span></div></div>
       <div class="tip"><div class="tip-icon">#</div><div><b>Usa pocos hashtags</b><span>Elige etiquetas relacionadas con el tema del video.</span></div></div>
     </div>
+    <div class="rail-card social-duration-card" aria-label="Duración de referencia para redes sociales">
+      <div class="rail-title">⏱️ Duración para redes</div>
+      <table class="social-duration-table">
+        <tbody>
+          <tr><th scope="row"><span class="social-logo instagram" aria-label="Instagram">◎</span></th><td>180 s</td></tr>
+          <tr><th scope="row"><span class="social-logo facebook" aria-label="Facebook">f</span></th><td>∞</td></tr>
+          <tr><th scope="row"><span class="social-logo tiktok" aria-label="TikTok">♪</span></th><td>180 s</td></tr>
+          <tr><th scope="row"><span class="social-logo youtube" aria-label="YouTube">▶</span></th><td>180 s</td></tr>
+        </tbody>
+      </table>
+    </div>
     <div class="rail-card"><div class="rail-title">📦 Tu espacio de creación</div><div style="display:flex;justify-content:space-between;font-size:11px;margin:12px 0"><span style="color:light-dark(#817A8F,#A29BAD)">Borradores guardados</span><b id="draftCount">0</b></div><div style="height:6px;background:light-dark(#EEEAF3,#2A2635);border-radius:8px;overflow:hidden"><div style="width:12%;height:100%;background:#9875EA;border-radius:8px"></div></div><p style="font-size:10px;color:light-dark(#8A8396,#A29BAD);line-height:1.5;margin:12px 0 0">Los borradores de esta demo se conservan mientras la página permanezca abierta.</p></div>
     <div class="rail-card"><div class="rail-title">🛠️ Herramientas añadidas</div><div style="font-size:11px;color:light-dark(#817A8F,#A29BAD);line-height:1.7">✓ Biblioteca local de audio<br>✓ Texto animado en vista previa<br>✓ Recorte individual en la línea de tiempo<br>✓ Accesos a Instagram, Facebook y TikTok<br><br>La publicación automática y la exportación de secuencias con títulos requieren una siguiente integración.</div></div>
   </aside>
@@ -3894,6 +3905,65 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 /* El recortador permanece debajo de la vista previa, dentro del área visualizadora. */
 .floating-stage .workspace-trim-card{position:absolute!important;top:470px!important;left:50%!important;right:auto!important;bottom:auto!important;transform:translateX(-50%)!important;width:min(calc(100% - 32px),390px)!important;max-height:none!important;overflow:visible!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;z-index:4!important}
 .floating-stage .workspace-trim-card .trim-panel{position:relative!important;inset:auto!important;transform:none!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important}
+
+<style id="tato-pc-social-duration-table-and-trim-layout-20261108">
+/* Tabla compacta de duraciones en el lateral derecho, solo PC. */
+.social-duration-card{padding:14px!important}
+.social-duration-card .rail-title{margin-bottom:9px!important}
+.social-duration-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.social-duration-table th,.social-duration-table td{padding:7px 5px;border-bottom:1px solid light-dark(#EEEAF3,#302A3A);vertical-align:middle}
+.social-duration-table tr:last-child th,.social-duration-table tr:last-child td{border-bottom:0}
+.social-duration-table th{text-align:left;width:55%}
+.social-duration-table td{text-align:right;font-size:12.1px;font-weight:800;font-variant-numeric:tabular-nums}
+.social-logo{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:8px;font-size:17px;font-weight:900;line-height:1}
+.social-logo.instagram{color:#D94C91;background:#FCE8F2}
+.social-logo.facebook{color:#fff;background:#1877F2;font-family:Arial,sans-serif;font-size:20px}
+.social-logo.tiktok{color:#fff;background:#111;font-size:19px;text-shadow:1px 1px #25F4EE,-1px -1px #FE2C55}
+.social-logo.youtube{color:#fff;background:#F00;font-size:13px}
+@media(max-width:1050px){.social-duration-card{display:none!important}}
+/* Corrección definitiva: el recortador ya no queda cortado por el área de vista previa. */
+@media(min-width:721px){
+  .creator>.floating-stage{
+    min-height:1000px!important;
+    height:auto!important;
+    overflow:visible!important;
+    contain:none!important;
+  }
+  .creator>.floating-stage>.preview-shell{
+    top:42px!important;
+    left:50%!important;
+    transform:translateX(-50%)!important;
+    width:min(100% - 28px,340px)!important;
+    max-width:340px!important;
+  }
+  .creator>.floating-stage>.preview-shell>.video-frame{
+    max-height:610px!important;
+    height:auto!important;
+    aspect-ratio:9/16!important;
+  }
+  .creator>.floating-stage>.workspace-trim-card{
+    position:absolute!important;
+    top:665px!important;
+    left:50%!important;
+    right:auto!important;
+    bottom:auto!important;
+    transform:translateX(-50%)!important;
+    width:min(calc(100% - 32px),390px)!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:0!important;
+    z-index:4!important;
+  }
+  .creator>.floating-stage>.workspace-trim-card>.trim-panel{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:0!important;
+  }
+}
 </style>
 </body>
 </html>
