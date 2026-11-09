@@ -3764,6 +3764,7 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
     const input = document.getElementById('loginUser');
     const user = (input && input.value || '').trim();
     if (!user) return;
+    event.preventDefault();
     try { localStorage.setItem('tatoUsername', user); } catch (_) {}
     reveal(user);
   }, true);
