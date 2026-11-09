@@ -2921,6 +2921,16 @@ function loadExportOutroLogo(){
  if(!exportOutroLogoPromise)exportOutroLogoPromise=new Promise(resolve=>{const logo=new Image();logo.onload=()=>resolve(logo);logo.onerror=()=>resolve(null);logo.src=new URL('assets/tato-reels-icon.svg',document.baseURI).href;});
  return exportOutroLogoPromise;
 }
+function playExportOutroSound(audioContext,audioDestination){
+ if(!audioContext||!audioDestination)return;
+ const start=audioContext.currentTime+.04;
+ [[659.25,0,.13],[880,.14,.20]].forEach(([frequency,offset,duration])=>{
+  const oscillator=audioContext.createOscillator(),gain=audioContext.createGain(),when=start+offset;
+  oscillator.type='sine';oscillator.frequency.setValueAtTime(frequency,when);
+  gain.gain.setValueAtTime(.0001,when);gain.gain.exponentialRampToValueAtTime(.12,when+.018);gain.gain.exponentialRampToValueAtTime(.0001,when+duration);
+  oscillator.connect(gain);gain.connect(audioDestination);oscillator.start(when);oscillator.stop(when+duration+.02);
+ });
+}
 async function playExportOutro(ctx){
  const logo=await loadExportOutroLogo(),started=performance.now();
  await new Promise(resolve=>{
@@ -2961,7 +2971,7 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
     activeClip.pause();activeClip.removeAttribute('src');activeClip.load();activeClip=null;
    }
    cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);
-  }  await playExportOutro(ctx);recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});window.tatoCompiledReelBlob=blob;$('exportReelBtn').disabled=false;awardTatoCoin('proyecto compilado');updateProgress(100);progressLabel.textContent='¡Proyecto compilado! Ya puedes exportar tu Reel.';finishFloatingUploadStatus('Proyecto compilado · listo para exportar');toast('Proyecto compilado. Pulsa Exportar Reel para guardarlo en tu dispositivo.');$('videoStatus').textContent='Proyecto compilado';
+  }  playExportOutroSound(audioContext,audioOut);await playExportOutro(ctx);recorder.stop();await stopped;if(music)music.pause();const blob=new Blob(chunks,{type:mime});window.tatoCompiledReelBlob=blob;$('exportReelBtn').disabled=false;awardTatoCoin('proyecto compilado');updateProgress(100);progressLabel.textContent='¡Proyecto compilado! Ya puedes exportar tu Reel.';finishFloatingUploadStatus('Proyecto compilado · listo para exportar');toast('Proyecto compilado. Pulsa Exportar Reel para guardarlo en tu dispositivo.');$('videoStatus').textContent='Proyecto compilado';
  }catch(error){if(recorder&&recorder.state!=='inactive')recorder.stop();setFloatingUploadStatus(error.message||'No se pudo compilar el proyecto',0,'error');toast(error.message||'No se pudo exportar el Reel completo.');}
  finally{cancelAnimationFrame(raf);if(music)music.pause();if(activeClip){activeClip.pause();activeClip.removeAttribute('src');activeClip.load();}if(recorderStream)recorderStream.getTracks().forEach(track=>track.stop());if(stream)stream.getTracks().forEach(track=>track.stop());if(audioContext)await audioContext.close().catch(()=>{});btn.disabled=false;btn.textContent='⚙️ Compilar proyecto';}
 });
