@@ -4580,7 +4580,27 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 #exportProgress.visible{position:fixed!important;right:18px!important;bottom:92px!important;z-index:99998!important;width:min(360px,calc(100vw - 36px))!important;box-shadow:0 12px 35px #0007!important;border:1px solid #9a7be7!important}
 @media(max-width:720px){.editor-tool-pane[data-pane="publish"].active{grid-template-columns:repeat(2,minmax(0,1fr))!important}#exportProgress.visible{right:10px!important;bottom:78px!important;width:calc(100vw - 20px)!important}}
 @media(prefers-reduced-motion:reduce){.topbar>.construction-sign,.topbar>.construction-sign span{animation:none!important}}
-</style></body>
+</style><script id="tato-publish-import-card-relocation-20261109">
+(()=>{
+ const importButton=document.getElementById('importInspirationFiles');
+ const publishPane=document.querySelector('.editor-tool-pane[data-pane="publish"]');
+ if(!importButton||!publishPane)return;
+ const importCard=importButton.closest('.explore-import-card');
+ if(importCard)publishPane.append(importCard);
+ const labels={openInstagram:'◎ Instagram',openFacebook:'f Facebook',openTikTok:'♪ TikTok',importInspirationFiles:'📥 Importar videos'};
+ Object.entries(labels).forEach(([id,label])=>{const button=document.getElementById(id);if(button)button.textContent=label;});
+})();
+</script>
+<style id="tato-publish-grid-2x2-20261109">
+.editor-tool-pane[data-pane="publish"].active>.publish-network-card,
+.editor-tool-pane[data-pane="publish"].active>.explore-import-card{grid-column:auto!important;min-width:0!important}
+.editor-tool-pane[data-pane="publish"].active>.publish-network-card button,
+.editor-tool-pane[data-pane="publish"].active>.explore-import-card button{min-height:68px!important;font-size:14px!important;font-weight:800!important}
+.editor-tool-pane[data-pane="publish"].active>.publish-info-card,
+.editor-tool-pane[data-pane="publish"].active>.publish-status-card{grid-column:1/-1!important}
+@media(max-width:720px){.editor-tool-pane[data-pane="publish"].active>.publish-network-card button,.editor-tool-pane[data-pane="publish"].active>.explore-import-card button{min-height:56px!important;font-size:12px!important}}
+</style>
+</body>
 </html>
 
 
