@@ -2091,7 +2091,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   <div class="voice-recorder-actions"><button type="button" class="primary" id="startVoiceRecording">⏺ Grabar voz</button><button type="button" class="secondary" id="stopVoiceRecording" disabled>⏹ Detener</button></div>
   <audio id="voiceRecordingPreview" controls hidden></audio><div class="file-note" id="voiceRecordingStatus" role="status">Listo para grabar. El navegador solicitará permiso para usar el micrófono.</div>
   <button type="button" class="secondary" id="saveVoiceRecording" disabled>＋ Guardar voz en Biblioteca de música</button>`;
-  editCard.insertAdjacentElement('afterend',voiceCard);
+  sourceCard.insertAdjacentElement('afterend',voiceCard);
  }
  // IMAGEN: un contenedor común con filtros y escala en dos columnas.
  const imagePanel=[...panes.image.children].find(node=>node.classList?.contains('panel'));
@@ -4445,6 +4445,16 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 @media(max-width:720px){
   html body #app .editor-tool-pane[data-pane="image"]>.image-visual-tools-container{
     grid-template-columns:minmax(0,1fr)!important;
+  }
+}
+</style>
+
+<style id="tato-pc-voice-studio-under-library-wide-20261108">
+@media(min-width:721px){
+  html body #app .editor-tool-pane[data-pane="music"].active>.voice-studio-card{
+    grid-column:1/-1!important;grid-row:3!important;
+    width:100%!important;max-width:none!important;min-width:0!important;
+    justify-self:stretch!important;box-sizing:border-box!important;
   }
 }
 </style>
