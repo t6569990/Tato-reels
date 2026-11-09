@@ -46,6 +46,9 @@ jobs:
       - name: Generate Android project
         run: npx cap add android
 
+      - name: Generate native Android launcher icons
+        run: node scripts/install-android-icon.mjs
+
       - name: Sync Capacitor
         run: npx cap sync android
 
