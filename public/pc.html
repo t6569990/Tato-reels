@@ -4085,5 +4085,76 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
 </style>
 
 
+
+<style id="tato-pc-all-cards-readable-aligned-20261109">
+/* PC: tipografía más legible en todos los contenedores de contenido.
+   Encabezados y etiquetas centrados; textos explicativos justificados. */
+@media(min-width:721px){
+  html body #app .editor-tool-pane:not([data-pane="video"])>.panel,
+  html body #app .editor-tool-pane[data-pane="video"]>.panel:not(.timeline-panel),
+  html body #app .rail-card,
+  html body #app .side-card,
+  html body #app .post-card,
+  html body #app .creation-mode-card,
+  html body #app .workspace-switch-card,
+  html body #app .workspace-trim-card,
+  html body #app .trim-panel,
+  html body #app .tools-added-card{
+    text-align:center!important;
+  }
+  html body #app .editor-tool-pane>.panel h2,
+  html body #app .editor-tool-pane>.panel h3,
+  html body #app .editor-tool-pane>.panel h4,
+  html body #app .rail-card .rail-title,
+  html body #app .side-card h2,
+  html body #app .side-card h3,
+  html body #app .post-card h2,
+  html body #app .post-card h3,
+  html body #app .creation-mode-card b,
+  html body #app .tool-pane-heading h2{
+    text-align:center!important;
+    font-size:clamp(16px,1.12vw,20px)!important;
+    line-height:1.35!important;
+  }
+  html body #app .editor-tool-pane>.panel p,
+  html body #app .editor-tool-pane>.panel .file-note,
+  html body #app .editor-tool-pane>.panel .field-help,
+  html body #app .rail-card p,
+  html body #app .rail-card li,
+  html body #app .side-card p,
+  html body #app .post-card p,
+  html body #app .creation-mode-card span,
+  html body #app .workspace-trim-card p,
+  html body #app .trim-panel p,
+  html body #app .tools-added-copy{
+    font-size:clamp(14px,1vw,17px)!important;
+    line-height:1.6!important;
+    text-align:justify!important;
+    text-justify:inter-word;
+    overflow-wrap:anywhere!important;
+  }
+  html body #app .editor-tool-pane>.panel .field-label,
+  html body #app .editor-tool-pane>.panel label,
+  html body #app .rail-card label,
+  html body #app .side-card label{
+    font-size:clamp(13px,.95vw,16px)!important;
+    line-height:1.4!important;
+    text-align:center!important;
+  }
+  html body #app .editor-tool-pane>.panel button,
+  html body #app .rail-card button,
+  html body #app .side-card button,
+  html body #app .post-card button,
+  html body #app .creation-mode-card button{
+    font-size:clamp(13px,.95vw,16px)!important;
+    line-height:1.3!important;
+  }
+  /* La Línea de tiempo queda expresamente fuera de estos ajustes. */
+  html body #app .timeline-panel,
+  html body #app .timeline-panel *{
+    text-align:initial;
+  }
+}
+</style>
 </body>
 </html>
