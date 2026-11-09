@@ -3796,8 +3796,13 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     if(panel&&!card.querySelector('.trim-panel'))card.append(panel);
     extra.remove();
   });
-  /* La tarjeta queda justo debajo de la vista previa, dentro del área visualizadora. */
-  if(card.parentElement!==floatingStage)floatingStage.append(card);
+  /* La tarjeta de corte queda entre el contenedor del visualizador y el contenedor de modos de creación. */
+  const creationModes=creator.querySelector('.creation-modes-layout');
+  if(creationModes){
+    if(card.parentElement!==creator||card.nextElementSibling!==creationModes)creator.insertBefore(card,creationModes);
+  }else if(card.parentElement!==floatingStage){
+    floatingStage.insertAdjacentElement('afterend',card);
+  }
 
   const sync=()=>{
     const active=creator.querySelector('.editor-toolbar [data-pane].active, .editor-bottom-toolbar [data-pane].active');
@@ -4124,6 +4129,42 @@ html body #app .creator .editor-tool-pane[data-pane="video"] > .workspace-trim-c
     line-height:1.6!important;
     text-align:center!important;
   }
+}
+</style>
+
+<style id="tato-pc-trim-between-preview-and-creation-20261109">
+/* PC: recortador visible solo en VIDEO y colocado entre visualizador y modos de creación. */
+@media(min-width:721px){
+  html body #app .creator>.workspace-trim-card{
+    display:block;
+    position:relative!important;
+    inset:auto!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    order:2!important;
+    align-self:stretch!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+    margin:0 0 14px!important;
+    padding:0!important;
+    z-index:2!important;
+    box-sizing:border-box!important;
+  }
+  html body #app .creator>.workspace-trim-card>.trim-panel{
+    position:relative!important;
+    inset:auto!important;
+    width:100%!important;
+    max-width:none!important;
+    max-height:none!important;
+    overflow:visible!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  html body #app .creator>.floating-stage{margin-bottom:14px!important}
 }
 </style>
 </body>
