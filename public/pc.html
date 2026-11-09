@@ -2183,7 +2183,8 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  // Sustituir las acciones y la barra duplicada inferior por un único acceso discreto.
  const makeGoTop=()=>{const goTop=document.createElement('button');goTop.type='button';goTop.className='editor-go-top';goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';goTop.addEventListener('click',()=>toolbar.scrollIntoView({behavior:'smooth',block:'start'}));return goTop;};
  paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-top-'+name);goTopButtons[name]=goTop;});
-  if(timeline)paneNames.forEach(name=>timeline.append(goTopButtons[name]));
+  // Los accesos de retorno van dentro de cada herramienta; la Línea de tiempo queda intacta.
+  paneNames.forEach(name=>{if(panes[name])panes[name].append(goTopButtons[name]);});
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
@@ -2201,7 +2202,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
   previewSwitch.classList.toggle('active',!adding);addSwitch.classList.toggle('active',adding);
   previewSwitch.setAttribute('aria-pressed',String(!adding));addSwitch.setAttribute('aria-pressed',String(adding));
  }
- previewSwitch.addEventListener('click',()=>{activate('video');setWorkspace('preview');stage.scrollIntoView({behavior:'smooth',block:'start'});});
+ previewSwitch.addEventListener('click',()=>{activate('video');setWorkspace('preview');stage.scrollIntoView({behavior:'smooth',block:'nearest'});});
  addSwitch.addEventListener('click',()=>{activate('video');setWorkspace('add');const target=creationModesLayout?.querySelector('.creation-modes-panel')||creationModesLayout;if(target)target.scrollIntoView({behavior:'smooth',block:'start'});});
  tabs.forEach(b=>b.addEventListener('click',()=>{const name=b.dataset.pane;activate(name);setWorkspace(name==='video'?'add':'preview');}));
  activate('video');setWorkspace('preview');
@@ -4383,4 +4384,20 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
     z-index:1!important;
   }
 }
+</style>
+
+<style id="tato-pc-final-layout-stability-20261109">
+/* Mantener la barra superior por encima del editor y evitar que tape los controles al volver. */
+.topbar{position:sticky!important;top:0!important;z-index:5000!important}
+.editor-toolbar,.workspace-switch,.editor-shortcuts,.editor-bottom-toolbar,.editor-bottom-actions,.floating-stage{scroll-margin-top:calc(var(--tato-topbar-offset, 96px) + 14px)!important}
+/* El panel de herramientas conserva sus clics, pero nunca debe cubrir la navegación superior. */
+@media(min-width:721px){
+  .creator>.editor-panel{z-index:20!important}
+  .creator>.editor-panel>.creation-modes-layout{z-index:21!important}
+  .creator>.editor-panel .creation-mode-card,
+  .creator>.editor-panel .creation-mode-card button{z-index:22!important}
+}
+/* Los controles de retorno viven en sus paneles y no alteran la Línea de tiempo. */
+.editor-tool-pane>.editor-go-top{display:flex;position:relative;z-index:2;justify-self:center;align-self:center;margin:14px auto 4px}
+.editor-tool-pane>.editor-go-top[hidden]{display:none}
 </style>
