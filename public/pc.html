@@ -3000,6 +3000,13 @@ document.querySelectorAll('.editor-toolbar [data-pane="explore"], .editor-bottom
 
 renderTimeline();
 
+// Recuperación del último borrador local después de actualizar o reabrir el navegador.
+if(drafts.length&&!timelineItems.length){
+ const latestDraft=drafts[0];
+ window.setTimeout(()=>{
+  if(confirm('Hay un proyecto guardado en este dispositivo ('+(latestDraft.videoName||'Mi Reel')+'). ¿Deseas recuperarlo ahora?'))openDraft(latestDraft);
+ },350);
+}
 
 })();
 </script>
