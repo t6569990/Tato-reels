@@ -2168,7 +2168,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  }
 
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
- if(timeline){panes.video.append(timeline);paneNames.forEach(name=>timeline.append(goTopButtons[name]));}
+ if(timeline)panes.video.append(timeline);
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
  if(actionRow){
   const shortcuts=document.createElement('div');shortcuts.className='editor-shortcuts';shortcuts.setAttribute('aria-label','Accesos directos');
@@ -2182,6 +2182,7 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
  const makeGoTop=()=>{const goTop=document.createElement('button');goTop.type='button';goTop.className='editor-go-top';goTop.setAttribute('aria-label','Ir arriba');goTop.title='Ir arriba';goTop.innerHTML='<span aria-hidden="true">↑</span><small>IR ARRIBA</small>';goTop.addEventListener('click',()=>toolbar.scrollIntoView({behavior:'smooth',block:'start'}));return goTop;};
  const goTopButtons={};
 paneNames.forEach(name=>{const goTop=makeGoTop();goTop.classList.add('editor-go-top-'+name);goTopButtons[name]=goTop;});
+  if(timeline)paneNames.forEach(name=>timeline.append(goTopButtons[name]));
  const switchBar=document.createElement('div');switchBar.className='workspace-switch';switchBar.setAttribute('role','group');switchBar.setAttribute('aria-label','Cambiar área de trabajo');
  const previewCard=document.createElement('div');previewCard.className='workspace-switch-card';
  const addCard=document.createElement('div');addCard.className='workspace-switch-card';
@@ -2410,9 +2411,9 @@ function showExportOptions(blob,filename){
 }
 
 const APP_PUBLIC_URL=window.location.origin||window.location.href;
-$('shareWhatsApp').addEventListener('click',()=>window.open('https://wa.me/?text='+encodeURIComponent('Prueba Tato Reels: '+APP_PUBLIC_URL),'_blank','noopener'));
-$('shareFacebook').addEventListener('click',()=>window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(APP_PUBLIC_URL),'_blank','noopener'));
-$('copyAppLink').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(APP_PUBLIC_URL);toast('Enlace de Tato Reels copiado.');}catch(error){window.prompt('Copia el enlace de Tato Reels:',APP_PUBLIC_URL);}});
+$('shareWhatsApp')?.addEventListener('click',()=>window.open('https://wa.me/?text='+encodeURIComponent('Prueba Tato Reels: '+APP_PUBLIC_URL),'_blank','noopener'));
+$('shareFacebook')?.addEventListener('click',()=>window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(APP_PUBLIC_URL),'_blank','noopener'));
+$('copyAppLink')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(APP_PUBLIC_URL);toast('Enlace de Tato Reels copiado.');}catch(error){window.prompt('Copia el enlace de Tato Reels:',APP_PUBLIC_URL);}});
 const video = $('video');
 let objectUrl = null;
 let musicUrl = null;
