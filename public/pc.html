@@ -1664,11 +1664,16 @@ body.settings-large-text .settings-window{font-size:1.23em}body.settings-high-co
 </style>
 
 
-<style id="tato-pc-editor-scale-50-test">
-/* Prueba PC: reducir al 50% el bloque del editor sin ampliar su ancho ni desplazar la página. */
+<style id="tato-pc-preview-and-import-containers-scale-75">
+/* PC: reducir únicamente Vista previa y el bloque de importación; el resto conserva su tamaño normal. */
 @media (min-width:721px){
-  .creator{
-    zoom:0.5!important;
+  html body #app .creator>.preview-shell,
+  html body #app .creator>.editor-panel>.creation-modes-layout{
+    zoom:0.75!important;
+    box-sizing:border-box!important;
+  }
+  html body #app .creator{
+    zoom:1!important;
     width:100%!important;
     max-width:100%!important;
     box-sizing:border-box!important;
