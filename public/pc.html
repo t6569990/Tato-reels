@@ -4431,48 +4431,7 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 @media(max-width:620px){#tato-floating-upload-status{right:10px;bottom:10px;width:min(320px,calc(100vw - 20px));}}
 </style>
 
-<script id="tato-current-reel-autosave-pc">
-(()=>{
- const CURRENT_ID='tato-current-reel-autosave';
- let saveTimer=null,restoring=false,saveInProgress=false,saveAgain=false;
- async function saveCurrentReel(){
-  if(restoring)return;
-  const media=timelineItems.filter(item=>item.file instanceof Blob);
-  if(!media.length)return;
-  if(saveInProgress){saveAgain=true;return;}
-  saveInProgress=true;
-  try{
-   const settings=typeof draftSettings==='function'?draftSettings():{};
-   const record={id:CURRENT_ID,savedAt:new Date().toISOString(),settings,media:media.map(item=>({id:item.id,name:item.name||item.file.name,type:item.file.type||'',isMain:!!item.isMain,isImage:!!item.isImage,start:Number(item.start)||0,end:item.end==null?null:Number(item.end),duration:Number(item.duration)||0,blob:item.file})),music:typeof musicFile!=='undefined'&&musicFile instanceof Blob?{name:musicFile.name,type:musicFile.type,blob:musicFile}:null};
-   await writeDraftMedia(record);
-   const status=document.getElementById('timelineStatus');
-   if(status)status.dataset.autosaved='true';
-  }catch(error){console.error('No se pudo conservar el Reel automáticamente:',error);}
-  finally{saveInProgress=false;if(saveAgain){saveAgain=false;scheduleSave(250);}}
- }
- function scheduleSave(delay=1100){if(restoring)return;clearTimeout(saveTimer);saveTimer=setTimeout(saveCurrentReel,delay);}
- async function restoreCurrentReel(){
-  try{
-   const record=await readDraftMedia(CURRENT_ID);
-   if(!record||!Array.isArray(record.media)||!record.media.length)return;
-   if(timelineItems.length)return;
-   restoring=true;
-   await openDraft({mediaId:CURRENT_ID});
-  }catch(error){console.error('No se pudo recuperar el Reel anterior:',error);}
-  finally{restoring=false;}
- }
- ['fileInput','photosInput','clipsInput'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>scheduleSave(1800)));
- const track=document.getElementById('timelineTrack');
- track?.addEventListener('input',()=>scheduleSave(700));
- track?.addEventListener('change',()=>scheduleSave(700));
- track?.addEventListener('click',()=>scheduleSave(700));
- document.getElementById('applyTimelineBtn')?.addEventListener('click',()=>scheduleSave(350));
- document.getElementById('resetTimelineBtn')?.addEventListener('click',()=>scheduleSave(350));
- document.getElementById('saveBtn')?.addEventListener('click',()=>scheduleSave(900));
- window.addEventListener('pagehide',()=>{saveCurrentReel();});
- setTimeout(restoreCurrentReel,450);
-})();
-</script>
+<!-- Autosave PC independiente retirado: sus funciones estaban dentro de un IIFE distinto y no eran accesibles. -->
 </body>
 </html>
 
