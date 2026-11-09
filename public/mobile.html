@@ -1414,6 +1414,17 @@ p:not(.timeline-head p),
 #tato-floating-upload-status .tato-upload-status-track span.indeterminate{width:35%;animation:tatoUploadIndeterminate 1.15s ease-in-out infinite alternate}
 @keyframes tatoUploadIndeterminate{from{transform:translateX(0)}to{transform:translateX(180%)}}
 </style>
+
+<style id="tato-mobile-publish-web-sync-20261109">
+/* La navegación móvil adopta las seis herramientas principales de la web aprobada. */
+.editor-toolbar.editor-toolbar-one-line{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+.editor-toolbar.editor-toolbar-one-line .editor-tool{min-width:0!important;min-height:44px!important;white-space:normal!important}
+.editor-tool-pane[data-pane="publish"] .publish-share-card{grid-column:1/-1!important}
+.editor-tool-pane[data-pane="publish"] .publish-share-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;width:100%!important}
+.editor-tool-pane[data-pane="publish"] .publish-share-yellow{background:linear-gradient(135deg,#ffb34d,#f08a24)!important;border:1px solid #d77a22!important;color:#241407!important;font-weight:850!important}
+.mobile-publish-explore-shortcut{grid-column:1/-1!important;width:100%!important;min-height:42px!important;margin:4px 0!important}
+@media(max-width:360px){.editor-toolbar.editor-toolbar-one-line{gap:5px!important}.editor-toolbar.editor-toolbar-one-line .editor-tool{font-size:10.5px!important;padding:6px 3px!important}}
+</style>
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1457,15 +1468,11 @@ p:not(.timeline-head p),
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <nav class="editor-toolbar editor-toolbar-one-line" aria-label="Herramientas del editor">
-      <span class="toolbar-group-label">CREAR Y EDITAR</span>
       <button class="editor-tool active" data-pane="video"><span class="tool-icon">🎬</span><span class="tool-label">Video</span></button>
       <button class="editor-tool" data-pane="image"><span class="tool-icon">🖼️</span><span class="tool-label">Imagen</span></button>
       <button class="editor-tool" data-pane="text"><span class="tool-icon">✍️</span><span class="tool-label">Texto</span></button>
       <button class="editor-tool" data-pane="music"><span class="tool-icon">🎵</span><span class="tool-label">Música</span></button>
       <button class="editor-tool" data-pane="format"><span class="tool-icon">📐</span><span class="tool-label">Formato</span></button>
-      <span class="toolbar-group-label secondary-tools-label">COMPARTIR Y DESCUBRIR</span>
-      <button class="editor-tool" data-pane="explore"><span class="tool-icon">🌐</span><span class="tool-label">Explorar</span></button>
-      <button class="editor-tool" data-pane="share"><span class="tool-icon">🔗</span><span class="tool-label">Compartir</span></button>
       <button class="editor-tool" data-pane="publish"><span class="tool-icon">📣</span><span class="tool-label">Publicar</span></button>
     </nav>
     <div class="creator">
@@ -1657,7 +1664,7 @@ p:not(.timeline-head p),
  if(!creator||!preview||!trim||!editor||!toolbar)return;
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
  creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';trimCard.append(trim);stage.append(trimCard);
- const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
+ const paneNames=['video','text','music','image','format','explore','publish'],panes={};
  const paneWrap=document.createElement('div');paneWrap.className='editor-tool-panes';
  paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;p.setAttribute('aria-label',name);const meta={"video":["🎬","VIDEO","Carga, organiza y recorta tus clips."],"image":["🖼️","IMAGEN","Ajustes visuales y recursos gráficos."],"text":["✍️","TEXTO","Contenido, títulos y texto sobre el Reel."],"music":["🎵","MÚSICA","Biblioteca, selección y mezcla de audio."],"format":["📐","FORMATO","Proporción y formato de exportación."],"explore":["🌐","EXPLORAR","Inspiración y biblioteca de referencias."],"share":["🔗","COMPARTIR","Comparte Tato Reels."],"publish":["📣","PUBLICAR","Prepara tu salida a redes sociales."]}[name];const heading=document.createElement('header');heading.className='tool-pane-heading';const icon=document.createElement('span');icon.className='tool-pane-icon';icon.textContent=meta[0];const copy=document.createElement('div');const title=document.createElement('h2');title.textContent=meta[1];const description=document.createElement('p');description.textContent=meta[2];copy.append(title,description);heading.append(icon,copy);p.append(heading);panes[name]=p;paneWrap.append(p);});
  const timeline=editor.querySelector(':scope > .timeline-panel');
@@ -1671,8 +1678,17 @@ p:not(.timeline-head p),
   else if(/Texto animado|Detalles del Reel/i.test(h))key='text';
   else if(/Formato de descarga|^📐\s*Formato/i.test(h))key='format';
   else if(/Explorar redes y biblioteca/i.test(h))key='explore';
-  else if(/Compartir Tato Reels/i.test(h))key='share';
   else if(/Salida a redes/i.test(h))key='publish';
+  if(/Compartir Tato Reels/i.test(h)){
+   card.classList.add('publish-share-card');
+   const whatsapp=card.querySelector('#shareWhatsApp'),facebook=card.querySelector('#shareFacebook'),copyLink=card.querySelector('#copyAppLink');
+   if(whatsapp&&facebook){
+    const actions=document.createElement('div');actions.className='publish-share-actions';
+    whatsapp.classList.add('publish-share-yellow');facebook.classList.add('publish-share-yellow');
+    actions.append(whatsapp,facebook);card.insertBefore(actions,copyLink||null);
+   }
+   panes.publish.append(card);return;
+  }
   panes[key].append(card);
  });
  // Botón principal: debajo de "Nombre de creador" en "Detalles del Reel".
@@ -1703,6 +1719,17 @@ p:not(.timeline-head p),
   if(creativityCard&&sidebarClear.parentElement!==sidebar) creativityCard.after(sidebarClear);
   else if(creativityCard&&sidebarClear.previousElementSibling!==creativityCard) creativityCard.after(sidebarClear);
  }
+ // En móvil, Publicar reúne compartir, importación y salida a redes como en la web aprobada.
+ const exploreShortcut=document.createElement('button');
+ exploreShortcut.type='button';exploreShortcut.className='secondary mobile-publish-explore-shortcut';
+ exploreShortcut.textContent='🌐 Explorar redes y biblioteca';
+ exploreShortcut.addEventListener('click',()=>{activate('explore');setWorkspace('preview');});
+ const explorePaneReturn=document.createElement('button');
+ explorePaneReturn.type='button';explorePaneReturn.className='secondary mobile-publish-explore-shortcut';
+ explorePaneReturn.textContent='← Volver a Publicar';
+ explorePaneReturn.addEventListener('click',()=>{activate('publish');setWorkspace('preview');});
+ panes.publish.append(exploreShortcut);
+ panes.explore.append(explorePaneReturn);
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline)editor.append(timeline);
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
