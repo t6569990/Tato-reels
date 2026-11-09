@@ -69,6 +69,15 @@ async function body(request) {
 }
 async function handle(request, env) {
   const url = new URL(request.url);
+  const feedbackOrigins = new Set([url.origin, "https://localhost", "http://localhost", "capacitor://localhost"]);
+  const requestOrigin = request.headers.get("Origin");
+  const feedbackCorsHeaders = requestOrigin && feedbackOrigins.has(requestOrigin)
+    ? { "Access-Control-Allow-Origin": requestOrigin, "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type", "Vary": "Origin" }
+    : {};
+  if (url.pathname === "/api/feedback" && request.method === "OPTIONS") {
+    if (requestOrigin && !feedbackOrigins.has(requestOrigin)) return new Response(null, { status: 403 });
+    return new Response(null, { status: 204, headers: feedbackCorsHeaders });
+  }
   if (!url.pathname.startsWith("/api/")) return env.ASSETS ? env.ASSETS.fetch(request) : new Response("Tato Reels API", { status: 200 });
 
   if (request.method === "GET" && url.pathname === "/api/me") {
@@ -153,20 +162,19 @@ async function handle(request, env) {
   }
 
   if (request.method === "POST" && url.pathname === "/api/feedback") {
-    const origin=request.headers.get("Origin");
-    if(origin&&origin!==url.origin)return json({error:"Origen no permitido."},403);
-    if(Number(request.headers.get("Content-Length")||0)>12000)return json({error:"La opinión es demasiado larga."},413);
-    if(!env.RESEND_API_KEY||!env.FEEDBACK_TO)return json({error:"El buzón de opiniones aún no está configurado."},503);
+    if(requestOrigin&&!feedbackOrigins.has(requestOrigin))return json({error:"Origen no permitido."},403);
+    if(Number(request.headers.get("Content-Length")||0)>12000)return json({error:"La opinión es demasiado larga."},413,feedbackCorsHeaders);
+    if(!env.RESEND_API_KEY||!env.FEEDBACK_TO)return json({error:"El buzón de opiniones aún no está configurado."},503,feedbackCorsHeaders);
     const data=await body(request);
-    if(String(data.website||"").trim())return json({ok:true});
+    if(String(data.website||"").trim())return json({ok:true},200,feedbackCorsHeaders);
     const rating=Number(data.rating),comment=String(data.comment||"").trim().slice(0,1000),liked=String(data.liked||"").trim().slice(0,300),improve=String(data.improve||"").trim().slice(0,500);
-    if(!Number.isInteger(rating)||rating<1||rating>5)return json({error:"Selecciona una calificación de 1 a 5 estrellas."},400);
-    if(!comment&&!liked&&!improve)return json({error:"Cuéntanos brevemente cómo fue tu experiencia."},400);
+    if(!Number.isInteger(rating)||rating<1||rating>5)return json({error:"Selecciona una calificación de 1 a 5 estrellas."},400,feedbackCorsHeaders);
+    if(!comment&&!liked&&!improve)return json({error:"Cuéntanos brevemente cómo fue tu experiencia."},400,feedbackCorsHeaders);
     const details=[["Calificación",rating+"/5 estrellas"],["Lo que más gustó",liked||"Sin respuesta"],["Qué mejorar",improve||"Sin respuesta"],["Comentarios",comment||"Sin comentarios"],["Fecha",new Date().toISOString()]];
     const html="<div style=\"font-family:Arial,sans-serif;color:#201a2b\"><h2>Opinión nueva · Tato Reels Creator</h2>"+details.map(([label,value])=>"<p><strong>"+escapeHtml(label)+":</strong><br>"+escapeHtml(value).replace(/\\n/g,"<br>")+"</p>").join("")+"</div>";
     const response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{"Authorization":"Bearer "+env.RESEND_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({from:env.EMAIL_FROM||"Tato Reels <onboarding@resend.dev>",to:[env.FEEDBACK_TO],subject:"Opinión de usuario · Tato Reels Creator",html})});
-    if(!response.ok){console.error("Feedback email error",response.status,(await response.text()).slice(0,500));return json({error:"No se pudo enviar la opinión. Inténtalo más tarde."},502);}
-    return json({ok:true,message:"¡Gracias por compartir tu experiencia!"});
+    if(!response.ok){console.error("Feedback email error",response.status,(await response.text()).slice(0,500));return json({error:"No se pudo enviar la opinión. Inténtalo más tarde."},502,feedbackCorsHeaders);}
+    return json({ok:true,message:"¡Gracias por compartir tu experiencia!"},200,feedbackCorsHeaders);
   }
 
   if (request.method === "GET" && url.pathname === "/api/admin/stats") {
