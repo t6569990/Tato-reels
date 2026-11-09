@@ -2471,13 +2471,13 @@ function showMediaInVisualizer(item){
 }
 function addMediaFiles(fileList,mode){
  const files=Array.from(fileList||[]);
- if(files.length)setFloatingUploadStatus('Preparando '+files.length+' archivo(s) multimedia…',null,'working');
  if(!files.length)return;
- let added=0,skipped=0,firstAdded=null;
+ setFloatingUploadStatus('Preparando '+files.length+' archivo(s) multimedia…',null,'working');
+ let added=0,skipped=0,failed=0,firstAdded=null;
  if(mode==='video'){
   const file=files.find(entry=>getMediaKind(entry)==='video');
   skipped=files.length-(file?1:0);
-  if(!file){toast('Selecciona un video MP4, MOV o WebM válido.');return;}
+  if(!file){toast('Selecciona un video MP4, MOV o WebM válido.');finishFloatingUploadStatus('No se encontró un video compatible');return;}
   const previousMain=timelineItems.find(item=>item.isMain);
   if(previousMain){
    const oldIndex=timelineItems.indexOf(previousMain);
@@ -2485,26 +2485,33 @@ function addMediaFiles(fileList,mode){
    if(previousMain.url&&previousMain.url!==objectUrl&&!timelineItems.some(item=>item.url===previousMain.url))URL.revokeObjectURL(previousMain.url);
   }
   if(objectUrl){const oldUrl=objectUrl;objectUrl=null;if(!timelineItems.some(item=>item.url===oldUrl))URL.revokeObjectURL(oldUrl);}
-  const url=URL.createObjectURL(file);
-  const item={id:'main-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:file.name,url,file,isMain:true,isImage:false,start:0,end:null,duration:0};
-  objectUrl=url;timelineItems.unshift(item);firstAdded=item;added=1;
-  inspectTimelineClip(item);
+  try{
+   const url=URL.createObjectURL(file);
+   const item={id:'main-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),name:file.name,url,file,isMain:true,isImage:false,start:0,end:null,duration:0};
+   objectUrl=url;timelineItems.unshift(item);firstAdded=item;added=1;inspectTimelineClip(item);
+  }catch(error){failed++;console.error('No se pudo agregar el video:',file.name,error);}
  }else{
   files.forEach((file,index)=>{
-   const kind=getMediaKind(file);
-   if(mode==='photos'&&kind!=='image'||mode==='hybrid'&&!kind){skipped++;return;}
-   if(mode==='photos'&&kind!=='image'){skipped++;return;}
-   const isImage=kind==='image';
-   const url=URL.createObjectURL(file);
-   const becomesMain=kind==='video'&&!timelineItems.some(entry=>entry.isMain);
-   const item={id:(isImage?'photo-':'clip-')+Date.now()+'-'+index+'-'+Math.random().toString(36).slice(2,7),name:file.name,file,url,isMain:becomesMain,isImage,start:0,end:isImage?3:null,duration:isImage?3:0};
-   timelineItems.push(item);
-   if(becomesMain)objectUrl=url;
-   if(!firstAdded)firstAdded=item;
-   inspectTimelineClip(item);added++;
+   try{
+    const kind=getMediaKind(file);
+    if((mode==='photos'&&kind!=='image')||(mode==='hybrid'&&!kind)){skipped++;return;}
+    const isImage=kind==='image';
+    const url=URL.createObjectURL(file);
+    const becomesMain=kind==='video'&&!timelineItems.some(entry=>entry.isMain);
+    const item={id:(isImage?'photo-':'clip-')+Date.now()+'-'+index+'-'+Math.random().toString(36).slice(2,7),name:file.name,file,url,isMain:becomesMain,isImage,start:0,end:isImage?3:null,duration:isImage?3:0};
+    timelineItems.push(item);
+    if(becomesMain)objectUrl=url;
+    if(!firstAdded)firstAdded=item;
+    inspectTimelineClip(item);added++;
+   }catch(error){failed++;console.error('No se pudo agregar el archivo multimedia:',file?.name||'archivo',error);}
   });
  }
- if(!added){toast('No se encontraron archivos compatibles. Usa videos MP4, MOV o WebM y fotos JPG, PNG o WebP.');return;}
+ if(!added){
+  renderClips();renderTimeline();
+  toast(failed?'No se pudieron procesar los archivos seleccionados. Revisa la consola.':'No se encontraron archivos compatibles. Usa videos MP4, MOV o WebM y fotos JPG, PNG o WebP.');
+  setFloatingUploadStatus('No se pudieron agregar archivos',100,'error');
+  return;
+ }
  syncExtraClipsFromTimeline();
  selectedTimelineId=firstAdded.id;
  editSequence=[];
@@ -2514,6 +2521,7 @@ function addMediaFiles(fileList,mode){
  if(mode==='video')toast('Video cargado y agregado al visualizador.');
  else toast(added+' archivo(s) agregado(s) al visualizador y a la secuencia.');
  if(skipped)toast(skipped+' archivo(s) omitido(s) por formato o modo no compatible.');
+ if(failed)toast(failed+' archivo(s) no se pudieron procesar; los demás sí se conservaron.');
  finishFloatingUploadStatus(added+' archivo(s) listo(s) para editar');
 }
 function renderClips(){const list=$('clipList');list.innerHTML='';const main=timelineItems.find(item=>item.isMain);if(main){const row=document.createElement('div');row.className='clip-item main-clip-item';const name=document.createElement('strong');name.textContent='1. '+main.file.name+' · video principal';row.append(name);list.append(row);}if(!extraClips.length&&!main){list.innerHTML='<div class="file-note">Aún no agregas clips adicionales.</div>';return;}extraClips.forEach((clip,index)=>{const row=document.createElement('div');row.className='clip-item';const name=document.createElement('strong');name.textContent=(index+(main?2:1))+'. '+clip.file.name;row.append(name);[['↑','up'],['↓','down'],['×','remove']].forEach(([label,action])=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.dataset.action=action;button.dataset.index=index;button.setAttribute('aria-label',action+' '+clip.file.name);row.append(button);});list.append(row);});}
