@@ -3121,7 +3121,7 @@ if(drafts.length&&!timelineItems.length){
  }
  function renderWheel(){
   const s=wheelState(),status=document.getElementById('wheelStatus'),button=document.getElementById('spinWheel');
-  if(status){let detail=s.remaining<5?'Siguiente tirada en '+Math.ceil(Math.max(0,300000-(Date.now()-s.lastRefillAt))/1000)+' min.':'Tienes el máximo de 5 tiradas.';status.textContent='Tienes '+s.remaining+' de 5 tiradas disponibles. '+detail;}
+  if(status){let detail=s.remaining<5?'Siguiente tirada en '+Math.ceil(Math.max(0,300000-(Date.now()-s.lastRefillAt))/60000)+' min.':'Tienes el máximo de 5 tiradas.';status.textContent='Tienes '+s.remaining+' de 5 tiradas disponibles. '+detail;}
   if(button)button.disabled=s.remaining<=0;
  }
  function renderShop(){
