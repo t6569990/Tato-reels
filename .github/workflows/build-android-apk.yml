@@ -6,14 +6,17 @@ on:
     branches:
       - "main"
       - "preparacion-app-movil"
-      - "feature/admob-apk-test-2026-11-10"\n      - "feature/admob-integration"
+      - "feature/admob-apk-test-2026-11-10"
+      - "feature/admob-integration"
     paths:
       - "public/mobile.html"
       - "public/assets/**"
       - "package.json"
       - "capacitor.config.json"
       - "scripts/prepare-android.mjs"
-      - "scripts/apply-android-icon.mjs"\n      - "scripts/admob-entry.js"\n      - "scripts/configure-admob-android.mjs"
+      - "scripts/apply-android-icon.mjs"
+      - "scripts/admob-entry.js"
+      - "scripts/configure-admob-android.mjs"
       - ".github/workflows/build-android-apk.yml"
 
 permissions:
@@ -50,6 +53,9 @@ jobs:
 
       - name: Generate Android project
         run: npx cap add android
+
+      - name: Configure Google AdMob test application ID
+        run: npm run configure:admob
 
       - name: Apply official Tato Reels launcher icon
         run: npm run apply:android-icon
