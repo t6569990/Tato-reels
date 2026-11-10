@@ -19,7 +19,7 @@ const admobBootstrap = `
 <script type="module" src="./assets/admob.bundle.js"></script>
 `;
 if (!html.includes("admob.bundle.js")) {
-  html = html.replace("</body>", admobBootstrap + "\\n</body>");
+  html = html.replace("</body>", admobBootstrap + "\n</body>");
   await writeFile(indexPath, html);
 }
 
