@@ -1,7 +1,11 @@
-
 name: Diagnostico DNS y conexion
 
 on:
+  push:
+    branches:
+      - cleanup/approved-web-base-2026-11-10
+    paths:
+      - .github/workflows/diagnostico-dns.yml
   workflow_dispatch:
 
 permissions:
@@ -38,4 +42,3 @@ jobs:
           npm ping --registry=https://registry.npmjs.org/ || true
 
           echo "=== FIN DEL DIAGNOSTICO ==="
-
