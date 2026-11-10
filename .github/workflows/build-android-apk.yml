@@ -39,8 +39,11 @@ jobs:
         with:
           packages: platform-tools platforms;android-35 build-tools;35.0.0
 
-      - name: Install dependencies
-        run: npm install
+      - name: Generate lockfile from pinned Capacitor dependencies
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Install exact dependency tree for this build
+        run: npm ci --no-audit --no-fund
 
       - name: Prepare fresh web bundle from approved mobile source
         run: npm run build:android
