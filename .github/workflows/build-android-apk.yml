@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "main"
+      - "preparacion-app-movil"
     paths:
       - "public/mobile.html"
       - "public/assets/**"
