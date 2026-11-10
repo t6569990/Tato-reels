@@ -6,12 +6,14 @@ on:
     branches:
       - "main"
       - "preparacion-app-movil"
+      - "feature/admob-apk-test-2026-11-10"
     paths:
       - "public/mobile.html"
       - "public/assets/**"
       - "package.json"
       - "capacitor.config.json"
       - "scripts/prepare-android.mjs"
+      - "scripts/apply-android-icon.mjs"
       - ".github/workflows/build-android-apk.yml"
 
 permissions:
@@ -48,6 +50,9 @@ jobs:
 
       - name: Generate Android project
         run: npx cap add android
+
+      - name: Apply official Tato Reels launcher icon
+        run: npm run apply:android-icon
 
       - name: Sync Capacitor
         run: npx cap sync android
