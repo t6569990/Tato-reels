@@ -1,8 +1,13 @@
 name: Build Tato Reels Creator APK (Release)
 
 on:
-  # Manual builds only: automatic builds from main are disabled until the approved
-  # web source is deliberately promoted. Old APK branches are never build sources.
+  # Run once when this workflow is updated on the approved source branch.
+  # Manual runs remain available where GitHub exposes workflow_dispatch.
+  push:
+    branches:
+      - cleanup/approved-web-base-2026-11-10
+    paths:
+      - .github/workflows/build-android-apk.yml
   workflow_dispatch:
 
 permissions:
@@ -10,7 +15,9 @@ permissions:
 
 jobs:
   build-release-apk:
+    if: github.ref == 'refs/heads/cleanup/approved-web-base-2026-11-10'
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - name: Enforce approved web source branch
         shell: bash
@@ -54,7 +61,7 @@ jobs:
       - name: Sync fresh Capacitor project
         run: npx cap sync android
 
-      - name: Build release APK and create local test signing key
+      - name: Build release APK and debug APK
         working-directory: android
         run: ./gradlew assembleDebug assembleRelease
 
