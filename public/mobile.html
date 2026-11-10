@@ -1454,6 +1454,135 @@ p:not(.timeline-head p),
  #app .sub,#app .compact-note{font-size:14.5px!important;line-height:1.45!important;text-align:center!important}
 }
 </style>
+
+
+<style id="tato-creation-heading-match-trim-width">
+/* El encabezado ocupa las dos columnas de la herramienta Video, dentro de su contenedor */
+.creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
+  display:block!important;
+  grid-column:1 / -1!important;
+  grid-row:auto!important;
+  justify-self:stretch!important;
+  align-self:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+</style>
+
+<style id="tato-creation-heading-match-trim-width-v2">
+/* Igualar el ancho de ELIGE CÓMO CREAR TU REEL al contenedor de Recorta este video.
+   En escritorio se extiende sobre la columna izquierda y el espacio entre columnas;
+   en móvil conserva el ancho completo disponible, sin alterar las tarjetas ni su orden. */
+@media(min-width:901px){
+  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
+    width:calc(100% + 294px)!important;
+    max-width:none!important;
+    margin-left:-294px!important;
+  }
+}
+@media(min-width:721px) and (max-width:900px){
+  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
+    width:calc(100% + 251px)!important;
+    max-width:none!important;
+    margin-left:-251px!important;
+  }
+}
+@media(max-width:720px){
+  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
+    width:100%!important;
+    max-width:100%!important;
+    margin-left:0!important;
+  }
+}
+</style>
+
+<style id="tato-creation-modes-two-column-layout">
+/* Distribución aislada de los tres modos: dos arriba y HÍBRIDO a todo lo ancho. */
+.creation-modes-layout{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-auto-flow:row!important;
+  align-items:stretch!important;
+  gap:12px!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+  grid-column:1 / -1!important;
+}
+.creation-modes-layout > .creation-modes-panel{
+  /* El encabezado ocupa todo el ancho disponible, de margen a margen. */
+  display:block!important;
+  grid-column:1 / -1!important;
+  justify-self:stretch!important;
+  align-self:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+.creation-modes-layout > .creation-modes-panel h3,
+.creation-modes-layout > .creation-modes-panel .file-note{
+  width:100%!important;
+  max-width:none!important;
+}
+.creation-modes-layout > .creation-mode-card{
+  grid-column:auto!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+.creation-modes-layout > .creation-mode-card:has(#addClipsBtn){
+  grid-column:1 / -1!important;
+  justify-self:stretch!important;
+}
+@media(max-width:720px){
+  .creation-modes-layout{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:9px!important;
+  }
+  .creation-modes-layout > .creation-modes-panel,
+  .creation-modes-layout > .creation-mode-card,
+  .creation-modes-layout > .creation-mode-card:has(#addClipsBtn){
+    grid-column:1 / -1!important;
+  }
+}
+</style>
+
+<style id="tato-trim-below-visualizer-final-20261108">
+/* Corrección definitiva: el recortador queda en flujo normal, debajo del visualizador. */
+.creator{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important}
+.creator>.floating-stage{order:1!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;contain:none!important;padding:42px 12px 14px!important;box-sizing:border-box!important}
+.creator>.floating-stage .preview-shell{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;transform:none!important;order:1!important;align-self:center!important;width:min(100%,245px)!important;max-width:245px!important;max-height:none!important;margin:0 auto!important;z-index:1!important}
+.creator>.floating-stage .preview-shell .video-frame{width:100%!important;height:auto!important;aspect-ratio:9/16!important;max-height:410px!important}
+.creator>.floating-stage>.workspace-trim-card{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;order:2!important;align-self:stretch!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;z-index:1!important;box-sizing:border-box!important}
+.creator>.floating-stage>.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;box-sizing:border-box!important}
+.creator>.workspace-trim-card{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;order:2!important;align-self:stretch!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;z-index:1!important;box-sizing:border-box!important}
+.creator>.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;box-sizing:border-box!important}
+@media(max-width:720px){.creator{gap:9px!important}.creator>.floating-stage{padding:38px 8px 10px!important;gap:9px!important}.creator>.floating-stage .preview-shell{width:min(100%,210px)!important;max-width:210px!important}.creator>.floating-stage .preview-shell .video-frame{max-height:350px!important}}
+</style>
+
+<style id="tato-construction-sign-mobile-20261109">
+/* Aviso discreto en la cabecera móvil, entre la marca y el contador de monedas. */
+.topbar>.construction-sign{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  margin:0 5px 0 auto;padding:2px 5px;min-height:15px;
+  border:1px solid rgba(222,169,65,.48);border-radius:4px;
+  background:rgba(222,169,65,.10);color:#C99A43;
+  font-size:7.7px;font-weight:800;line-height:1;letter-spacing:.45px;white-space:nowrap;
+}
+@media(max-width:420px){.topbar>.construction-sign{font-size:6.8px;padding:2px 4px;margin-left:2px}}
+</style>
+
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -2830,132 +2959,3 @@ renderTimeline();
 </script>
 </body>
 </html>
-
-<style id="tato-creation-heading-match-trim-width">
-/* El encabezado ocupa las dos columnas de la herramienta Video, dentro de su contenedor */
-.creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
-  display:block!important;
-  grid-column:1 / -1!important;
-  grid-row:auto!important;
-  justify-self:stretch!important;
-  align-self:stretch!important;
-  width:100%!important;
-  max-width:none!important;
-  min-width:0!important;
-  box-sizing:border-box!important;
-  margin-left:0!important;
-  margin-right:0!important;
-}
-</style>
-
-
-<style id="tato-creation-heading-match-trim-width-v2">
-/* Igualar el ancho de ELIGE CÓMO CREAR TU REEL al contenedor de Recorta este video.
-   En escritorio se extiende sobre la columna izquierda y el espacio entre columnas;
-   en móvil conserva el ancho completo disponible, sin alterar las tarjetas ni su orden. */
-@media(min-width:901px){
-  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
-    width:calc(100% + 294px)!important;
-    max-width:none!important;
-    margin-left:-294px!important;
-  }
-}
-@media(min-width:721px) and (max-width:900px){
-  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
-    width:calc(100% + 251px)!important;
-    max-width:none!important;
-    margin-left:-251px!important;
-  }
-}
-@media(max-width:720px){
-  .creator>.editor-panel>.editor-tool-panes>.editor-tool-pane[data-pane="video"]>.creation-modes-panel{
-    width:100%!important;
-    max-width:100%!important;
-    margin-left:0!important;
-  }
-}
-</style>
-
-
-<style id="tato-creation-modes-two-column-layout">
-/* Distribución aislada de los tres modos: dos arriba y HÍBRIDO a todo lo ancho. */
-.creation-modes-layout{
-  display:grid!important;
-  grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  grid-auto-flow:row!important;
-  align-items:stretch!important;
-  gap:12px!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  margin:0!important;
-  padding:0!important;
-  box-sizing:border-box!important;
-  grid-column:1 / -1!important;
-}
-.creation-modes-layout > .creation-modes-panel{
-  /* El encabezado ocupa todo el ancho disponible, de margen a margen. */
-  display:block!important;
-  grid-column:1 / -1!important;
-  justify-self:stretch!important;
-  align-self:stretch!important;
-  width:100%!important;
-  max-width:none!important;
-  min-width:0!important;
-  margin:0!important;
-  box-sizing:border-box!important;
-}
-.creation-modes-layout > .creation-modes-panel h3,
-.creation-modes-layout > .creation-modes-panel .file-note{
-  width:100%!important;
-  max-width:none!important;
-}
-.creation-modes-layout > .creation-mode-card{
-  grid-column:auto!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  margin:0!important;
-  box-sizing:border-box!important;
-}
-.creation-modes-layout > .creation-mode-card:has(#addClipsBtn){
-  grid-column:1 / -1!important;
-  justify-self:stretch!important;
-}
-@media(max-width:720px){
-  .creation-modes-layout{
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:9px!important;
-  }
-  .creation-modes-layout > .creation-modes-panel,
-  .creation-modes-layout > .creation-mode-card,
-  .creation-modes-layout > .creation-mode-card:has(#addClipsBtn){
-    grid-column:1 / -1!important;
-  }
-}
-</style>
-
-<style id="tato-trim-below-visualizer-final-20261108">
-/* Corrección definitiva: el recortador queda en flujo normal, debajo del visualizador. */
-.creator{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important}
-.creator>.floating-stage{order:1!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;contain:none!important;padding:42px 12px 14px!important;box-sizing:border-box!important}
-.creator>.floating-stage .preview-shell{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;transform:none!important;order:1!important;align-self:center!important;width:min(100%,245px)!important;max-width:245px!important;max-height:none!important;margin:0 auto!important;z-index:1!important}
-.creator>.floating-stage .preview-shell .video-frame{width:100%!important;height:auto!important;aspect-ratio:9/16!important;max-height:410px!important}
-.creator>.floating-stage>.workspace-trim-card{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;order:2!important;align-self:stretch!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;z-index:1!important;box-sizing:border-box!important}
-.creator>.floating-stage>.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;box-sizing:border-box!important}
-.creator>.workspace-trim-card{position:relative!important;inset:auto!important;top:auto!important;right:auto!important;bottom:auto!important;left:auto!important;order:2!important;align-self:stretch!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;z-index:1!important;box-sizing:border-box!important}
-.creator>.workspace-trim-card>.trim-panel{position:relative!important;inset:auto!important;width:100%!important;max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;box-sizing:border-box!important}
-@media(max-width:720px){.creator{gap:9px!important}.creator>.floating-stage{padding:38px 8px 10px!important;gap:9px!important}.creator>.floating-stage .preview-shell{width:min(100%,210px)!important;max-width:210px!important}.creator>.floating-stage .preview-shell .video-frame{max-height:350px!important}}
-</style>
-
-<style id="tato-construction-sign-mobile-20261109">
-/* Aviso discreto en la cabecera móvil, entre la marca y el contador de monedas. */
-.topbar>.construction-sign{
-  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
-  margin:0 5px 0 auto;padding:2px 5px;min-height:15px;
-  border:1px solid rgba(222,169,65,.48);border-radius:4px;
-  background:rgba(222,169,65,.10);color:#C99A43;
-  font-size:7.7px;font-weight:800;line-height:1;letter-spacing:.45px;white-space:nowrap;
-}
-@media(max-width:420px){.topbar>.construction-sign{font-size:6.8px;padding:2px 4px;margin-left:2px}}
-</style>
