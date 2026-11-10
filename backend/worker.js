@@ -69,6 +69,18 @@ async function body(request) {
 }
 async function handle(request, env) {
   const url = new URL(request.url);
+  // Rutas heredadas deshabilitadas en la experiencia web aprobada.
+  // Se conservan tablas y registros; este bloqueo no altera datos existentes.
+  const disabledLegacyRoutes = new Set([
+    "/api/register",
+    "/api/login",
+    "/api/forgot-password",
+    "/api/reset-password",
+    "/api/feedback"
+  ]);
+  if (disabledLegacyRoutes.has(url.pathname)) {
+    return json({ error: "Esta función ya no está disponible." }, 410);
+  }
   const feedbackOrigins = new Set([url.origin, "https://localhost", "http://localhost", "capacitor://localhost"]);
   const requestOrigin = request.headers.get("Origin");
   const feedbackCorsHeaders = requestOrigin && feedbackOrigins.has(requestOrigin)
