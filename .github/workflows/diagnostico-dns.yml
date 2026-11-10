@@ -1,1 +1,41 @@
 
+name: Diagnostico DNS y conexion
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostico:
+    if: github.ref == 'refs/heads/cleanup/approved-web-base-2026-11-10'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Revisar DNS y HTTPS
+        shell: bash
+        run: |
+          echo "=== FECHA ==="
+          date -u
+
+          echo "=== DNS GITHUB ==="
+          getent ahosts github.com || true
+          nslookup github.com || true
+
+          echo "=== DNS NPM ==="
+          getent ahosts registry.npmjs.org || true
+          nslookup registry.npmjs.org || true
+
+          echo "=== HTTPS GITHUB ==="
+          curl -I -L --connect-timeout 10 --max-time 20 https://github.com || true
+
+          echo "=== HTTPS NPM ==="
+          curl -I -L --connect-timeout 10 --max-time 20 https://registry.npmjs.org || true
+
+          echo "=== PRUEBA NPM ==="
+          npm ping --registry=https://registry.npmjs.org/ || true
+
+          echo "=== FIN DEL DIAGNOSTICO ==="
+
