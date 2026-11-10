@@ -7,6 +7,11 @@
     "allowMixedContent": false
   },
   "server": {
-    "androidScheme": "https"
+    "url": "https://tato-reels.t6569990.workers.dev/",
+    "cleartext": false,
+    "androidScheme": "https",
+    "allowNavigation": [
+      "tato-reels.t6569990.workers.dev"
+    ]
   }
 }
