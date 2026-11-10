@@ -1414,6 +1414,46 @@ p:not(.timeline-head p),
 #tato-floating-upload-status .tato-upload-status-track span.indeterminate{width:35%;animation:tatoUploadIndeterminate 1.15s ease-in-out infinite alternate}
 @keyframes tatoUploadIndeterminate{from{transform:translateX(0)}to{transform:translateX(180%)}}
 </style>
+
+<style id="tato-mobile-publish-web-sync-20261109">
+/* La navegación móvil adopta las seis herramientas principales de la web aprobada. */
+.editor-toolbar.editor-toolbar-one-line,.editor-bottom-toolbar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+.editor-toolbar.editor-toolbar-one-line .editor-tool,.editor-bottom-toolbar .editor-tool{min-width:0!important;min-height:44px!important;white-space:normal!important}
+.editor-tool-pane[data-pane="publish"] .publish-share-card{grid-column:1/-1!important}
+.editor-tool-pane[data-pane="publish"] .publish-share-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;width:100%!important}
+.editor-tool-pane[data-pane="publish"] .publish-share-yellow{background:linear-gradient(135deg,#ffb34d,#f08a24)!important;border:1px solid #d77a22!important;color:#241407!important;font-weight:850!important}
+.mobile-publish-explore-shortcut{grid-column:1/-1!important;width:100%!important;min-height:42px!important;margin:4px 0!important}
+@media(max-width:360px){.editor-toolbar.editor-toolbar-one-line{gap:5px!important}.editor-toolbar.editor-toolbar-one-line .editor-tool{font-size:10.5px!important;padding:6px 3px!important}}
+</style>
+
+<style id="tato-mobile-image-tools-web-sync-20261109">
+.editor-tool-pane[data-pane="image"] .image-visual-tools-container{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;width:100%!important;min-width:0!important}
+.editor-tool-pane[data-pane="image"] .image-filter-group-card,.editor-tool-pane[data-pane="image"] .image-scale-card{min-width:0!important;width:100%!important;box-sizing:border-box!important}
+.editor-tool-pane[data-pane="image"] .image-filter-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;width:100%!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card{min-width:0!important;padding:3px!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:100%!important;min-height:66px!important;padding:6px 3px!important;text-align:center!important;white-space:normal!important}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter-icon{font-size:17px!important;line-height:1}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter strong{font-size:10px!important;line-height:1.15}
+.editor-tool-pane[data-pane="image"] .image-filter-card .filter small{font-size:9px!important;line-height:1.1}
+.editor-tool-pane[data-pane="image"] .image-scale-card .photo-scale-field{margin:0!important}
+.editor-tool-pane[data-pane="image"] #applyImageChanges{width:100%!important;min-height:44px!important;margin-top:8px!important}
+@media(min-width:721px){.editor-tool-pane[data-pane="image"] .image-visual-tools-container{grid-template-columns:minmax(0,1.4fr) minmax(220px,.8fr)!important;gap:16px!important}}
+</style>
+
+<style id="tato-mobile-text-apply-web-sync-20261109">
+.editor-tool-pane[data-pane="text"] #applyTextDecorations{width:100%!important;min-height:44px!important;margin-top:10px!important}
+.editor-tool-pane[data-pane="text"] #textApplyStatus{margin-top:7px!important}
+</style>
+
+<style id="tato-mobile-general-copy-web-sync-20261109">
+/* Texto explicativo móvil: misma legibilidad y justificación que la web, sin alterar títulos ni Línea de tiempo. */
+@media(max-width:720px){
+ #app p:not(.timeline-head p),#app .file-note,#app .trim-help,#app .upload-zone span,#app .login-note,#app .export-dest-card p,#app .post-card p,#app .tip span{
+  font-size:15px!important;line-height:1.55!important;text-align:justify!important;text-justify:inter-word!important;
+ }
+ #app .sub,#app .compact-note{font-size:14.5px!important;line-height:1.45!important;text-align:center!important}
+}
+</style>
 </head>
 <body class="device-mobile">
 <section id="loginScreen"><div class="login-card"><div class="login-mark">✊</div><div class="login-brand">TATO <span>REELS</span> <small style="display:block;font-size:16px;letter-spacing:3px;font-style:normal;color:#f7f2f7;margin-top:4px">CREATOR</small></div><div class="login-kicker">CREATE · EDIT · SHARE · LOUD</div><form id="loginForm"><label for="loginUser">USUARIO</label><input id="loginUser" type="text" autocomplete="username" maxlength="40" placeholder="Escribe tu usuario" required><button class="login-main" type="submit">ENTRAR</button></form><div class="auth-error" id="authError" role="status" aria-live="polite"></div><p class="login-note">Escribe tu usuario para entrar a Tato Reels.</p></div></section>
@@ -1457,15 +1497,11 @@ p:not(.timeline-head p),
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <nav class="editor-toolbar editor-toolbar-one-line" aria-label="Herramientas del editor">
-      <span class="toolbar-group-label">CREAR Y EDITAR</span>
       <button class="editor-tool active" data-pane="video"><span class="tool-icon">🎬</span><span class="tool-label">Video</span></button>
       <button class="editor-tool" data-pane="image"><span class="tool-icon">🖼️</span><span class="tool-label">Imagen</span></button>
       <button class="editor-tool" data-pane="text"><span class="tool-icon">✍️</span><span class="tool-label">Texto</span></button>
       <button class="editor-tool" data-pane="music"><span class="tool-icon">🎵</span><span class="tool-label">Música</span></button>
       <button class="editor-tool" data-pane="format"><span class="tool-icon">📐</span><span class="tool-label">Formato</span></button>
-      <span class="toolbar-group-label secondary-tools-label">COMPARTIR Y DESCUBRIR</span>
-      <button class="editor-tool" data-pane="explore"><span class="tool-icon">🌐</span><span class="tool-label">Explorar</span></button>
-      <button class="editor-tool" data-pane="share"><span class="tool-icon">🔗</span><span class="tool-label">Compartir</span></button>
       <button class="editor-tool" data-pane="publish"><span class="tool-icon">📣</span><span class="tool-label">Publicar</span></button>
     </nav>
     <div class="creator">
@@ -1537,9 +1573,27 @@ p:not(.timeline-head p),
           <div class="field" style="margin-bottom:0"><label class="field-label" for="username">Nombre de creador</label><input type="text" id="username" value="@tato.reels"></div>
           <button class="secondary" id="clearReelVisualChanges" type="button" style="width:100%;min-height:44px;margin-top:9px">🧹 Borrar cambios del visualizador</button>
         </div>
-        <div class="panel">
-          <h3>🎨 Estilo de vista</h3>
-          <div class="image-filter-list"><div class="image-filter-card"><button class="filter active" data-filter="none" type="button">Original</button></div><div class="image-filter-card"><button class="filter" data-filter="nitido" type="button">HD / Nitidez</button></div><div class="image-filter-card"><button class="filter" data-filter="warm" type="button">Cálido</button></div><div class="image-filter-card"><button class="filter" data-filter="mono" type="button">B&amp;N</button></div><div class="image-filter-card"><button class="filter" data-filter="vintage" type="button">Vintage</button></div><div class="image-filter-card"><button class="filter" data-filter="cinema" type="button">Cine</button></div></div><div class="file-note">Elige un estilo. Se aplica a la vista previa y al Reel exportado.</div>
+        <div class="panel image-visual-tools-container">
+          <div class="image-filter-group-card">
+            <h3>🎨 Estilo de vista</h3>
+            <div class="image-filter-list">
+              <div class="image-filter-card"><button class="filter active" data-filter="none" type="button"><span class="filter-icon">🖼️</span><strong>Original</strong><small>Sin cambios</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="nitido" type="button"><span class="filter-icon">✨</span><strong>HD / Nitidez</strong><small>Más detalle</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="warm" type="button"><span class="filter-icon">🌅</span><strong>Cálido</strong><small>Luz dorada</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="mono" type="button"><span class="filter-icon">⚫</span><strong>B&amp;N</strong><small>Blanco y negro</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="vintage" type="button"><span class="filter-icon">📷</span><strong>Vintage</strong><small>Toque retro</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="cinema" type="button"><span class="filter-icon">🎬</span><strong>Cine</strong><small>Contraste intenso</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="bright" type="button"><span class="filter-icon">☀️</span><strong>Luminoso</strong><small>Más claridad</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="night" type="button"><span class="filter-icon">🌙</span><strong>Nocturno</strong><small>Sombras profundas</small></button></div>
+              <div class="image-filter-card"><button class="filter" data-filter="fade" type="button"><span class="filter-icon">🌫️</span><strong>Desvanecido</strong><small>Estilo suave</small></button></div>
+            </div>
+          </div>
+          <div class="image-scale-card">
+            <h3>📏 Escala de fotografías</h3>
+            <div class="field photo-scale-field"><label class="field-label" for="photoScale">Acercamiento <strong id="photoScaleValue">100%</strong></label><input id="photoScale" type="range" min="0.75" max="1.5" step="0.05" value="1" style="width:100%"><div class="file-note">Ajusta el encuadre de las fotos de tu secuencia.</div></div>
+            <button class="primary" id="applyImageChanges" type="button" style="width:100%">✓ Aplicar imagen al Reel</button>
+            <div class="file-note" id="imageApplyStatus">Los filtros se previsualizan; aplica la escala para incluirla al compilar.</div>
+          </div>
         </div>
         <div class="panel">
           <h3>📐 Formato</h3>
@@ -1576,8 +1630,8 @@ p:not(.timeline-head p),
           <div class="field title-color-field"><label class="field-label" for="titleColor">Color del texto</label><div class="title-color-picker"><input id="titleColor" class="title-hue-slider" type="range" min="0" max="360" value="0" step="1" aria-label="Desliza para elegir el color del texto"><span id="titleColorPreview" class="title-color-preview" aria-live="polite">Rojo</span></div><div class="file-note">Desliza sobre la paleta para elegir cualquier tono.</div></div><div class="field"><label class="field-label" for="titleFont">Tipografía</label><select id="titleFont" style="width:100%;padding:9px;border-radius:9px;background:light-dark(#FBFAFD,#100F17);color:inherit;border:1px solid light-dark(#E3DDEB,#373244)"><option value="Arial,sans-serif">Moderna</option><option value="Georgia,serif">Clásica</option><option value="Impact,sans-serif">Impacto</option><option value="Trebuchet MS,sans-serif">Redondeada</option><option value="'Courier New',monospace">Técnica</option></select></div><div class="file-note">Arrastra el texto directamente sobre el video para colocarlo donde quieras.</div>
           <div class="range-row"><label>Tamaño<input id="titleSize" type="range" min="16" max="44" value="28"></label><label>Duración (s)<input id="titleDuration" type="number" min="1" max="30" value="5" step="1"></label></div>
           <button class="secondary" id="clearAnimatedText" style="width:100%;margin-top:9px">Quitar texto</button>
-          
-          <div class="file-note">Vista previa del texto animado. La exportación del Reel completo se habilitará en la siguiente integración.</div>
+          <button class="primary" id="applyTextDecorations" type="button" style="width:100%;min-height:42px;margin-top:10px">✓ Aplicar decoraciones al Reel</button>
+          <div class="file-note" id="textApplyStatus" role="status">Ajusta el texto y su posición; después pulsa Aplicar decoraciones.</div>
         </div>
         <div class="panel">
           <h3>📦 Formato de descarga</h3>
@@ -1626,11 +1680,11 @@ p:not(.timeline-head p),
         </div>
         <div class="panel">
           <h3>🚀 Salida a redes sociales</h3>
-          <div class="file-note">Prepara tu contenido y abre el centro de creación de cada plataforma. La publicación final se confirma dentro de tu cuenta.</div>
+          <div class="file-note">Antes de compartir, inicia sesión en Instagram, Facebook y TikTok en este mismo dispositivo. Al abrir cada red se aprovechará la sesión que ya tengas. Tato Reels no solicita tus contraseñas ni publica sin tu confirmación.</div>
           <button class="secondary" id="openInstagram" style="width:100%;margin-top:8px">Abrir Instagram</button>
           <button class="secondary" id="openFacebook" style="width:100%;margin-top:7px">Abrir Facebook</button>
           <button class="secondary" id="openTikTok" style="width:100%;margin-top:7px">Abrir TikTok</button>
-          <div class="file-note" id="socialStatus">No hay cuentas conectadas. Estos accesos no suben el video automáticamente.</div>
+          <div class="file-note" id="socialStatus">Inicia sesión previamente en tus redes desde este dispositivo. Después podrás abrir cada red y elegir el Reel exportado para publicarlo.</div>
         </div>
         <div class="export-progress" id="exportProgress" role="status" aria-live="polite"><div class="export-progress-head"><span id="exportProgressLabel">Preparando Reel completo…</span><strong id="exportProgressPercent">0%</strong></div><div class="export-progress-track"><div class="export-progress-fill" id="exportProgressFill"></div></div></div>
         <div style="grid-column:1/-1;display:flex;gap:9px;flex-wrap:wrap"><button class="secondary" id="saveBtn" style="flex:1">Guardar borrador</button><button class="primary" id="exportBtn" style="flex:1">Exportar clip WebM ↓</button><button class="primary" id="exportSequenceBtn" style="flex:1">Exportar Reel completo ↓</button><button class="secondary" id="publishBtn" style="flex:1">Preparar publicación ↗</button></div>
@@ -1657,7 +1711,7 @@ p:not(.timeline-head p),
  if(!creator||!preview||!trim||!editor||!toolbar)return;
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
  creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);const trimCard=document.createElement('div');trimCard.className='workspace-switch-card workspace-trim-card';trimCard.append(trim);stage.append(trimCard);
- const paneNames=['video','text','music','image','format','explore','share','publish'],panes={};
+ const paneNames=['video','text','music','image','format','explore','publish'],panes={};
  const paneWrap=document.createElement('div');paneWrap.className='editor-tool-panes';
  paneNames.forEach(name=>{const p=document.createElement('section');p.className='editor-tool-pane';p.dataset.pane=name;p.setAttribute('aria-label',name);const meta={"video":["🎬","VIDEO","Carga, organiza y recorta tus clips."],"image":["🖼️","IMAGEN","Ajustes visuales y recursos gráficos."],"text":["✍️","TEXTO","Contenido, títulos y texto sobre el Reel."],"music":["🎵","MÚSICA","Biblioteca, selección y mezcla de audio."],"format":["📐","FORMATO","Proporción y formato de exportación."],"explore":["🌐","EXPLORAR","Inspiración y biblioteca de referencias."],"share":["🔗","COMPARTIR","Comparte Tato Reels."],"publish":["📣","PUBLICAR","Prepara tu salida a redes sociales."]}[name];const heading=document.createElement('header');heading.className='tool-pane-heading';const icon=document.createElement('span');icon.className='tool-pane-icon';icon.textContent=meta[0];const copy=document.createElement('div');const title=document.createElement('h2');title.textContent=meta[1];const description=document.createElement('p');description.textContent=meta[2];copy.append(title,description);heading.append(icon,copy);p.append(heading);panes[name]=p;paneWrap.append(p);});
  const timeline=editor.querySelector(':scope > .timeline-panel');
@@ -1671,8 +1725,17 @@ p:not(.timeline-head p),
   else if(/Texto animado|Detalles del Reel/i.test(h))key='text';
   else if(/Formato de descarga|^📐\s*Formato/i.test(h))key='format';
   else if(/Explorar redes y biblioteca/i.test(h))key='explore';
-  else if(/Compartir Tato Reels/i.test(h))key='share';
   else if(/Salida a redes/i.test(h))key='publish';
+  if(/Compartir Tato Reels/i.test(h)){
+   card.classList.add('publish-share-card');
+   const whatsapp=card.querySelector('#shareWhatsApp'),facebook=card.querySelector('#shareFacebook'),copyLink=card.querySelector('#copyAppLink');
+   if(whatsapp&&facebook){
+    const actions=document.createElement('div');actions.className='publish-share-actions';
+    whatsapp.classList.add('publish-share-yellow');facebook.classList.add('publish-share-yellow');
+    actions.append(whatsapp,facebook);card.insertBefore(actions,copyLink||null);
+   }
+   panes.publish.append(card);return;
+  }
   panes[key].append(card);
  });
  // Botón principal: debajo de "Nombre de creador" en "Detalles del Reel".
@@ -1703,6 +1766,17 @@ p:not(.timeline-head p),
   if(creativityCard&&sidebarClear.parentElement!==sidebar) creativityCard.after(sidebarClear);
   else if(creativityCard&&sidebarClear.previousElementSibling!==creativityCard) creativityCard.after(sidebarClear);
  }
+ // En móvil, Publicar reúne compartir, importación y salida a redes como en la web aprobada.
+ const exploreShortcut=document.createElement('button');
+ exploreShortcut.type='button';exploreShortcut.className='secondary mobile-publish-explore-shortcut';
+ exploreShortcut.textContent='🌐 Explorar redes y biblioteca';
+ exploreShortcut.addEventListener('click',()=>{activate('explore');setWorkspace('preview');});
+ const explorePaneReturn=document.createElement('button');
+ explorePaneReturn.type='button';explorePaneReturn.className='secondary mobile-publish-explore-shortcut';
+ explorePaneReturn.textContent='← Volver a Publicar';
+ explorePaneReturn.addEventListener('click',()=>{activate('publish');setWorkspace('preview');});
+ panes.publish.append(exploreShortcut);
+ panes.explore.append(explorePaneReturn);
  editor.insertBefore(paneWrap,timeline||editor.firstChild);
  if(timeline)editor.append(timeline);
  const actionRow=editor.querySelector(':scope > div[style*="grid-column:1/-1"]');
@@ -1846,6 +1920,30 @@ form?.addEventListener('submit',event=>{
 function getExportConfig(){const choice=$('exportFormat')?.value||'webm';const candidates=choice==='mp4'?['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']:['video/webm;codecs=vp9,opus','video/webm'];const mime=candidates.find(type=>MediaRecorder.isTypeSupported(type));if(!mime)throw new Error(choice==='mp4'?'MP4 no es compatible en este navegador. Selecciona WebM.':'WebM no es compatible en este navegador.');return {mime,extension:mime.startsWith('video/mp4')?'mp4':'webm'};}
 function refreshExportFormats(){const select=$('exportFormat');if(!select||!window.MediaRecorder)return;const mp4=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4'].some(type=>MediaRecorder.isTypeSupported(type));const option=select.querySelector('option[value="mp4"]');option.disabled=!mp4;if(!mp4&&select.value==='mp4')select.value='webm';$('formatNote').textContent=mp4?'Este navegador permite exportar MP4 y WebM.':'Este navegador no ofrece MP4 en la exportación; utiliza WebM o prueba otro navegador.';}
 $('exportFormat').addEventListener('change',refreshExportFormats);
+function showFeedbackSurvey(){
+ if(document.getElementById('tatoFeedbackModal'))return;
+ const backdrop=document.createElement('div');backdrop.id='tatoFeedbackModal';backdrop.style.cssText='position:fixed;inset:0;z-index:100500;background:rgba(8,5,18,.78);display:grid;place-items:center;padding:18px;overflow:auto';
+ const card=document.createElement('section');card.style.cssText='width:min(100%,520px);max-height:90vh;overflow:auto;background:#171322;color:#fff;border:1px solid #62517e;border-radius:18px;padding:22px;box-shadow:0 20px 70px #0009;font:14px/1.5 Arial,sans-serif';
+ card.innerHTML='<h2 style="margin:0 0 6px;color:#ffe36a">🎬 ¿Cómo fue tu experiencia?</h2><p style="margin:0 0 16px;color:#d7cfe4">Tu opinión nos ayuda a mejorar Tato Reels Creator. Para continuar, califica tu experiencia y responde las preguntas. No necesitas compartir tu video.</p><form id="tatoFeedbackForm"><label style="display:block;font-weight:700;margin-bottom:8px">Califica tu experiencia</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">'+[1,2,3,4,5].map(n=>'<label style="display:flex;align-items:center;gap:4px;padding:8px 10px;background:#292238;border-radius:9px"><input type="radio" name="rating" value="'+n+'" required> '+n+' ★</label>').join('')+'</div><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackLiked">¿Qué fue lo que más te gustó?</label><textarea id="tatoFeedbackLiked" name="liked" maxlength="300" rows="2" required style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackImprove">¿Qué podemos mejorar?</label><textarea id="tatoFeedbackImprove" name="improve" maxlength="500" rows="2" required style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><label style="display:block;font-weight:700;margin:10px 0 6px" for="tatoFeedbackComment">Comentarios adicionales</label><textarea id="tatoFeedbackComment" name="comment" maxlength="1000" rows="3" placeholder="Cuéntanos lo que quieras..." style="box-sizing:border-box;width:100%;padding:10px;border-radius:9px;background:#0e0b16;color:#fff;border:1px solid #514363"></textarea><input name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px"><p id="tatoFeedbackStatus" role="status" style="min-height:20px;color:#ffd96a"></p><div style="display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap"><button type="submit" id="tatoFeedbackSend" style="padding:10px 16px;border-radius:9px;border:0;background:#ffdc58;color:#201800;font-weight:800">Enviar opinión</button></div></form>';
+ backdrop.append(card);document.body.append(backdrop);
+ const close=()=>{backdrop.remove();window.removeEventListener('keydown',blockSurveyEscape,true);};
+ const blockSurveyEscape=event=>{if(event.key==='Escape'&&document.getElementById('tatoFeedbackModal')){event.preventDefault();event.stopImmediatePropagation();}};
+ window.addEventListener('keydown',blockSurveyEscape,true);
+ backdrop.addEventListener('click',event=>{if(event.target===backdrop){event.preventDefault();event.stopPropagation();}});
+ if(window.history&&window.history.pushState){window.history.pushState({tatoFeedbackRequired:true},'','#opinion-obligatoria');window.addEventListener('popstate',function keepSurveyOpen(){if(document.getElementById('tatoFeedbackModal'))window.history.pushState({tatoFeedbackRequired:true},'','#opinion-obligatoria');});}
+
+ card.querySelector('#tatoFeedbackForm').addEventListener('submit',async event=>{
+  event.preventDefault();const values=new FormData(event.currentTarget),status=card.querySelector('#tatoFeedbackStatus'),send=card.querySelector('#tatoFeedbackSend'),rating=values.get('rating');
+  if(!rating){status.textContent='Selecciona una calificación.';return;}if(!String(values.get('liked')||'').trim()||!String(values.get('improve')||'').trim()){status.textContent='Responde qué te gustó y qué podemos mejorar para continuar.';return;}send.disabled=true;send.textContent='Enviando…';status.textContent='Enviando tu opinión…';
+  try{const response=await fetch('https://tato-reels.t6569990.workers.dev/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({rating:Number(rating),liked:values.get('liked'),improve:values.get('improve'),comment:values.get('comment'),website:values.get('website')})});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||'No se pudo enviar tu opinión.');status.textContent='✓ ¡Gracias! Recibimos tu opinión.';try{localStorage.removeItem('tatoFeedbackPending');}catch(_){}send.textContent='Enviada';setTimeout(close,1600);}
+  catch(error){status.textContent=error.message||'No se pudo enviar. Inténtalo más tarde.';send.disabled=false;send.textContent='Reintentar envío';}
+ });
+}
+function promptFeedbackAfterExport(){try{localStorage.setItem('tatoFeedbackPending','1');}catch(error){console.warn('No se pudo guardar el estado de encuesta pendiente:',error);}window.setTimeout(showFeedbackSurvey,650);}
+window.setTimeout(()=>{try{if(localStorage.getItem('tatoFeedbackPending')==='1')showFeedbackSurvey();}catch(error){console.warn('No se pudo consultar la encuesta pendiente:',error);}},900);
+window.addEventListener('beforeunload',event=>{if(document.getElementById('tatoFeedbackModal')){event.preventDefault();event.returnValue='Completa la encuesta antes de salir.';return event.returnValue;}});
+
+
 function showExportOptions(blob,filename){
  const old=document.getElementById('exportDestModal');if(old)old.remove();
  const backdrop=document.createElement('div');backdrop.id='exportDestModal';backdrop.className='export-dest-backdrop';
@@ -1866,17 +1964,17 @@ function showExportOptions(blob,filename){
     const mime=blob.type||'application/octet-stream';
     const handle=await window.showSaveFilePicker({suggestedName:filename,types:[{description:'Video de Tato Reels',accept:{[mime]:[ext]}}]});
     const writable=await handle.createWritable();await writable.write(blob);await writable.close();
-    toast('Video guardado en la ubicación que elegiste.');backdrop.remove();return;
+    toast('Video guardado en la ubicación que elegiste.');promptFeedbackAfterExport();backdrop.remove();return;
    }
    // Guardar debe descargar el archivo, no abrir la hoja de compartir del sistema.
    // En navegadores con showSaveFilePicker se ofrece selección de ubicación arriba;
    // en móviles sin esa API se utiliza la descarga estándar del navegador.
    downloadFile();
    toast('Descarga iniciada. Revisa la carpeta Descargas de tu dispositivo.');
-   backdrop.remove();
+   promptFeedbackAfterExport();backdrop.remove();
   }catch(error){
    if(error.name==='AbortError')return;
-   try{downloadFile();toast('El selector no está disponible. Descarga iniciada; revisa Descargas.');backdrop.remove();}
+   try{downloadFile();toast('El selector no está disponible. Descarga iniciada; revisa Descargas.');promptFeedbackAfterExport();backdrop.remove();}
    catch(fallbackError){toast('No se pudo iniciar la descarga. Revisa los permisos del navegador e inténtalo otra vez.');}
   }
  };
@@ -1886,14 +1984,14 @@ function showExportOptions(blob,filename){
   try{
    if(typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files:[file]})){
     await navigator.share({files:[file],title:'Mi Reel de Tato Reels',text:'Creado con Tato Reels'});
-    backdrop.remove();return;
+    promptFeedbackAfterExport();backdrop.remove();return;
    }
    downloadFile();
    toast('Este navegador no comparte videos directamente. Descargado: ahora adjúntalo desde la app que quieras.');
-   backdrop.remove();
+   promptFeedbackAfterExport();backdrop.remove();
   }catch(error){
    if(error.name==='AbortError')return;
-   try{downloadFile();toast('No se pudo abrir el menú compartir. El video se descargó para adjuntarlo manualmente.');backdrop.remove();}
+   try{downloadFile();toast('No se pudo abrir el menú compartir. El video se descargó para adjuntarlo manualmente.');promptFeedbackAfterExport();backdrop.remove();}
    catch(fallbackError){toast('No se pudo compartir ni descargar. Revisa los permisos del navegador.');}
   }
  });
@@ -1919,6 +2017,7 @@ let sequencePhotoRemaining=0;
 let sequencePaused=false;
 let drafts = JSON.parse(localStorage.getItem('tatoReelsDrafts') || '[]');
 let filter = 'none';
+let textDecorationsApplied=false;
 function refreshDraftCount(){ $('draftCount').textContent=drafts.length; }
 function setFloatingUploadStatus(message,percent=null,state='working'){
  let bar=document.getElementById('tato-floating-upload-status');
@@ -1953,9 +2052,13 @@ $('muteBtn').addEventListener('click',()=>{video.muted=!video.muted; $('muteBtn'
 function updateCaption(){ $('count').textContent=$('caption').value.length; $('overlayCaption').textContent=$('caption').value || 'Tu idea merece ser vista. ✨'; }
 $('caption').addEventListener('input',updateCaption);
 $('username').addEventListener('input',()=> $('overlayName').textContent=$('username').value || '@creador');
-const imageFilterStyles={none:'none',nitido:'contrast(1.14) saturate(1.08)',warm:'sepia(.22) saturate(1.18)',mono:'grayscale(1)',vintage:'sepia(.38) contrast(1.08) saturate(.82)',cinema:'contrast(1.18) saturate(1.12) brightness(.94)',sepia:'sepia(1)',cool:'saturate(1.08) hue-rotate(12deg)'};
+const imageFilterStyles={none:'none',nitido:'contrast(1.14) saturate(1.08)',warm:'sepia(.22) saturate(1.18)',mono:'grayscale(1)',vintage:'sepia(.38) contrast(1.08) saturate(.82)',cinema:'contrast(1.18) saturate(1.12) brightness(.94)',bright:'brightness(1.16) contrast(1.04) saturate(1.12)',night:'brightness(.82) contrast(1.22) saturate(.92)',fade:'contrast(.9) saturate(.78) brightness(1.06)',sepia:'sepia(1)',cool:'saturate(1.08) hue-rotate(12deg)'};
  function currentImageFilter(){return imageFilterStyles[filter]||'none';}
- document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filter=btn.dataset.filter;video.style.filter=currentImageFilter();$('sampleArt').style.filter=currentImageFilter();toast('Efecto aplicado: '+btn.textContent+'.');}));
+ let photoScale=1,photoScaleApplied=false;
+ document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filter=btn.dataset.filter;video.style.filter=currentImageFilter();$('sampleArt').style.filter=currentImageFilter();if(sequencePhoto)sequencePhoto.style.filter=currentImageFilter();toast('Efecto aplicado: '+(btn.querySelector('strong')?.textContent||btn.textContent.trim())+'.');}));
+ const photoScaleInput=$('photoScale');
+ if(photoScaleInput){photoScaleInput.addEventListener('input',()=>{photoScale=Number(photoScaleInput.value)||1;$('photoScaleValue').textContent=Math.round(photoScale*100)+'%';if(sequencePhoto&&sequencePhoto.style.display!=='none')sequencePhoto.style.transform='scale('+photoScale+')';});}
+ $('applyImageChanges')?.addEventListener('click',()=>{photoScaleApplied=true;if(sequencePhoto&&sequencePhoto.style.display!=='none')sequencePhoto.style.transform='scale('+photoScale+')';$('imageApplyStatus').textContent='✓ Escala aplicada a las fotografías al compilar el Reel.';toast('Ajustes de imagen aplicados.');});
 document.querySelectorAll('[data-ratio]').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('[data-ratio]').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); $('videoFrame').style.aspectRatio=btn.dataset.ratio; toast('Formato de vista actualizado.');
 }));
@@ -1965,7 +2068,7 @@ function openDraftDB(){return new Promise((resolve,reject)=>{if(!('indexedDB' in
 async function writeDraftMedia(record){const db=await openDraftDB();await new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').put(record);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('No se pudieron guardar los archivos.'));tx.onabort=()=>reject(tx.error||new Error('Guardado cancelado.'));});db.close();}
 async function readDraftMedia(id){const db=await openDraftDB();const value=await new Promise((resolve,reject)=>{const req=db.transaction('drafts','readonly').objectStore('drafts').get(id);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);});db.close();return value;}
 async function deleteDraftMedia(id){if(!id)return;const db=await openDraftDB();await new Promise((resolve,reject)=>{const tx=db.transaction('drafts','readwrite');tx.objectStore('drafts').delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});db.close();}
-function draftSettings(){return {caption:$('caption').value,hashtags:$('hashtags').value,username:$('username').value,trimStart:$('trimStart').value,trimEnd:$('trimEnd').value,animatedText:$('animatedText').value,titleAnimation:$('titleAnimation').value,titleSize:$('titleSize').value,titleColor:$('titleColor').value,titleFont:$('titleFont').value,ratio:$('videoFrame').style.aspectRatio||'9/16',filter:typeof filter!=='undefined'?filter:'none',audioStart:$('audioStart').value,audioEnd:$('audioEnd').value,musicVolume:$('musicVolume').value,musicIntegrated:!!musicIntegrated,titleLeft:$('animatedTitle').style.left||'',titleTop:$('animatedTitle').style.top||'',placedStickers:localStorage.getItem('tatoReelsPlacedStickers')||'[]'};}
+function draftSettings(){return {caption:$('caption').value,hashtags:$('hashtags').value,username:$('username').value,trimStart:$('trimStart').value,trimEnd:$('trimEnd').value,animatedText:$('animatedText').value,titleAnimation:$('titleAnimation').value,titleSize:$('titleSize').value,titleColor:$('titleColor').value,titleFont:$('titleFont').value,ratio:$('videoFrame').style.aspectRatio||'9/16',filter:typeof filter!=='undefined'?filter:'none',photoScale:typeof photoScale!=='undefined'?photoScale:1,photoScaleApplied:typeof photoScaleApplied!=='undefined'?photoScaleApplied:false,textDecorationsApplied:typeof textDecorationsApplied!=='undefined'?textDecorationsApplied:false,audioStart:$('audioStart').value,audioEnd:$('audioEnd').value,musicVolume:$('musicVolume').value,musicIntegrated:!!musicIntegrated,titleLeft:$('animatedTitle').style.left||'',titleTop:$('animatedTitle').style.top||'',placedStickers:localStorage.getItem('tatoReelsPlacedStickers')||'[]'};}
 async function saveDraft(){
  const media=timelineItems.filter(item=>item.file instanceof Blob);
  if(!media.length){toast('Primero agrega un video o fotos. El borrador guardará también esos archivos.');return;}
@@ -1989,6 +2092,10 @@ async function openDraft(item){
   const saved=item.mediaId?await readDraftMedia(item.mediaId):null;
   if(!saved){$('caption').value=item.caption||'';$('hashtags').value=item.hashtags||'';$('username').value=item.username||'@tato.reels';$('trimStart').value=item.trimStart||0;$('trimEnd').value=item.trimEnd||0;updateCaption();$('overlayName').textContent=$('username').value;toast('Este es un borrador antiguo: conserva textos y ajustes, pero no contiene el video.');return;}
   const s=saved.settings||{};
+  if(s.filter){filter=s.filter;document.querySelectorAll('[data-filter]').forEach(button=>button.classList.toggle('active',button.dataset.filter===filter));video.style.filter=currentImageFilter();$('sampleArt').style.filter=currentImageFilter();}
+  photoScale=Number(s.photoScale)||1;photoScaleApplied=!!s.photoScaleApplied;textDecorationsApplied=!!s.textDecorationsApplied;
+  if($('photoScale'))$('photoScale').value=String(photoScale);if($('photoScaleValue'))$('photoScaleValue').textContent=Math.round(photoScale*100)+'%';
+  if($('textApplyStatus'))$('textApplyStatus').textContent=textDecorationsApplied?'✓ Decoraciones aplicadas al Reel y a la exportación.':'Ajusta el texto y su posición; después pulsa Aplicar decoraciones.';
   if(s.placedStickers)localStorage.setItem('tatoReelsPlacedStickers',s.placedStickers);window.refreshTatoPlacedStickers?.();
   ['caption','hashtags','username','trimStart','trimEnd','animatedText','titleAnimation','titleSize','titleColor','titleFont','audioStart','audioEnd','musicVolume'].forEach(key=>{if(s[key]!=null&&$(key))$(key).value=s[key];});
   $('videoFrame').style.aspectRatio=s.ratio||'9/16';updateCaption();$('overlayName').textContent=$('username').value||'@tato.reels';updateAnimatedTitle();
@@ -2053,6 +2160,7 @@ video.addEventListener('loadedmetadata',updateAnimatedTitle);
 (()=>{const title=$('animatedTitle'),frame=$('videoFrame');let dragging=false;title.addEventListener('pointerdown',e=>{if(title.hidden)return;dragging=true;title.setPointerCapture(e.pointerId);e.preventDefault();});title.addEventListener('pointermove',e=>{if(!dragging)return;const r=frame.getBoundingClientRect();const x=Math.max(8,Math.min(r.width-8,e.clientX-r.left));const y=Math.max(8,Math.min(r.height-8,e.clientY-r.top));title.style.left=(x/r.width*100)+'%';title.style.top=(y/r.height*100)+'%';});const stop=()=>{dragging=false;};title.addEventListener('pointerup',stop);title.addEventListener('pointercancel',stop);})();
 $('clearAnimatedText').addEventListener('click',()=>{$('animatedText').value='';updateAnimatedTitle();toast('Texto animado eliminado.');});
 $('clearReelVisualChanges').addEventListener('click',()=>{try{$('animatedText').value='';updateAnimatedTitle();const title=$('animatedTitle');if(title){title.style.left='';title.style.top='';title.style.transform='';}filter='none';video.style.filter='none';$('sampleArt').style.filter='none';document.querySelectorAll('[data-filter]').forEach(button=>button.classList.toggle('active',button.dataset.filter==='none'));if(typeof photoScale!=='undefined')photoScale=1;if(typeof photoScaleApplied!=='undefined')photoScaleApplied=false;if($('photoScale'))$('photoScale').value='1';if($('photoScaleValue'))$('photoScaleValue').textContent='100%';if(typeof sequencePhoto!=='undefined'&&sequencePhoto)sequencePhoto.style.transform='scale(1)';if(typeof textDecorationsApplied!=='undefined')textDecorationsApplied=false;try{window.clearPlacedReelStickers?.();}catch(error){console.warn('Limpieza de stickers:',error);}const stickerLayer=document.getElementById('reelStickerLayer');if(stickerLayer)stickerLayer.replaceChildren();const status=$('textApplyStatus');if(status)status.textContent='Visualizador limpio. El video y tus archivos siguen intactos.';const imageStatus=$('imageApplyStatus');if(imageStatus)imageStatus.textContent='Ajustes visuales restablecidos.';toast('Visualizador limpio: textos, stickers, filtros y escala restablecidos. Tus archivos y premios siguen intactos.');}catch(error){console.error('Error al limpiar el visualizador:',error);toast('No se pudo completar la limpieza. Revisa la consola.');}});
+$('applyTextDecorations')?.addEventListener('click',()=>{textDecorationsApplied=true;updateAnimatedTitle();$('textApplyStatus').textContent='✓ Decoraciones aplicadas al Reel y a la exportación.';toast('Decoraciones de texto aplicadas.');});
 $('openInstagram').addEventListener('click',()=>{window.open('https://www.instagram.com/','_blank','noopener');$('socialStatus').textContent='Instagram abierto. Para publicar, usa la opción Crear dentro de tu cuenta y selecciona el video exportado.';});
 $('openFacebook').addEventListener('click',()=>{window.open('https://www.facebook.com/','_blank','noopener');$('socialStatus').textContent='Facebook abierto. Para publicar, crea un Reel desde tu cuenta y selecciona el video exportado.';});
 $('openTikTok').addEventListener('click',()=>{window.open('https://www.tiktok.com/upload','_blank','noopener');$('socialStatus').textContent='Centro de carga de TikTok abierto. Selecciona el video exportado para completar la publicación.';});
@@ -2094,7 +2202,7 @@ $('exportBtn').addEventListener('click',async()=>{
   const finished=new Promise(resolve=>{recorder.onstop=resolve;});
   recorder.start(250);await video.play();
   await new Promise((resolve,reject)=>{
-   const tick=()=>{if(video.error){reject(new Error('Ocurrió un error durante la reproducción del video.'));return;}watermarkCtx.fillStyle='#000';watermarkCtx.fillRect(0,0,720,1280);drawCover(watermarkCtx,video,720,1280);drawExportBrandWatermark(watermarkCtx);drawExportCaption(watermarkCtx);drawExportTitle(watermarkCtx,video.currentTime-start);window.drawExportReelStickers?.(watermarkCtx);if(video.currentTime>=end||video.ended){video.pause();resolve();return;}if(video.paused){reject(new Error('La reproducción del video se detuvo antes de terminar.'));return;}raf=requestAnimationFrame(tick);};
+   const tick=()=>{if(video.error){reject(new Error('Ocurrió un error durante la reproducción del video.'));return;}watermarkCtx.fillStyle='#000';watermarkCtx.fillRect(0,0,720,1280);drawCover(watermarkCtx,video,720,1280);drawExportBrandWatermark(watermarkCtx);drawExportCaption(watermarkCtx);drawExportTitle(watermarkCtx,video.currentTime-start);drawExportHashtags(watermarkCtx);window.drawExportReelStickers?.(watermarkCtx);if(video.currentTime>=end||video.ended){video.pause();resolve();return;}if(video.paused){reject(new Error('La reproducción del video se detuvo antes de terminar.'));return;}raf=requestAnimationFrame(tick);};
    tick();
   });
   cancelAnimationFrame(raf);await playExportOutro(watermarkCtx);recorder.stop();if(exportMusic)exportMusic.pause();await finished;
@@ -2224,7 +2332,7 @@ $('timelineTrack').addEventListener('change',updateMobileTimelineTrim);
 
 $('applyTimelineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Agrega videos o fotos antes de aplicar la línea de tiempo.');return;}const invalid=timelineItems.find(item=>{const duration=Number(item.duration)||(item.isImage?3:0),start=Math.max(0,Number(item.start)||0),end=item.end==null?duration:Number(item.end);return duration<=0||end<=start||end>duration+.05;});if(invalid){toast('No se puede aplicar el recorte de '+invalid.name+'. Espera a que cargue su duración y revisa Inicio y Final.');$('timelineStatus').textContent='Revisa el recorte de '+invalid.name+'.';return;}editSequence=timelineItems.map(item=>({...item,start:Number(item.start)||0,end:item.end==null?(Number(item.duration)||(item.isImage?3:0)):Number(item.end)}));window.tatoCompiledReelBlob=null;syncExtraClipsFromTimeline();renderTimeline();renderSequenceMarkers(-1);$('timelineStatus').textContent='✓ Recortes, duración y orden aplicados a '+editSequence.length+' elemento(s).';finishFloatingUploadStatus('Cambios de la línea de tiempo aplicados',100,'done');$('sequenceNote').textContent='✓ Secuencia actualizada con los recortes aplicados.';toast('Cambios aplicados. La vista previa y la exportación usarán estos tiempos.');});
 $('resetTimelineBtn').addEventListener('click',()=>{timelineItems.forEach(item=>{item.start=0;item.end=item.duration||null;});editSequence=timelineItems.map(item=>({...item}));window.tatoCompiledReelBlob=null;renderTimeline();finishFloatingUploadStatus('Recortes restablecidos',100,'done');toast('Recortes de la línea de tiempo restablecidos.');});
-function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}return sequencePhoto;}
+function ensureSequencePhoto(){if(!sequencePhoto){sequencePhoto=document.createElement('img');sequencePhoto.className='sequence-photo';sequencePhoto.alt='Fotografía de la secuencia';$('videoFrame').insertBefore(sequencePhoto,$('videoOverlay'));}sequencePhoto.style.transform='scale('+photoScale+')';sequencePhoto.style.filter=currentImageFilter();return sequencePhoto;}
 function stopSequenceTimer(){if(sequenceTimer){clearTimeout(sequenceTimer);sequenceTimer=null;}}
 function finishSequence(){stopSequenceTimer();sequenceActive=false;sequencePaused=false;video.pause();$('videoStatus').textContent='Secuencia completa';$('playBtn').textContent='▶';finishFloatingUploadStatus('Vista previa de secuencia terminada');}
 function advanceSequence(){if(!sequenceActive)return;stopSequenceTimer();if(sequenceIndex>=editSequence.length-1){finishSequence();return;}sequenceIndex++;showSequenceItem();}
@@ -2235,8 +2343,10 @@ video.addEventListener('timeupdate',()=>{if(!sequenceActive||!editSequence.lengt
 $('combineBtn').addEventListener('click',()=>{if(!timelineItems.length){toast('Carga y agrega clips en la línea de tiempo.');return;}editSequence=timelineItems.map(item=>({...item}));$('sequenceNote').textContent='Secuencia actualizada con videos, fotografías y recortes. Los archivos originales siguen separados.';$('combineBtn').textContent='Actualizar secuencia editable';startSequence();});
 // Exporta la secuencia completa dibujando cada clip y el título sobre un canvas.
 function waitForMedia(target,event){return new Promise((resolve,reject)=>{const ok=()=>{cleanup();resolve();};const fail=()=>{cleanup();reject(new Error('No se pudo leer uno de los videos.'));};const cleanup=()=>{target.removeEventListener(event,ok);target.removeEventListener('error',fail);};target.addEventListener(event,ok,{once:true});target.addEventListener('error',fail,{once:true});});}
-function drawCover(ctx,source,width,height){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const scale=Math.max(width/sw,height/sh),dw=sw*scale,dh=sh*scale;ctx.save();ctx.filter=currentImageFilter();ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);ctx.restore();}
+function drawCover(ctx,source,width,height){const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;const zoom=(source.tagName==='IMG'&&photoScaleApplied)?photoScale:1,scale=Math.max(width/sw,height/sh)*Math.max(.5,Number(zoom)||1),dw=sw*scale,dh=sh*scale;ctx.save();ctx.filter=currentImageFilter();ctx.drawImage(source,(width-dw)/2,(height-dh)/2,dw,dh);ctx.restore();}
 function drawExportBrandWatermark(ctx){ctx.save();ctx.globalAlpha=.78;ctx.font='800 22px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';const label='TATO REELS CREATOR',x=360,y=48,w=ctx.measureText(label).width+30,h=38;ctx.fillStyle='rgba(8,7,12,.34)';ctx.fillRect(x-w/2,y-h/2,w,h);ctx.strokeStyle='rgba(255,255,255,.24)';ctx.lineWidth=1;ctx.strokeRect(x-w/2,y-h/2,w,h);ctx.fillStyle='rgba(255,255,255,.88)';ctx.shadowColor='rgba(0,0,0,.55)';ctx.shadowBlur=5;ctx.fillText(label,x,y);ctx.restore();}
+
+function drawExportHashtags(ctx){const tags=$('hashtags')?.value?.trim();if(!tags)return;ctx.save();ctx.font='700 25px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='bottom';ctx.fillStyle='#FFD76A';ctx.shadowColor='rgba(0,0,0,.82)';ctx.shadowBlur=9;ctx.fillText(tags,360,1190,650);ctx.restore();}
 
 function drawExportCaption(ctx){
  const username=String($('username').value||'@creador').trim();
@@ -2256,7 +2366,7 @@ function drawExportCaption(ctx){
  lines.forEach((text,index)=>ctx.fillText(text,x,1180+index*25,maxWidth));
  ctx.restore();
 }
-function drawExportTitle(ctx,time){const value=$('animatedText').value.trim();if(!value)return;const duration=Math.max(1,Number($('titleDuration').value)||5);if(time>duration)return;const animation=$('titleAnimation').value;let alpha=1,offset=0,scale=1;if(animation==='fade')alpha=Math.min(1,time/0.8);if(animation==='pop'){const p=Math.min(1,time/0.8);scale=.55+.45*p;alpha=p;}if(animation==='slide'){const p=Math.min(1,time/.8);offset=(1-p)*-90;alpha=p;}if(animation==='bounce')offset=-Math.abs(Math.sin(time*5))*18;const size=Number($('titleSize').value)||28;const lines=value.split('\n');const lineHeight=size*1.15;const left=parseFloat($('animatedTitle').style.left)||50;const top=parseFloat($('animatedTitle').style.top)||50;const x=left/100*720;const y=top/100*1280;ctx.save();ctx.globalAlpha=alpha;ctx.translate(x+offset,y);ctx.scale(scale,scale);ctx.font='900 '+size*2+'px '+($('titleFont').value||'Arial,sans-serif');ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=14;ctx.fillStyle=getAnimatedTitleColor();lines.forEach((line,index)=>ctx.fillText(line,0,(index-(lines.length-1)/2)*lineHeight*2,600));ctx.restore();}
+function drawExportTitle(ctx,time){const value=$('animatedText').value.trim();if(!value||!textDecorationsApplied)return;const duration=Math.max(1,Number($('titleDuration').value)||5);if(time>duration)return;const animation=$('titleAnimation').value;let alpha=1,offset=0,scale=1;if(animation==='fade')alpha=Math.min(1,time/0.8);if(animation==='pop'){const p=Math.min(1,time/0.8);scale=.55+.45*p;alpha=p;}if(animation==='slide'){const p=Math.min(1,time/.8);offset=(1-p)*-90;alpha=p;}if(animation==='bounce')offset=-Math.abs(Math.sin(time*5))*18;const size=Number($('titleSize').value)||28;const lines=value.split('\n');const lineHeight=size*1.15;const left=parseFloat($('animatedTitle').style.left)||50;const top=parseFloat($('animatedTitle').style.top)||50;const x=left/100*720;const y=top/100*1280;ctx.save();ctx.globalAlpha=alpha;ctx.translate(x+offset,y);ctx.scale(scale,scale);ctx.font='900 '+size*2+'px '+($('titleFont').value||'Arial,sans-serif');ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.75)';ctx.shadowBlur=14;ctx.fillStyle=getAnimatedTitleColor();lines.forEach((line,index)=>ctx.fillText(line,0,(index-(lines.length-1)/2)*lineHeight*2,600));ctx.restore();}
 const EXPORT_OUTRO_DURATION_MS=2500;
 let exportOutroLogoPromise=null;
 function loadExportOutroLogo(){
@@ -2295,11 +2405,11 @@ $('exportSequenceBtn').addEventListener('click',async()=>{
    if(item.isImage){
     const photo=new Image();photo.src=item.url;await new Promise((resolve,reject)=>{if(photo.complete&&photo.naturalWidth){resolve();return;}photo.onload=resolve;photo.onerror=()=>reject(new Error('No se pudo cargar la fotografía '+(item.name||'')));});
     end=Math.max(start+.1,Number(item.end)||Number(item.duration)||3);const duration=end-start;if(duration<=0)throw new Error('La duración de una fotografía no es válida.');const began=performance.now();
-    await new Promise(resolve=>{const frame=now=>{const elapsedPhoto=Math.min(duration,(now-began)/1000);ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,photo,720,1280);drawExportCaption(ctx);window.drawExportReelStickers?.(ctx);drawExportTitle(ctx,completedDuration+elapsedPhoto);updateProgress(totalDuration?((completedDuration+elapsedPhoto)/totalDuration)*100:0);if(elapsedPhoto>=duration){resolve();return;}raf=requestAnimationFrame(frame);};raf=requestAnimationFrame(frame);});
+    await new Promise(resolve=>{const frame=now=>{const elapsedPhoto=Math.min(duration,(now-began)/1000);ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,photo,720,1280);drawExportCaption(ctx);window.drawExportReelStickers?.(ctx);drawExportTitle(ctx,completedDuration+elapsedPhoto);drawExportHashtags(ctx);updateProgress(totalDuration?((completedDuration+elapsedPhoto)/totalDuration)*100:0);if(elapsedPhoto>=duration){resolve();return;}raf=requestAnimationFrame(frame);};raf=requestAnimationFrame(frame);});
    }else{
     activeClip=document.createElement('video');activeClip.src=item.url;activeClip.muted=false;activeClip.playsInline=true;activeClip.preload='auto';await waitForMedia(activeClip,'loadedmetadata');end=Math.min(activeClip.duration,Number(item.end)||activeClip.duration);if(!(end>start))throw new Error('Hay un recorte inválido en '+(item.name||'un clip'));
     const source=audioContext.createMediaElementSource(activeClip);source.connect(audioOut);activeClip.currentTime=start;await waitForMedia(activeClip,'seeked');await activeClip.play();
-    await new Promise((resolve,reject)=>{const frame=()=>{if(activeClip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,activeClip,720,1280);drawExportBrandWatermark(ctx);drawExportCaption(ctx);window.drawExportReelStickers?.(ctx);const elapsed=completedDuration+(activeClip.currentTime-start);drawExportTitle(ctx,elapsed);updateProgress(totalDuration?((elapsed/totalDuration)*100):0);if(activeClip.currentTime>=end||activeClip.ended){activeClip.pause();resolve();return;}raf=requestAnimationFrame(frame);};frame();});
+    await new Promise((resolve,reject)=>{const frame=()=>{if(activeClip.error){reject(new Error('Error al reproducir un clip.'));return;}ctx.fillStyle='#000';ctx.fillRect(0,0,720,1280);drawCover(ctx,activeClip,720,1280);drawExportBrandWatermark(ctx);drawExportCaption(ctx);window.drawExportReelStickers?.(ctx);const elapsed=completedDuration+(activeClip.currentTime-start);drawExportTitle(ctx,elapsed);drawExportHashtags(ctx);updateProgress(totalDuration?((elapsed/totalDuration)*100):0);if(activeClip.currentTime>=end||activeClip.ended){activeClip.pause();resolve();return;}raf=requestAnimationFrame(frame);};frame();});
     activeClip.pause();activeClip.removeAttribute('src');activeClip.load();activeClip=null;
    }
    cancelAnimationFrame(raf);completedDuration+=end-start;updateProgress(totalDuration?(completedDuration/totalDuration)*100:100);

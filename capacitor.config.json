@@ -1,0 +1,9 @@
+{
+  "appId": "com.tatotechnology.tatoreelscreator",
+  "appName": "Tato Reels Creator",
+  "webDir": "dist",
+  "android": {
+    "path": "android",
+    "allowMixedContent": false
+  }
+}
