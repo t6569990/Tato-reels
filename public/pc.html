@@ -1758,7 +1758,7 @@ p:not(.timeline-head p),
 <div class="layout">
   <aside class="sidebar">
     <div class="nav-label">CREAR</div>
-    <button class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>Editor de Reels</button>
+    <button class="nav-item active" id="editorNav" type="button" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>Editor de Reels</button>
     <button class="nav-item" id="draftNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>Mis borradores</button>
     <button class="nav-item" id="postsNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg>Mis publicaciones</button>
     <div class="nav-label" style="margin-top:28px">TU ESPACIO</div>
@@ -1787,7 +1787,7 @@ p:not(.timeline-head p),
 
   </aside>
   <main class="main">
-    <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
+    <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div></div>
     <nav class="editor-toolbar editor-toolbar-one-line" aria-label="Herramientas del editor">
       <button class="editor-tool active" data-pane="video"><span class="tool-icon">🎬</span><span class="tool-label">Video</span></button>
       <button class="editor-tool" data-pane="image"><span class="tool-icon">🖼️</span><span class="tool-label">Imagen</span></button>
@@ -2797,7 +2797,10 @@ async function openDraft(item){
   toast('Borrador completo abierto: videos, fotos, música y ajustes recuperados.');$('videoFrame').scrollIntoView({behavior:'smooth',block:'center'});
  }catch(error){toast(error.message||'No se pudo abrir el borrador.');}
 }
-function showDrafts(shouldScroll=true){
+function setSidebarActive(id){document.querySelectorAll('.sidebar .nav-item').forEach(button=>{const active=button.id===id;button.classList.toggle('active',active);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});}
+function hideLocalNavigationPanels(except){['draftShelf','postsShelf','profileShelf'].forEach(id=>{if(id===except)return;const panel=$(id);if(panel){panel.hidden=true;panel.style.display='none';}});}
+function showEditor(){hideLocalNavigationPanels(null);setSidebarActive('editorNav');document.querySelector('.editor-toolbar')?.scrollIntoView({behavior:'smooth',block:'start'});}
+function showDrafts(shouldScroll=true){hideLocalNavigationPanels('draftShelf');setSidebarActive('draftNav');
  let shelf=$('draftShelf');if(!shelf){shelf=document.createElement('section');shelf.id='draftShelf';shelf.className='panel';shelf.style.margin='18px 0';shelf.hidden=true;$('postCard').after(shelf);}
  shelf.hidden=false;shelf.style.display='block';shelf.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><h3 style="margin:0">📁 Mis borradores guardados</h3><button type="button" id="closeDraftShelf" class="secondary">✕ Cerrar</button></div><p class="file-note">Tus videos, fotos y ajustes se guardan en este dispositivo. Abre un borrador para continuar editándolo.</p>';
  if(drafts.length){const deleteAll=document.createElement('button');deleteAll.type='button';deleteAll.className='secondary';deleteAll.textContent='Eliminar todos los borradores';deleteAll.style.marginBottom='10px';deleteAll.addEventListener('click',async()=>{if(!confirm('¿Eliminar todos los borradores guardados? Esta acción no se puede deshacer.'))return;for(const item of drafts){try{await deleteDraftMedia(item.mediaId);}catch(_){}}drafts=[];localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts(false);toast('Todos los borradores fueron eliminados.');});shelf.append(deleteAll);}
@@ -2806,8 +2809,8 @@ function showDrafts(shouldScroll=true){
  const closeButton=$('closeDraftShelf');if(closeButton)closeButton.addEventListener('click',()=>{shelf.hidden=true;shelf.style.display='none';});
  if(shouldScroll)shelf.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;shelf.style.display='none';return;}showDrafts(true);}
-function showPosts(){
+function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;shelf.style.display='none';setSidebarActive('editorNav');return;}showDrafts(true);}
+function showPosts(){hideLocalNavigationPanels('postsShelf');setSidebarActive('postsNav');
  const card=$('postCard');
  if(card?.classList.contains('visible')){card.scrollIntoView({behavior:'smooth',block:'center'});toast('Mostrando tu publicación preparada en este dispositivo.');return;}
  let shelf=$('postsShelf');
@@ -2818,7 +2821,7 @@ function showPosts(){
  const back=document.createElement('button');back.type='button';back.className='secondary';back.textContent='Volver al editor';back.addEventListener('click',()=>{shelf.hidden=true;document.querySelector('.editor-toolbar')?.scrollIntoView({behavior:'smooth',block:'start'});});
  shelf.append(heading,message,back);shelf.hidden=false;shelf.scrollIntoView({behavior:'smooth',block:'center'});
 }
-function showProfile(){
+function showProfile(){hideLocalNavigationPanels('profileShelf');setSidebarActive('profileNav');
  let panel=$('profileShelf');
  if(!panel){panel=document.createElement('section');panel.id='profileShelf';panel.className='panel local-workspace-panel';$('postCard')?.before(panel);}
  panel.replaceChildren();
@@ -2830,9 +2833,10 @@ function showProfile(){
  const close=document.createElement('button');close.type='button';close.className='secondary';close.textContent='Cerrar perfil';close.addEventListener('click',()=>{panel.hidden=true;});
  panel.append(heading,name,draftsInfo,privacy,edit,close);panel.hidden=false;panel.scrollIntoView({behavior:'smooth',block:'center'});
 }
-['draftNav','draftTab','mobileDraft','topDraftsBtn'].forEach(id=>$(id).addEventListener('click',toggleDrafts));
-['postsNav','publishedTab','mobilePosts'].forEach(id=>$(id).addEventListener('click',showPosts));
-['profileNav','mobileProfile'].forEach(id=>$(id).addEventListener('click',showProfile));
+$('editorNav').addEventListener('click',showEditor);
+['draftNav','mobileDraft','topDraftsBtn'].forEach(id=>$(id)?.addEventListener('click',toggleDrafts));
+['postsNav','mobilePosts'].forEach(id=>$(id)?.addEventListener('click',showPosts));
+['profileNav','mobileProfile'].forEach(id=>$(id)?.addEventListener('click',showProfile));
 $('tipsBtn').addEventListener('click',()=>toast('Tip: usa buena luz, encuadre vertical y una idea clara.'));
 $('helpBtn').addEventListener('click',()=>toast('Selecciona un video y personaliza los detalles en el panel de edición.'));
 updateCaption();
