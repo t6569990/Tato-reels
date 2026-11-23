@@ -2029,7 +2029,7 @@ p:not(.timeline-head p),
     sidebarClear.type='button';
     sidebarClear.style.cssText=clearButtonStyle;
     const editorPanel=creator.querySelector('.editor-panel');
-    if(editorPanel) editorPanel.after(clearVisualizerButton,sidebarClear);
+    if(editorPanel) editorPanel.append(clearVisualizerButton,sidebarClear);
    }
   }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
