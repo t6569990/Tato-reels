@@ -1765,6 +1765,26 @@ p:not(.timeline-head p),
     <button class="nav-item" id="profileNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mi perfil</button>
     <div class="side-card"><strong>✨ Tu creatividad, en corto</strong><p>Prepara videos verticales, agrega tu texto y deja listo tu próximo Reel.</p><button class="secondary" id="tipsBtn">Ver consejos</button></div>
     <button class="secondary" id="clearReelVisualChangesSidebar" type="button" aria-label="Borrar cambios del visualizador" style="display:block;width:100%;min-height:46px;margin:10px 0 0;position:relative;z-index:5;box-sizing:border-box;background:#f4c542;border:1px solid #d39a16;color:#241900;font-weight:800;box-shadow:0 2px 8px #0002">🧹 Borrar cambios del visualizador</button>
+    <!-- Cuatro contenedores informativos independientes trasladados desde el panel derecho. -->
+    <div class="rail-card"><div class="rail-title">💡 Consejos para destacar</div>
+          <div class="tip"><div class="tip-icon">▶</div><div><b>Engancha en 2 segundos</b><span>Empieza con una imagen o frase que despierte curiosidad.</span></div></div>
+          <div class="tip"><div class="tip-icon">▣</div><div><b>Formato vertical</b><span>Graba en 9:16 para aprovechar toda la pantalla.</span></div></div>
+          <div class="tip"><div class="tip-icon">#</div><div><b>Usa pocos hashtags</b><span>Elige etiquetas relacionadas con el tema del video.</span></div></div>
+        </div>
+        <div class="rail-card social-duration-card" aria-label="Duración de referencia para redes sociales">
+          <div class="rail-title">⏱️ Duración para redes</div>
+          <table class="social-duration-table">
+            <tbody>
+              <tr><th scope="row"><span class="social-logo instagram" aria-label="Instagram">◎</span> Instagram</th><td>180 s</td></tr>
+              <tr><th scope="row"><span class="social-logo facebook" aria-label="Facebook">f</span> Facebook</th><td>∞</td></tr>
+              <tr><th scope="row"><span class="social-logo tiktok" aria-label="TikTok">♪</span> TikTok</th><td>180 s</td></tr>
+              <tr><th scope="row"><span class="social-logo youtube" aria-label="YouTube">▶</span> YouTube</th><td>180 s</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="rail-card"><div class="rail-title">📦 Tu espacio de creación</div><div style="display:flex;justify-content:space-between;font-size:11px;margin:12px 0"><span style="color:light-dark(#817A8F,#A29BAD)">Borradores guardados</span><b id="draftCount">0</b></div><div style="height:6px;background:light-dark(#EEEAF3,#2A2635);border-radius:8px;overflow:hidden"><div style="width:12%;height:100%;background:#9875EA;border-radius:8px"></div></div><p style="font-size:10px;color:light-dark(#8A8396,#A29BAD);line-height:1.5;margin:12px 0 0">Los borradores de esta demo se conservan mientras la página permanezca abierta.</p></div>
+        <div class="rail-card tools-added-card"><div class="rail-title">🛠️ Herramientas añadidas</div><div class="tools-added-copy"><div>✓ Biblioteca local de audio</div><div>✓ Texto animado en vista previa</div><div>✓ Recorte individual en la línea de tiempo</div><div>✓ Accesos a Instagram, Facebook y TikTok</div><p>La publicación automática y la exportación de secuencias con títulos requieren una siguiente integración.</p></div></div>
+
   </aside>
   <main class="main">
     <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
@@ -1952,26 +1972,7 @@ p:not(.timeline-head p),
     </div>
     <div class="post-card" id="postCard"><h3>✓ Publicación preparada</h3><p id="postText">Tu Reel está listo en esta vista previa. La publicación real en redes sociales requiere conectar una cuenta o servicio.</p></div>
   </main>
-  <aside class="right-rail">
-    <div class="rail-card"><div class="rail-title">💡 Consejos para destacar</div>
-      <div class="tip"><div class="tip-icon">▶</div><div><b>Engancha en 2 segundos</b><span>Empieza con una imagen o frase que despierte curiosidad.</span></div></div>
-      <div class="tip"><div class="tip-icon">▣</div><div><b>Formato vertical</b><span>Graba en 9:16 para aprovechar toda la pantalla.</span></div></div>
-      <div class="tip"><div class="tip-icon">#</div><div><b>Usa pocos hashtags</b><span>Elige etiquetas relacionadas con el tema del video.</span></div></div>
-    </div>
-    <div class="rail-card social-duration-card" aria-label="Duración de referencia para redes sociales">
-      <div class="rail-title">⏱️ Duración para redes</div>
-      <table class="social-duration-table">
-        <tbody>
-          <tr><th scope="row"><span class="social-logo instagram" aria-label="Instagram">◎</span> Instagram</th><td>180 s</td></tr>
-          <tr><th scope="row"><span class="social-logo facebook" aria-label="Facebook">f</span> Facebook</th><td>∞</td></tr>
-          <tr><th scope="row"><span class="social-logo tiktok" aria-label="TikTok">♪</span> TikTok</th><td>180 s</td></tr>
-          <tr><th scope="row"><span class="social-logo youtube" aria-label="YouTube">▶</span> YouTube</th><td>180 s</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="rail-card"><div class="rail-title">📦 Tu espacio de creación</div><div style="display:flex;justify-content:space-between;font-size:11px;margin:12px 0"><span style="color:light-dark(#817A8F,#A29BAD)">Borradores guardados</span><b id="draftCount">0</b></div><div style="height:6px;background:light-dark(#EEEAF3,#2A2635);border-radius:8px;overflow:hidden"><div style="width:12%;height:100%;background:#9875EA;border-radius:8px"></div></div><p style="font-size:10px;color:light-dark(#8A8396,#A29BAD);line-height:1.5;margin:12px 0 0">Los borradores de esta demo se conservan mientras la página permanezca abierta.</p></div>
-    <div class="rail-card tools-added-card"><div class="rail-title">🛠️ Herramientas añadidas</div><div class="tools-added-copy"><div>✓ Biblioteca local de audio</div><div>✓ Texto animado en vista previa</div><div>✓ Recorte individual en la línea de tiempo</div><div>✓ Accesos a Instagram, Facebook y TikTok</div><p>La publicación automática y la exportación de secuencias con títulos requieren una siguiente integración.</p></div></div>
-  </aside>
+  <aside class="right-rail"></aside>
 </div>
 <nav class="mobile-nav"><button class="current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>Crear</button><button id="mobileDraft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5zM8 8h8M8 12h8"/></svg>Borradores</button><button id="mobilePosts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4zM8 9h8"/></svg>Publicados</button><button id="mobileProfile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</button><button id="mobileSettings" type="button" aria-label="Ajustes">⚙️<span>Ajustes</span></button></nav>
 <div class="toast" id="toast"></div>
