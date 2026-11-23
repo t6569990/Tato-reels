@@ -4617,7 +4617,39 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 .editor-tool-pane[data-pane="publish"].active>.publish-status-card{grid-column:1/-1!important}
 @media(max-width:720px){.editor-tool-pane[data-pane="publish"].active>.publish-network-card button,.editor-tool-pane[data-pane="publish"].active>.explore-import-card button{min-height:56px!important;font-size:12px!important}}
 </style>
-</body>
+
+<script id="tato-final-visualizer-clear-actions">
+(()=>{
+ const placeButtons=()=>{
+  const editor=document.querySelector('.creator > .editor-panel');
+  const primary=document.getElementById('clearReelVisualChanges');
+  const secondary=document.getElementById('clearReelVisualChangesSidebar');
+  if(!editor||!primary||!secondary)return false;
+  let group=editor.querySelector(':scope > .visualizer-clear-actions');
+  if(!group){
+   group=document.createElement('div');
+   group.className='visualizer-clear-actions';
+   group.setAttribute('role','group');
+   group.setAttribute('aria-label','Acciones para borrar cambios del visualizador');
+  }
+  group.style.cssText='grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;margin:18px 0 0;padding:14px;border:1px solid light-dark(#E8E3EE,#373144);border-radius:14px;background:light-dark(#FFFFFF,#171521);box-sizing:border-box;';
+  const style='display:block!important;visibility:visible!important;width:100%!important;min-width:0!important;min-height:48px!important;height:auto!important;margin:0!important;padding:11px 12px!important;position:relative!important;z-index:1003!important;box-sizing:border-box!important;background:#f4c542!important;border:1px solid #d39a16!important;border-radius:11px!important;color:#241900!important;-webkit-text-fill-color:#241900!important;font-weight:900!important;text-shadow:none!important;box-shadow:0 2px 8px #0002!important;white-space:normal!important;cursor:pointer!important;';
+  primary.type='button';secondary.type='button';
+  primary.style.cssText=style;secondary.style.cssText=style;
+  group.append(primary,secondary);
+  editor.append(group);
+  if(!secondary.dataset.boundToVisualizerClear){
+   secondary.addEventListener('click',event=>{event.preventDefault();primary.click();});
+   secondary.dataset.boundToVisualizerClear='true';
+  }
+  return true;
+ };
+ if(!placeButtons()){
+  document.addEventListener('DOMContentLoaded',placeButtons,{once:true});
+ }
+})();
+</script>
+\n</body>
 </html>
 
 
