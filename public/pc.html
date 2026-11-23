@@ -1678,19 +1678,6 @@ p:not(.timeline-head p),
 .editor-tool-pane[data-pane="explore"].active .explore-export-network:focus-visible{outline:2px solid var(--site-primary)!important;outline-offset:4px!important}
 </style>
 
-<style id="tato-sidebar-clear-button-white-text">
-#clearReelVisualChangesSidebar,
-#clearReelVisualChangesSidebar:hover,
-#clearReelVisualChangesSidebar:focus,
-#clearReelVisualChanges,
-#clearReelVisualChanges:hover,
-#clearReelVisualChanges:focus{
- color:#241900!important;-webkit-text-fill-color:#241900!important;
- font-weight:900!important;text-shadow:none!important;
-}
-</style>
-
-
 <style id="tato-pc-preview-and-import-containers-scale-75">
 /* PC: reducir únicamente Vista previa y el bloque de importación; el resto conserva su tamaño normal. */
 @media (min-width:721px){
@@ -1767,7 +1754,7 @@ p:not(.timeline-head p),
     <div class="nav-label" style="margin-top:28px">TU ESPACIO</div>
     <button class="nav-item" id="profileNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mi perfil</button>
     <div class="side-card"><strong>✨ Tu creatividad, en corto</strong><p>Prepara videos verticales, agrega tu texto y deja listo tu próximo Reel.</p><button class="secondary" id="tipsBtn">Ver consejos</button></div>
-    <button class="secondary" id="clearReelVisualChangesSidebar" type="button" aria-label="Borrar cambios del visualizador" style="display:block;width:100%;min-height:46px;margin:10px 0 0;position:relative;z-index:5;box-sizing:border-box;background:#f4c542;border:1px solid #d39a16;color:#241900;font-weight:800;box-shadow:0 2px 8px #0002">🧹 Borrar cambios del visualizador</button>
+
     <!-- Cuatro contenedores informativos independientes trasladados desde el panel derecho. -->
     <div class="rail-card"><div class="rail-title">💡 Consejos para destacar</div>
           <div class="tip"><div class="tip-icon">▶</div><div><b>Engancha en 2 segundos</b><span>Empieza con una imagen o frase que despierte curiosidad.</span></div></div>
@@ -1860,7 +1847,7 @@ p:not(.timeline-head p),
           </div>
           <div class="field"><label class="field-label" for="hashtags">Hashtags</label><input type="text" id="hashtags" placeholder="#tendencia #creatividad"></div>
           <div class="field" style="margin-bottom:0"><label class="field-label" for="username">Nombre de creador</label><input type="text" id="username" value="@tato.reels"></div>
-          <button class="secondary" id="clearReelVisualChanges" type="button" style="width:100%;min-height:44px;margin-top:9px">🧹 Borrar cambios del visualizador</button>
+
         </div>
         <div class="panel">
           <h3>🎨 Estilo de vista</h3>
@@ -2014,35 +2001,6 @@ p:not(.timeline-head p),
   }
   panes[key].append(card);
  });
- // Los dos botones de restablecimiento se agrupan al final del editor.
- const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
- const sidebar=document.querySelector('.sidebar');
- const editorPanel=document.querySelector('.editor-panel');
- if(editorPanel&&clearVisualizerButton){
-  let clearActions=editorPanel.querySelector(':scope > .visualizer-clear-actions');
-  if(!clearActions){
-   clearActions=document.createElement('div');
-   clearActions.className='visualizer-clear-actions';
-   clearActions.setAttribute('role','group');
-   clearActions.setAttribute('aria-label','Acciones para borrar cambios del visualizador');
-   clearActions.style.cssText='grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;margin:18px 0 0;padding:14px;border:1px solid light-dark(#E8E3EE,#373144);border-radius:14px;background:light-dark(#FFFFFF,#171521);box-sizing:border-box;';
-   editorPanel.append(clearActions);
-  }
-  const clearButtonStyle='display:block!important;visibility:visible!important;width:100%!important;min-width:0!important;min-height:48px!important;height:auto!important;margin:0!important;padding:11px 12px!important;position:relative!important;z-index:3!important;box-sizing:border-box!important;background:#f4c542!important;border:1px solid #d39a16!important;border-radius:11px!important;color:#241900!important;-webkit-text-fill-color:#241900!important;font-weight:900!important;text-shadow:none!important;box-shadow:0 2px 8px #0002!important;white-space:normal!important;';
-  clearVisualizerButton.type='button';
-  clearVisualizerButton.style.cssText=clearButtonStyle;
-  clearActions.append(clearVisualizerButton);
-  const sidebarClear=sidebar?.querySelector('#clearReelVisualChangesSidebar');
-  if(sidebarClear){
-   sidebarClear.type='button';
-   sidebarClear.style.cssText=clearButtonStyle;
-   clearActions.append(sidebarClear);
-   if(!sidebarClear.dataset.boundToVisualizerClear){
-    sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
-    sidebarClear.dataset.boundToVisualizerClear='true';
-   }
-  }
- }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
   const sideNav=document.createElement('div');
@@ -2327,9 +2285,6 @@ p:not(.timeline-head p),
  window.addEventListener('pointermove',move);
  window.addEventListener('pointerup',stop);
  window.addEventListener('pointercancel',stop);
- // Reubicar el grupo existente después de montar todas las herramientas del editor.
- const finalClearActions=editor.querySelector(':scope > .visualizer-clear-actions');
- if(finalClearActions)editor.append(finalClearActions);
 })();
 
 // Ajustes generales: navegación independiente del editor y sin alterar la línea de tiempo.
@@ -2710,68 +2665,6 @@ updateAnimatedTitle();
 video.addEventListener('loadedmetadata',updateAnimatedTitle);
 (()=>{const title=$('animatedTitle'),frame=$('videoFrame');let dragging=false;title.addEventListener('pointerdown',e=>{if(title.hidden)return;dragging=true;title.setPointerCapture(e.pointerId);e.preventDefault();});title.addEventListener('pointermove',e=>{if(!dragging)return;const r=frame.getBoundingClientRect();const x=Math.max(8,Math.min(r.width-8,e.clientX-r.left));const y=Math.max(8,Math.min(r.height-8,e.clientY-r.top));title.style.left=(x/r.width*100)+'%';title.style.top=(y/r.height*100)+'%';});const stop=()=>{dragging=false;};title.addEventListener('pointerup',stop);title.addEventListener('pointercancel',stop);})();
 $('clearAnimatedText').addEventListener('click',()=>{$('animatedText').value='';updateAnimatedTitle();toast('Texto animado eliminado.');});
-$('clearReelVisualChanges').addEventListener('click',()=>{try{$('animatedText').value='';updateAnimatedTitle();const title=$('animatedTitle');if(title){title.style.left='';title.style.top='';title.style.transform='';}filter='none';video.style.filter='none';$('sampleArt').style.filter='none';document.querySelectorAll('[data-filter]').forEach(button=>button.classList.toggle('active',button.dataset.filter==='none'));if(typeof photoScale!=='undefined')photoScale=1;if(typeof photoScaleApplied!=='undefined')photoScaleApplied=false;if($('photoScale'))$('photoScale').value='1';if($('photoScaleValue'))$('photoScaleValue').textContent='100%';if(typeof sequencePhoto!=='undefined'&&sequencePhoto)sequencePhoto.style.transform='scale(1)';if(typeof textDecorationsApplied!=='undefined')textDecorationsApplied=false;try{window.clearPlacedReelStickers?.();}catch(error){console.warn('Limpieza de stickers:',error);}const stickerLayer=document.getElementById('reelStickerLayer');if(stickerLayer)stickerLayer.replaceChildren();const status=$('textApplyStatus');if(status)status.textContent='Visualizador limpio. El video y tus archivos siguen intactos.';const imageStatus=$('imageApplyStatus');if(imageStatus)imageStatus.textContent='Ajustes visuales restablecidos.';toast('Visualizador limpio: textos, stickers, filtros y escala restablecidos. Tus archivos y premios siguen intactos.');}catch(error){console.error('Error al limpiar el visualizador:',error);toast('No se pudo completar la limpieza. Revisa la consola.');}});
-const socialStatus=$('socialStatus');
-$('openInstagram')?.addEventListener('click',()=>{window.open('https://www.instagram.com/','_blank','noopener');if(socialStatus)socialStatus.textContent='Instagram abierto. Para publicar, usa la opción Crear dentro de tu cuenta y selecciona el video exportado.';});
-$('openFacebook')?.addEventListener('click',()=>{window.open('https://www.facebook.com/','_blank','noopener');if(socialStatus)socialStatus.textContent='Facebook abierto. Para publicar, crea un Reel desde tu cuenta y selecciona el video exportado.';});
-$('openTikTok')?.addEventListener('click',()=>{window.open('https://www.tiktok.com/upload','_blank','noopener');if(socialStatus)socialStatus.textContent='Centro de carga de TikTok abierto. Selecciona el video exportado para completar la publicación.';});
-$('exportBtn').addEventListener('click',async()=>{
- if(!video.src){toast('Primero selecciona un video.');return;}
- if(!window.MediaRecorder||!video.captureStream){toast('Tu navegador no permite exportar este video. Prueba Chrome actualizado.');return;}
- const mainTrim=timelineItems.find(item=>item.isMain)||{start:0,end:video.duration};
-  const start=Math.max(0,Number(mainTrim.start)||0);
- const end=Number(mainTrim.end)||video.duration;
- if(start>=end||end>video.duration){toast('Revisa el inicio y el final del recorte.');return;}
- const btn=$('exportBtn');btn.disabled=true;btn.textContent='Exportando…';
- let audioContext=null,recorder=null,raf=0,stream=null,exportMusic=null;
- try{
-  const config=getExportConfig();
-  video.pause();video.currentTime=start;
-  await new Promise((resolve,reject)=>{
-   if(Math.abs(video.currentTime-start)<0.05){resolve();return;}
-   const onSeek=()=>{cleanup();resolve();};
-   const onError=()=>{cleanup();reject(new Error('No se pudo posicionar el video.'));};
-   const cleanup=()=>{video.removeEventListener('seeked',onSeek);video.removeEventListener('error',onError);};
-   video.addEventListener('seeked',onSeek,{once:true});video.addEventListener('error',onError,{once:true});
-  });
-  stream=video.captureStream();
-  const sourceAudioTracks=stream.getAudioTracks();
-  const watermarkCanvas=document.createElement('canvas');watermarkCanvas.width=720;watermarkCanvas.height=1280;
-  const watermarkCtx=watermarkCanvas.getContext('2d');
-  const watermarkStream=watermarkCanvas.captureStream(30);
-  stream.getVideoTracks().forEach(track=>{stream.removeTrack(track);track.stop();});
-  watermarkStream.getVideoTracks().forEach(track=>stream.addTrack(track));
-  sourceAudioTracks.forEach(track=>{if(originalAudioMuted){stream.removeTrack(track);track.stop();}else if(!stream.getAudioTracks().includes(track))stream.addTrack(track);});
-  if(musicIntegrated&&musicUrl){
-   audioContext=new AudioContext();
-   const destination=audioContext.createMediaStreamDestination();
-   destination.stream.getAudioTracks().forEach(track=>stream.addTrack(track));
-   exportMusic=await startTrimmedExportMusic(audioContext,destination,end-start);
-  }
-  recorder=new MediaRecorder(stream,{mimeType:config.mime});
-  const chunks=[];
-  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
-  const finished=new Promise(resolve=>{recorder.onstop=resolve;});
-  recorder.start(250);await video.play();
-  await new Promise((resolve,reject)=>{
-   const tick=()=>{if(video.error){reject(new Error('Ocurrió un error durante la reproducción del video.'));return;}watermarkCtx.fillStyle='#000';watermarkCtx.fillRect(0,0,720,1280);drawFilteredCover(watermarkCtx,video,720,1280);drawExportBrandWatermark(watermarkCtx);drawExportTitle(watermarkCtx,video.currentTime-start);window.drawExportReelStickers?.(watermarkCtx);if(video.currentTime>=end||video.ended){video.pause();resolve();return;}if(video.paused){reject(new Error('La reproducción del video se detuvo antes de terminar.'));return;}raf=requestAnimationFrame(tick);};
-   tick();
-  });
-  cancelAnimationFrame(raf);await playExportOutro(watermarkCtx);recorder.stop();if(exportMusic)exportMusic.pause();await finished;
-  const blob=new Blob(chunks,{type:config.mime});
-  showExportOptions(blob,'tato-reel.'+config.extension);
-  awardTatoCoin('clip exportado');
-  toast('Exportación lista en '+config.extension.toUpperCase()+'.');
- }catch(err){
-  if(recorder&&recorder.state!=='inactive')recorder.stop();
-  toast(err.message||'No se pudo exportar. Intenta con otro video o navegador.');
- }finally{
-  cancelAnimationFrame(raf);if(musicAudio)musicAudio.pause();if(exportMusic){exportMusic.pause();exportMusic.removeAttribute('src');exportMusic.load();}
-  if(stream)stream.getTracks().forEach(track=>track.stop());
-  if(audioContext)await audioContext.close().catch(()=>{});
-  btn.disabled=false;btn.textContent='Exportar clip ↓';
- }
-});
 
 $('publishBtn')?.addEventListener('click',()=>{
  if(!video.src&&!timelineItems.length){toast('Agrega un video o una secuencia de fotos antes de preparar tu Reel.');return;}
