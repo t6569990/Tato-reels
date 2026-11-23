@@ -2011,7 +2011,7 @@ p:not(.timeline-head p),
   }
   panes[key].append(card);
  });
-  // Las dos acciones amarillas de restablecimiento quedan al final del panel principal.
+  // Estilo y enlace funcional del botón secundario; la ubicación se fija al final del montaje.
   const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
   const sidebar=document.querySelector('.sidebar');
   const clearButtonStyle='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
@@ -2028,8 +2028,6 @@ p:not(.timeline-head p),
    if(sidebarClear){
     sidebarClear.type='button';
     sidebarClear.style.cssText=clearButtonStyle;
-    const editorPanel=creator.querySelector('.editor-panel');
-    // La ubicación final se establece al terminar de montar todo el editor.
    }
   }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
@@ -3099,6 +3097,22 @@ if(drafts.length&&!timelineItems.length){
  window.setTimeout(()=>{
   if(confirm('Hay un proyecto guardado en este dispositivo ('+(latestDraft.videoName||'Mi Reel')+'). ¿Deseas recuperarlo ahora?'))openDraft(latestDraft);
  },350);
+}
+
+// Ubicación final: después de crear paneWrap, montar sus herramientas y añadir componentes.
+const resetEditor=editor;
+const resetPrimary=document.getElementById('clearReelVisualChanges');
+const resetSecondary=document.getElementById('clearReelVisualChangesSidebar');
+if(resetEditor&&resetPrimary&&resetSecondary){
+ const resetFooter=document.createElement('div');
+ resetFooter.className='visualizer-reset-actions';
+ resetFooter.style.cssText='display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;grid-column:1/-1!important;width:100%!important;margin:16px 0 0!important;box-sizing:border-box!important;';
+ [resetPrimary,resetSecondary].forEach(button=>{
+  button.type='button';
+  button.style.cssText=clearButtonStyle+'width:100%!important;margin:0!important;';
+  resetFooter.append(button);
+ });
+ resetEditor.append(resetFooter);
 }
 
 })();
