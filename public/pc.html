@@ -2327,6 +2327,9 @@ p:not(.timeline-head p),
  window.addEventListener('pointermove',move);
  window.addEventListener('pointerup',stop);
  window.addEventListener('pointercancel',stop);
+ // Reubicar el grupo existente después de montar todas las herramientas del editor.
+ const finalClearActions=editor.querySelector(':scope > .visualizer-clear-actions');
+ if(finalClearActions)editor.append(finalClearActions);
 })();
 
 // Ajustes generales: navegación independiente del editor y sin alterar la línea de tiempo.
