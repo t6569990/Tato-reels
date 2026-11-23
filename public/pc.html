@@ -1681,9 +1681,12 @@ p:not(.timeline-head p),
 <style id="tato-sidebar-clear-button-white-text">
 #clearReelVisualChangesSidebar,
 #clearReelVisualChangesSidebar:hover,
-#clearReelVisualChangesSidebar:focus{
- color:#fff!important;-webkit-text-fill-color:#fff!important;
- font-weight:900!important;text-shadow:0 1px 2px #6b4b00!important;
+#clearReelVisualChangesSidebar:focus,
+#clearReelVisualChanges,
+#clearReelVisualChanges:hover,
+#clearReelVisualChanges:focus{
+ color:#241900!important;-webkit-text-fill-color:#241900!important;
+ font-weight:900!important;text-shadow:none!important;
 }
 </style>
 
@@ -2011,25 +2014,34 @@ p:not(.timeline-head p),
   }
   panes[key].append(card);
  });
- // Botón principal: debajo de "Nombre de creador" en "Detalles del Reel".
- // La segunda copia queda inmediatamente debajo de "Tu creatividad, en corto".
+ // Los dos botones de restablecimiento se agrupan al final del editor.
  const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
  const sidebar=document.querySelector('.sidebar');
- const clearButtonStyle='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
- if(clearVisualizerButton){
+ const editorPanel=document.querySelector('.editor-panel');
+ if(editorPanel&&clearVisualizerButton){
+  let clearActions=editorPanel.querySelector(':scope > .visualizer-clear-actions');
+  if(!clearActions){
+   clearActions=document.createElement('div');
+   clearActions.className='visualizer-clear-actions';
+   clearActions.setAttribute('role','group');
+   clearActions.setAttribute('aria-label','Acciones para borrar cambios del visualizador');
+   clearActions.style.cssText='grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;margin:18px 0 0;padding:14px;border:1px solid light-dark(#E8E3EE,#373144);border-radius:14px;background:light-dark(#FFFFFF,#171521);box-sizing:border-box;';
+   editorPanel.append(clearActions);
+  }
+  const clearButtonStyle='display:block!important;visibility:visible!important;width:100%!important;min-width:0!important;min-height:48px!important;height:auto!important;margin:0!important;padding:11px 12px!important;position:relative!important;z-index:3!important;box-sizing:border-box!important;background:#f4c542!important;border:1px solid #d39a16!important;border-radius:11px!important;color:#241900!important;-webkit-text-fill-color:#241900!important;font-weight:900!important;text-shadow:none!important;box-shadow:0 2px 8px #0002!important;white-space:normal!important;';
   clearVisualizerButton.type='button';
   clearVisualizerButton.style.cssText=clearButtonStyle;
-  const creatorNameField=document.getElementById('username')?.closest('.field');
-  if(creatorNameField&&clearVisualizerButton.parentElement!==creatorNameField.parentElement) creatorNameField.after(clearVisualizerButton);
- }
- if(clearVisualizerButton&&sidebar){
-  const creativityCard=sidebar.querySelector('.side-card');
-  const sidebarClear=sidebar.querySelector('#clearReelVisualChangesSidebar');
-  if(sidebarClear&&!sidebarClear.dataset.boundToVisualizerClear){
-   sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
-   sidebarClear.dataset.boundToVisualizerClear='true';
+  clearActions.append(clearVisualizerButton);
+  const sidebarClear=sidebar?.querySelector('#clearReelVisualChangesSidebar');
+  if(sidebarClear){
+   sidebarClear.type='button';
+   sidebarClear.style.cssText=clearButtonStyle;
+   clearActions.append(sidebarClear);
+   if(!sidebarClear.dataset.boundToVisualizerClear){
+    sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
+    sidebarClear.dataset.boundToVisualizerClear='true';
+   }
   }
-  if(sidebarClear) sidebarClear.style.cssText=clearButtonStyle+'margin-top:10px!important;background:#f4c542!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:1px solid #d39a16!important;font-weight:900!important;text-shadow:0 1px 2px #6b4b00!important;';
  }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
