@@ -35,7 +35,7 @@ button { cursor: pointer; }
 .top-actions { display:flex; align-items:center; gap:10px; }
 .pill { border:1px solid light-dark(#E4DFEB,#302B3D); border-radius:999px; padding:10px 15px; color:inherit; background:transparent; font-size:14.3px; font-weight:650; }
 .avatar { width:36px; height:36px; display:grid; place-items:center; border-radius:50%; background:#F4C36D; color:#30200A; font-weight:800; }
-.layout { max-width:1320px; margin:auto; padding:28px clamp(16px,3vw,42px) 48px; display:grid; grid-template-columns:220px minmax(330px,1fr) 310px; gap:30px; }
+.layout { max-width:1320px; margin:auto; padding:28px clamp(16px,3vw,42px) 48px; display:grid; grid-template-columns:220px minmax(0,1fr); gap:30px; }
 .sidebar { padding-top:12px; }
 .nav-label { color:light-dark(#8B8497,#888196); font-size:11px; font-weight:800; letter-spacing:1.6px; margin:10px 12px 13px; }
 .nav-item { width:100%; display:flex; align-items:center; gap:13px; border:0; padding:13px 14px; margin:4px 0; border-radius:13px; background:transparent; color:light-dark(#5F586D,#B7B1C4); font-size:15.4px; font-weight:650; text-align:left; }
@@ -1972,7 +1972,6 @@ p:not(.timeline-head p),
     </div>
     <div class="post-card" id="postCard"><h3>✓ Publicación preparada</h3><p id="postText">Tu Reel está listo en esta vista previa. La publicación real en redes sociales requiere conectar una cuenta o servicio.</p></div>
   </main>
-  <aside class="right-rail"></aside>
 </div>
 <nav class="mobile-nav"><button class="current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>Crear</button><button id="mobileDraft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5zM8 8h8M8 12h8"/></svg>Borradores</button><button id="mobilePosts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4zM8 9h8"/></svg>Publicados</button><button id="mobileProfile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</button><button id="mobileSettings" type="button" aria-label="Ajustes">⚙️<span>Ajustes</span></button></nav>
 <div class="toast" id="toast"></div>
