@@ -2011,26 +2011,27 @@ p:not(.timeline-head p),
   }
   panes[key].append(card);
  });
- // Botón principal: debajo de "Nombre de creador" en "Detalles del Reel".
- // La segunda copia queda inmediatamente debajo de "Tu creatividad, en corto".
- const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
- const sidebar=document.querySelector('.sidebar');
- const clearButtonStyle='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
- if(clearVisualizerButton){
-  clearVisualizerButton.type='button';
-  clearVisualizerButton.style.cssText=clearButtonStyle;
-  const creatorNameField=document.getElementById('username')?.closest('.field');
-  if(creatorNameField&&clearVisualizerButton.parentElement!==creatorNameField.parentElement) creatorNameField.after(clearVisualizerButton);
- }
- if(clearVisualizerButton&&sidebar){
-  const creativityCard=sidebar.querySelector('.side-card');
-  const sidebarClear=sidebar.querySelector('#clearReelVisualChangesSidebar');
-  if(sidebarClear&&!sidebarClear.dataset.boundToVisualizerClear){
-   sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
-   sidebarClear.dataset.boundToVisualizerClear='true';
+  // Las dos acciones amarillas de restablecimiento quedan al final del panel principal.
+  const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
+  const sidebar=document.querySelector('.sidebar');
+  const clearButtonStyle='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
+  if(clearVisualizerButton){
+   clearVisualizerButton.type='button';
+   clearVisualizerButton.style.cssText=clearButtonStyle;
   }
-  if(sidebarClear) sidebarClear.style.cssText=clearButtonStyle+'margin-top:10px!important;background:#f4c542!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:1px solid #d39a16!important;font-weight:900!important;text-shadow:0 1px 2px #6b4b00!important;';
- }
+  if(clearVisualizerButton&&sidebar){
+   const sidebarClear=sidebar.querySelector('#clearReelVisualChangesSidebar');
+   if(sidebarClear&&!sidebarClear.dataset.boundToVisualizerClear){
+    sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
+    sidebarClear.dataset.boundToVisualizerClear='true';
+   }
+   if(sidebarClear){
+    sidebarClear.type='button';
+    sidebarClear.style.cssText=clearButtonStyle;
+    const editorPanel=creator.querySelector('.editor-panel');
+    if(editorPanel) editorPanel.after(clearVisualizerButton,sidebarClear);
+   }
+  }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
   const sideNav=document.createElement('div');
