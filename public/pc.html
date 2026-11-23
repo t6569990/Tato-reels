@@ -2029,7 +2029,7 @@ p:not(.timeline-head p),
     sidebarClear.type='button';
     sidebarClear.style.cssText=clearButtonStyle;
     const editorPanel=creator.querySelector('.editor-panel');
-    if(editorPanel) editorPanel.append(clearVisualizerButton,sidebarClear);
+    // La ubicación final se establece al terminar de montar todo el editor.
    }
   }
  // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
@@ -2316,8 +2316,24 @@ p:not(.timeline-head p),
  window.addEventListener('pointermove',move);
  window.addEventListener('pointerup',stop);
  window.addEventListener('pointercancel',stop);
-})();
 
+ // Colocar ambos botones en un pie dedicado DESPUÉS de montar todas las herramientas.
+ const resetEditor=creator.querySelector('.editor-panel');
+ const resetPrimary=document.getElementById('clearReelVisualChanges');
+ const resetSecondary=document.getElementById('clearReelVisualChangesSidebar');
+ if(resetEditor&&resetPrimary&&resetSecondary){
+  const resetFooter=document.createElement('div');
+  resetFooter.className='visualizer-reset-actions';
+  resetFooter.style.cssText='display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;grid-column:1/-1!important;width:100%!important;margin:16px 0 0!important;box-sizing:border-box!important;';
+  [resetPrimary,resetSecondary].forEach(button=>{
+   button.type='button';
+   button.style.cssText=clearButtonStyle+'width:100%!important;margin:0!important;';
+   resetFooter.append(button);
+  });
+  resetEditor.append(resetFooter);
+ }
+})();
+ 
 // Ajustes generales: navegación independiente del editor y sin alterar la línea de tiempo.
 (()=>{
  const modal=document.getElementById('settingsWindow');if(!modal)return;
