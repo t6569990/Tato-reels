@@ -4575,9 +4575,6 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 </style>
 
 
-\n</body>
-</html>
-
 
 <style id="tato-pc-restore-preview-pointer-events-20261109">
 /* PC: reactivar exclusivamente los controles del visualizador; móvil permanece intacto. */
@@ -4653,3 +4650,33 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 #tato-floating-upload-status[data-state="working"] .tato-upload-status-track span{background:linear-gradient(90deg,#f4c542,#ffe58a)!important;}
 #tato-floating-upload-status[data-state="working"] .tato-upload-status-percent{color:#ffe58a!important;}
 </style>
+
+<style id="tato-pc-click-layer-repair-20261124">
+/* Reparación PC: el visualizador no debe interceptar clics del editor. */
+@media (min-width:721px) {
+  html body #app .creator { position:relative!important; isolation:isolate!important; }
+  html body #app .creator > .floating-stage {
+    position:relative!important; z-index:1!important; pointer-events:none!important;
+  }
+  html body #app .creator > .floating-stage > .preview-shell {
+    pointer-events:auto!important;
+  }
+  html body #app .creator > .floating-stage .preview-drag-handle,
+  html body #app .creator > .floating-stage .preview-resize-handle {
+    pointer-events:auto!important; z-index:30!important;
+  }
+  html body #app .creator > .editor-panel {
+    position:relative!important; z-index:30!important; pointer-events:auto!important;
+  }
+  html body #app .creator > .editor-panel * {
+    pointer-events:auto!important;
+  }
+}
+/* Las ventanas cerradas nunca capturan clics. */
+.settings-backdrop:not(.open),
+.rewards-backdrop:not(.open) {
+  display:none!important; pointer-events:none!important;
+}
+</style>
+</body>
+</html>
