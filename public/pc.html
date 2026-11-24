@@ -1968,7 +1968,7 @@ p:not(.timeline-head p),
 </div>
 <script>
 (()=>{
- const creator=document.querySelector('.creator'), preview=creator?.querySelector('.preview-shell'), editor=creator?.querySelector('.editor-panel'), toolbar=document.querySelector('.editor-toolbar');
+ const creator=document.querySelector('.creator'), preview=creator?.querySelector('.preview-shell'), editor=creator?.querySelector('.editor-panel'), toolbar=document.querySelector('.editor-toolbar'), sidebar=document.querySelector('.layout > .sidebar');
  if(!creator||!preview||!editor||!toolbar)return;
  const stage=document.createElement('section');stage.className='floating-stage';stage.setAttribute('aria-label','Área de vista previa flotante');
  creator.insertBefore(stage,preview);stage.classList.add('tato-preview-container-locked');stage.append(preview);
