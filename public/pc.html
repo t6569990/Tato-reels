@@ -35,7 +35,7 @@ button { cursor: pointer; }
 .top-actions { display:flex; align-items:center; gap:10px; }
 .pill { border:1px solid light-dark(#E4DFEB,#302B3D); border-radius:999px; padding:10px 15px; color:inherit; background:transparent; font-size:14.3px; font-weight:650; }
 .avatar { width:36px; height:36px; display:grid; place-items:center; border-radius:50%; background:#F4C36D; color:#30200A; font-weight:800; }
-.layout { max-width:1320px; margin:auto; padding:28px clamp(16px,3vw,42px) 48px; display:grid; grid-template-columns:220px minmax(0,1fr); gap:30px; }
+.layout { max-width:1320px; margin:auto; padding:28px clamp(16px,3vw,42px) 48px; display:grid; grid-template-columns:220px minmax(330px,1fr) 310px; gap:30px; }
 .sidebar { padding-top:12px; }
 .nav-label { color:light-dark(#8B8497,#888196); font-size:11px; font-weight:800; letter-spacing:1.6px; margin:10px 12px 13px; }
 .nav-item { width:100%; display:flex; align-items:center; gap:13px; border:0; padding:13px 14px; margin:4px 0; border-radius:13px; background:transparent; color:light-dark(#5F586D,#B7B1C4); font-size:15.4px; font-weight:650; text-align:left; }
@@ -1678,6 +1678,14 @@ p:not(.timeline-head p),
 .editor-tool-pane[data-pane="explore"].active .explore-export-network:focus-visible{outline:2px solid var(--site-primary)!important;outline-offset:4px!important}
 </style>
 
+<style id="tato-sidebar-clear-button-white-text">
+#clearReelVisualChangesSidebar,
+#clearReelVisualChangesSidebar:hover,
+#clearReelVisualChangesSidebar:focus{
+ color:#fff!important;-webkit-text-fill-color:#fff!important;
+ font-weight:900!important;text-shadow:0 1px 2px #6b4b00!important;
+}
+</style>
 
 
 <style id="tato-pc-preview-and-import-containers-scale-75">
@@ -1750,35 +1758,16 @@ p:not(.timeline-head p),
 <div class="layout">
   <aside class="sidebar">
     <div class="nav-label">CREAR</div>
-    <button class="nav-item active" id="editorNav" type="button" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>Editor de Reels</button>
+    <button class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>Editor de Reels</button>
     <button class="nav-item" id="draftNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>Mis borradores</button>
     <button class="nav-item" id="postsNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg>Mis publicaciones</button>
     <div class="nav-label" style="margin-top:28px">TU ESPACIO</div>
     <button class="nav-item" id="profileNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mi perfil</button>
     <div class="side-card"><strong>✨ Tu creatividad, en corto</strong><p>Prepara videos verticales, agrega tu texto y deja listo tu próximo Reel.</p><button class="secondary" id="tipsBtn">Ver consejos</button></div>
-    <!-- Cuatro contenedores informativos independientes trasladados desde el panel derecho. -->
-    <div class="rail-card"><div class="rail-title">💡 Consejos para destacar</div>
-          <div class="tip"><div class="tip-icon">▶</div><div><b>Engancha en 2 segundos</b><span>Empieza con una imagen o frase que despierte curiosidad.</span></div></div>
-          <div class="tip"><div class="tip-icon">▣</div><div><b>Formato vertical</b><span>Graba en 9:16 para aprovechar toda la pantalla.</span></div></div>
-          <div class="tip"><div class="tip-icon">#</div><div><b>Usa pocos hashtags</b><span>Elige etiquetas relacionadas con el tema del video.</span></div></div>
-        </div>
-        <div class="rail-card social-duration-card" aria-label="Duración de referencia para redes sociales">
-          <div class="rail-title">⏱️ Duración para redes</div>
-          <table class="social-duration-table">
-            <tbody>
-              <tr><th scope="row"><span class="social-logo instagram" aria-label="Instagram">◎</span> Instagram</th><td>180 s</td></tr>
-              <tr><th scope="row"><span class="social-logo facebook" aria-label="Facebook">f</span> Facebook</th><td>∞</td></tr>
-              <tr><th scope="row"><span class="social-logo tiktok" aria-label="TikTok">♪</span> TikTok</th><td>180 s</td></tr>
-              <tr><th scope="row"><span class="social-logo youtube" aria-label="YouTube">▶</span> YouTube</th><td>180 s</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="rail-card"><div class="rail-title">📦 Tu espacio de creación</div><div style="display:flex;justify-content:space-between;font-size:11px;margin:12px 0"><span style="color:light-dark(#817A8F,#A29BAD)">Borradores guardados</span><b id="draftCount">0</b></div><div style="height:6px;background:light-dark(#EEEAF3,#2A2635);border-radius:8px;overflow:hidden"><div style="width:12%;height:100%;background:#9875EA;border-radius:8px"></div></div><p style="font-size:10px;color:light-dark(#8A8396,#A29BAD);line-height:1.5;margin:12px 0 0">Los borradores de esta demo se conservan mientras la página permanezca abierta.</p></div>
-        <div class="rail-card tools-added-card"><div class="rail-title">🛠️ Herramientas añadidas</div><div class="tools-added-copy"><div>✓ Biblioteca local de audio</div><div>✓ Texto animado en vista previa</div><div>✓ Recorte individual en la línea de tiempo</div><div>✓ Accesos a Instagram, Facebook y TikTok</div><p>La publicación automática y la exportación de secuencias con títulos requieren una siguiente integración.</p></div></div>
-
+    <button class="secondary" id="clearReelVisualChangesSidebar" type="button" aria-label="Borrar cambios del visualizador" style="display:block;width:100%;min-height:46px;margin:10px 0 0;position:relative;z-index:5;box-sizing:border-box;background:#f4c542;border:1px solid #d39a16;color:#241900;font-weight:800;box-shadow:0 2px 8px #0002">🧹 Borrar cambios del visualizador</button>
   </aside>
   <main class="main">
-    <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div></div>
+    <div class="heading-row"><div><h1>Editor de Reels</h1><div class="sub">Dale vida a tus ideas. Crea algo que valga la pena compartir.</div></div><div class="tabs"><button class="tab selected">Crear</button><button class="tab" id="draftTab">Borradores</button><button class="tab" id="publishedTab">Publicados</button></div></div>
     <nav class="editor-toolbar editor-toolbar-one-line" aria-label="Herramientas del editor">
       <button class="editor-tool active" data-pane="video"><span class="tool-icon">🎬</span><span class="tool-label">Video</span></button>
       <button class="editor-tool" data-pane="image"><span class="tool-icon">🖼️</span><span class="tool-label">Imagen</span></button>
@@ -1848,6 +1837,7 @@ p:not(.timeline-head p),
           </div>
           <div class="field"><label class="field-label" for="hashtags">Hashtags</label><input type="text" id="hashtags" placeholder="#tendencia #creatividad"></div>
           <div class="field" style="margin-bottom:0"><label class="field-label" for="username">Nombre de creador</label><input type="text" id="username" value="@tato.reels"></div>
+          <button class="secondary" id="clearReelVisualChanges" type="button" style="width:100%;min-height:44px;margin-top:9px">🧹 Borrar cambios del visualizador</button>
         </div>
         <div class="panel">
           <h3>🎨 Estilo de vista</h3>
@@ -1962,6 +1952,26 @@ p:not(.timeline-head p),
     </div>
     <div class="post-card" id="postCard"><h3>✓ Publicación preparada</h3><p id="postText">Tu Reel está listo en esta vista previa. La publicación real en redes sociales requiere conectar una cuenta o servicio.</p></div>
   </main>
+  <aside class="right-rail">
+    <div class="rail-card"><div class="rail-title">💡 Consejos para destacar</div>
+      <div class="tip"><div class="tip-icon">▶</div><div><b>Engancha en 2 segundos</b><span>Empieza con una imagen o frase que despierte curiosidad.</span></div></div>
+      <div class="tip"><div class="tip-icon">▣</div><div><b>Formato vertical</b><span>Graba en 9:16 para aprovechar toda la pantalla.</span></div></div>
+      <div class="tip"><div class="tip-icon">#</div><div><b>Usa pocos hashtags</b><span>Elige etiquetas relacionadas con el tema del video.</span></div></div>
+    </div>
+    <div class="rail-card social-duration-card" aria-label="Duración de referencia para redes sociales">
+      <div class="rail-title">⏱️ Duración para redes</div>
+      <table class="social-duration-table">
+        <tbody>
+          <tr><th scope="row"><span class="social-logo instagram" aria-label="Instagram">◎</span> Instagram</th><td>180 s</td></tr>
+          <tr><th scope="row"><span class="social-logo facebook" aria-label="Facebook">f</span> Facebook</th><td>∞</td></tr>
+          <tr><th scope="row"><span class="social-logo tiktok" aria-label="TikTok">♪</span> TikTok</th><td>180 s</td></tr>
+          <tr><th scope="row"><span class="social-logo youtube" aria-label="YouTube">▶</span> YouTube</th><td>180 s</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="rail-card"><div class="rail-title">📦 Tu espacio de creación</div><div style="display:flex;justify-content:space-between;font-size:11px;margin:12px 0"><span style="color:light-dark(#817A8F,#A29BAD)">Borradores guardados</span><b id="draftCount">0</b></div><div style="height:6px;background:light-dark(#EEEAF3,#2A2635);border-radius:8px;overflow:hidden"><div style="width:12%;height:100%;background:#9875EA;border-radius:8px"></div></div><p style="font-size:10px;color:light-dark(#8A8396,#A29BAD);line-height:1.5;margin:12px 0 0">Los borradores de esta demo se conservan mientras la página permanezca abierta.</p></div>
+    <div class="rail-card tools-added-card"><div class="rail-title">🛠️ Herramientas añadidas</div><div class="tools-added-copy"><div>✓ Biblioteca local de audio</div><div>✓ Texto animado en vista previa</div><div>✓ Recorte individual en la línea de tiempo</div><div>✓ Accesos a Instagram, Facebook y TikTok</div><p>La publicación automática y la exportación de secuencias con títulos requieren una siguiente integración.</p></div></div>
+  </aside>
 </div>
 <nav class="mobile-nav"><button class="current"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 9 5 3-5 3z"/></svg>Crear</button><button id="mobileDraft"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5zM8 8h8M8 12h8"/></svg>Borradores</button><button id="mobilePosts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4zM8 9h8"/></svg>Publicados</button><button id="mobileProfile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Perfil</button><button id="mobileSettings" type="button" aria-label="Ajustes">⚙️<span>Ajustes</span></button></nav>
 <div class="toast" id="toast"></div>
@@ -2001,6 +2011,27 @@ p:not(.timeline-head p),
   }
   panes[key].append(card);
  });
+ // Botón principal: debajo de "Nombre de creador" en "Detalles del Reel".
+ // La segunda copia queda inmediatamente debajo de "Tu creatividad, en corto".
+ const clearVisualizerButton=document.getElementById('clearReelVisualChanges');
+ const sidebar=document.querySelector('.sidebar');
+ const clearButtonStyle='display:block!important;visibility:visible!important;width:100%!important;min-height:46px!important;margin:10px 0 0!important;position:relative;z-index:3;box-sizing:border-box;background:#f4c542!important;border:1px solid #d39a16!important;color:#241900!important;font-weight:800!important;box-shadow:0 2px 8px #0002!important;';
+ if(clearVisualizerButton){
+  clearVisualizerButton.type='button';
+  clearVisualizerButton.style.cssText=clearButtonStyle;
+  const creatorNameField=document.getElementById('username')?.closest('.field');
+  if(creatorNameField&&clearVisualizerButton.parentElement!==creatorNameField.parentElement) creatorNameField.after(clearVisualizerButton);
+ }
+ if(clearVisualizerButton&&sidebar){
+  const creativityCard=sidebar.querySelector('.side-card');
+  const sidebarClear=sidebar.querySelector('#clearReelVisualChangesSidebar');
+  if(sidebarClear&&!sidebarClear.dataset.boundToVisualizerClear){
+   sidebarClear.addEventListener('click',event=>{event.preventDefault();clearVisualizerButton.click();});
+   sidebarClear.dataset.boundToVisualizerClear='true';
+  }
+  if(sidebarClear) sidebarClear.style.cssText=clearButtonStyle+'margin-top:10px!important;background:#f4c542!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border:1px solid #d39a16!important;font-weight:900!important;text-shadow:0 1px 2px #6b4b00!important;';
+ }
+ // Navegación vertical amarilla en la barra izquierda: recorre las ocho familias.
  if(sidebar&&!document.querySelector('.editor-side-navigation')){
   const sideNav=document.createElement('div');
   sideNav.className='editor-side-navigation';
@@ -2664,6 +2695,7 @@ updateAnimatedTitle();
 video.addEventListener('loadedmetadata',updateAnimatedTitle);
 (()=>{const title=$('animatedTitle'),frame=$('videoFrame');let dragging=false;title.addEventListener('pointerdown',e=>{if(title.hidden)return;dragging=true;title.setPointerCapture(e.pointerId);e.preventDefault();});title.addEventListener('pointermove',e=>{if(!dragging)return;const r=frame.getBoundingClientRect();const x=Math.max(8,Math.min(r.width-8,e.clientX-r.left));const y=Math.max(8,Math.min(r.height-8,e.clientY-r.top));title.style.left=(x/r.width*100)+'%';title.style.top=(y/r.height*100)+'%';});const stop=()=>{dragging=false;};title.addEventListener('pointerup',stop);title.addEventListener('pointercancel',stop);})();
 $('clearAnimatedText').addEventListener('click',()=>{$('animatedText').value='';updateAnimatedTitle();toast('Texto animado eliminado.');});
+$('clearReelVisualChanges').addEventListener('click',()=>{try{$('animatedText').value='';updateAnimatedTitle();const title=$('animatedTitle');if(title){title.style.left='';title.style.top='';title.style.transform='';}filter='none';video.style.filter='none';$('sampleArt').style.filter='none';document.querySelectorAll('[data-filter]').forEach(button=>button.classList.toggle('active',button.dataset.filter==='none'));if(typeof photoScale!=='undefined')photoScale=1;if(typeof photoScaleApplied!=='undefined')photoScaleApplied=false;if($('photoScale'))$('photoScale').value='1';if($('photoScaleValue'))$('photoScaleValue').textContent='100%';if(typeof sequencePhoto!=='undefined'&&sequencePhoto)sequencePhoto.style.transform='scale(1)';if(typeof textDecorationsApplied!=='undefined')textDecorationsApplied=false;try{window.clearPlacedReelStickers?.();}catch(error){console.warn('Limpieza de stickers:',error);}const stickerLayer=document.getElementById('reelStickerLayer');if(stickerLayer)stickerLayer.replaceChildren();const status=$('textApplyStatus');if(status)status.textContent='Visualizador limpio. El video y tus archivos siguen intactos.';const imageStatus=$('imageApplyStatus');if(imageStatus)imageStatus.textContent='Ajustes visuales restablecidos.';toast('Visualizador limpio: textos, stickers, filtros y escala restablecidos. Tus archivos y premios siguen intactos.');}catch(error){console.error('Error al limpiar el visualizador:',error);toast('No se pudo completar la limpieza. Revisa la consola.');}});
 const socialStatus=$('socialStatus');
 $('openInstagram')?.addEventListener('click',()=>{window.open('https://www.instagram.com/','_blank','noopener');if(socialStatus)socialStatus.textContent='Instagram abierto. Para publicar, usa la opción Crear dentro de tu cuenta y selecciona el video exportado.';});
 $('openFacebook')?.addEventListener('click',()=>{window.open('https://www.facebook.com/','_blank','noopener');if(socialStatus)socialStatus.textContent='Facebook abierto. Para publicar, crea un Reel desde tu cuenta y selecciona el video exportado.';});
@@ -2765,20 +2797,17 @@ async function openDraft(item){
   toast('Borrador completo abierto: videos, fotos, música y ajustes recuperados.');$('videoFrame').scrollIntoView({behavior:'smooth',block:'center'});
  }catch(error){toast(error.message||'No se pudo abrir el borrador.');}
 }
-function setSidebarActive(id){document.querySelectorAll('.sidebar .nav-item').forEach(button=>{const active=button.id===id;button.classList.toggle('active',active);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});}
-function hideLocalNavigationPanels(except){['draftShelf','postsShelf','profileShelf'].forEach(id=>{if(id===except)return;const panel=$(id);if(panel){panel.hidden=true;panel.style.display='none';}});}
-function showEditor(){hideLocalNavigationPanels(null);setSidebarActive('editorNav');document.querySelector('.editor-toolbar')?.scrollIntoView({behavior:'smooth',block:'start'});}
-function showDrafts(shouldScroll=true){hideLocalNavigationPanels('draftShelf');setSidebarActive('draftNav');
+function showDrafts(shouldScroll=true){
  let shelf=$('draftShelf');if(!shelf){shelf=document.createElement('section');shelf.id='draftShelf';shelf.className='panel';shelf.style.margin='18px 0';shelf.hidden=true;$('postCard').after(shelf);}
  shelf.hidden=false;shelf.style.display='block';shelf.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><h3 style="margin:0">📁 Mis borradores guardados</h3><button type="button" id="closeDraftShelf" class="secondary">✕ Cerrar</button></div><p class="file-note">Tus videos, fotos y ajustes se guardan en este dispositivo. Abre un borrador para continuar editándolo.</p>';
  if(drafts.length){const deleteAll=document.createElement('button');deleteAll.type='button';deleteAll.className='secondary';deleteAll.textContent='Eliminar todos los borradores';deleteAll.style.marginBottom='10px';deleteAll.addEventListener('click',async()=>{if(!confirm('¿Eliminar todos los borradores guardados? Esta acción no se puede deshacer.'))return;for(const item of drafts){try{await deleteDraftMedia(item.mediaId);}catch(_){}}drafts=[];localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts(false);toast('Todos los borradores fueron eliminados.');});shelf.append(deleteAll);}
  if(!drafts.length){const empty=document.createElement('p');empty.className='file-note';empty.textContent='Todavía no hay borradores guardados en este dispositivo.';shelf.append(empty);}
  else{drafts.forEach((item,index)=>{const row=document.createElement('div');row.className='clip-item';row.style.marginTop='8px';const info=document.createElement('strong');const date=item.savedAt?new Date(item.savedAt).toLocaleString('es-MX'):'Fecha no disponible';info.textContent=(item.videoName||'Borrador sin título')+' · '+date+' · '+(item.mediaCount||0)+' archivo(s)';const open=document.createElement('button');open.type='button';open.textContent='Abrir';open.addEventListener('click',()=>openDraft(item));const remove=document.createElement('button');remove.type='button';remove.textContent='Eliminar';remove.setAttribute('aria-label','Eliminar borrador '+(index+1));remove.addEventListener('click',async()=>{if(!confirm('¿Eliminar este borrador?'))return;try{await deleteDraftMedia(item.mediaId);}catch(_){}drafts.splice(index,1);localStorage.setItem('tatoReelsDrafts',JSON.stringify(drafts));refreshDraftCount();showDrafts(false);toast('Borrador eliminado.');});row.append(info,open,remove);shelf.append(row);});}
- const closeButton=$('closeDraftShelf');if(closeButton)closeButton.addEventListener('click',()=>{shelf.hidden=true;shelf.style.display='none';setSidebarActive('editorNav');});
+ const closeButton=$('closeDraftShelf');if(closeButton)closeButton.addEventListener('click',()=>{shelf.hidden=true;shelf.style.display='none';});
  if(shouldScroll)shelf.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;shelf.style.display='none';setSidebarActive('editorNav');return;}showDrafts(true);}
-function showPosts(){hideLocalNavigationPanels('postsShelf');setSidebarActive('postsNav');
+function toggleDrafts(){const shelf=$('draftShelf');if(shelf&&!shelf.hidden){shelf.hidden=true;shelf.style.display='none';return;}showDrafts(true);}
+function showPosts(){
  const card=$('postCard');
  if(card?.classList.contains('visible')){card.scrollIntoView({behavior:'smooth',block:'center'});toast('Mostrando tu publicación preparada en este dispositivo.');return;}
  let shelf=$('postsShelf');
@@ -2786,10 +2815,10 @@ function showPosts(){hideLocalNavigationPanels('postsShelf');setSidebarActive('p
  shelf.replaceChildren();
  const heading=document.createElement('h3');heading.textContent='📣 Mis publicaciones';
  const message=document.createElement('p');message.className='file-note';message.textContent='Todavía no has preparado una publicación en esta sesión. Cuando pulses “Preparar publicación”, tu vista previa aparecerá aquí. La app no publica ni sincroniza contenido con redes sociales.';
- const back=document.createElement('button');back.type='button';back.className='secondary';back.textContent='Volver al editor';back.addEventListener('click',()=>{shelf.hidden=true;shelf.style.display='none';setSidebarActive('editorNav');document.querySelector('.editor-toolbar')?.scrollIntoView({behavior:'smooth',block:'start'});});
- shelf.append(heading,message,back);shelf.hidden=false;shelf.style.display='block';shelf.scrollIntoView({behavior:'smooth',block:'center'});
+ const back=document.createElement('button');back.type='button';back.className='secondary';back.textContent='Volver al editor';back.addEventListener('click',()=>{shelf.hidden=true;document.querySelector('.editor-toolbar')?.scrollIntoView({behavior:'smooth',block:'start'});});
+ shelf.append(heading,message,back);shelf.hidden=false;shelf.scrollIntoView({behavior:'smooth',block:'center'});
 }
-function showProfile(){hideLocalNavigationPanels('profileShelf');setSidebarActive('profileNav');
+function showProfile(){
  let panel=$('profileShelf');
  if(!panel){panel=document.createElement('section');panel.id='profileShelf';panel.className='panel local-workspace-panel';$('postCard')?.before(panel);}
  panel.replaceChildren();
@@ -2798,13 +2827,12 @@ function showProfile(){hideLocalNavigationPanels('profileShelf');setSidebarActiv
  const draftsInfo=document.createElement('p');draftsInfo.className='file-note';draftsInfo.textContent='Borradores guardados en este dispositivo: '+drafts.length;
  const privacy=document.createElement('p');privacy.className='file-note';privacy.textContent='Perfil local de creador. Tus datos y borradores no se sincronizan con una cuenta en la nube.';
  const edit=document.createElement('button');edit.type='button';edit.className='primary';edit.textContent='Editar nombre';edit.addEventListener('click',()=>{$('username')?.focus();$('username')?.scrollIntoView({behavior:'smooth',block:'center'});});
- const close=document.createElement('button');close.type='button';close.className='secondary';close.textContent='Cerrar perfil';close.addEventListener('click',()=>{panel.hidden=true;panel.style.display='none';setSidebarActive('editorNav');});
- panel.append(heading,name,draftsInfo,privacy,edit,close);panel.hidden=false;panel.style.display='block';panel.scrollIntoView({behavior:'smooth',block:'center'});
+ const close=document.createElement('button');close.type='button';close.className='secondary';close.textContent='Cerrar perfil';close.addEventListener('click',()=>{panel.hidden=true;});
+ panel.append(heading,name,draftsInfo,privacy,edit,close);panel.hidden=false;panel.scrollIntoView({behavior:'smooth',block:'center'});
 }
-$('editorNav').addEventListener('click',showEditor);
-['draftNav','mobileDraft','topDraftsBtn'].forEach(id=>$(id)?.addEventListener('click',toggleDrafts));
-['postsNav','mobilePosts'].forEach(id=>$(id)?.addEventListener('click',showPosts));
-['profileNav','mobileProfile'].forEach(id=>$(id)?.addEventListener('click',showProfile));
+['draftNav','draftTab','mobileDraft','topDraftsBtn'].forEach(id=>$(id).addEventListener('click',toggleDrafts));
+['postsNav','publishedTab','mobilePosts'].forEach(id=>$(id).addEventListener('click',showPosts));
+['profileNav','mobileProfile'].forEach(id=>$(id).addEventListener('click',showProfile));
 $('tipsBtn').addEventListener('click',()=>toast('Tip: usa buena luz, encuadre vertical y una idea clara.'));
 $('helpBtn').addEventListener('click',()=>toast('Selecciona un video y personaliza los detalles en el panel de edición.'));
 updateCaption();
@@ -4573,9 +4601,7 @@ html body #app .creator .editor-panel > .creation-modes-layout.is-hidden-by-tool
 .editor-tool-pane[data-pane="publish"].active>.publish-status-card{grid-column:1/-1!important}
 @media(max-width:720px){.editor-tool-pane[data-pane="publish"].active>.publish-network-card button,.editor-tool-pane[data-pane="publish"].active>.explore-import-card button{min-height:56px!important;font-size:12px!important}}
 </style>
-
-
-\n</body>
+</body>
 </html>
 
 
